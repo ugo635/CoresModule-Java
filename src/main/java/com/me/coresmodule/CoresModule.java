@@ -1,21 +1,18 @@
 package com.me.coresmodule;
 
 
-import com.mojang.brigadier.arguments.IntegerArgumentType;
-import com.mojang.brigadier.arguments.StringArgumentType;
-import com.mojang.brigadier.context.CommandContext;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
-import net.minecraft.server.command.CommandManager;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.Text;
 
+import net.minecraft.client.MinecraftClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.me.coresmodule.features.Diana.mfCalc;
+import com.me.coresmodule.utils.chat.simulateChat;
+import com.me.coresmodule.utils.chat.Chat;
 
 public class CoresModule implements ModInitializer {
+	public static MinecraftClient mc = MinecraftClient.getInstance();
 	public static final String MOD_ID = "coresmodule";
 
 	// This logger is used to write text to the console and the log file.
@@ -31,5 +28,6 @@ public class CoresModule implements ModInitializer {
 
 		LOGGER.info("Hello Fabric world!");
 		mfCalc.register();
+		simulateChat.register(); // TODO: Make it /cm simulateChat
 	}
 }

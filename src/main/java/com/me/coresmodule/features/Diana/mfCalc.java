@@ -1,30 +1,30 @@
 package com.me.coresmodule.features.Diana;
 
+import com.me.coresmodule.utils.chat.Chat;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
-import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
-import net.minecraft.server.command.CommandManager;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.Text;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 
 public class mfCalc {
     public static void register() {
-        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
-            dispatcher.register(CommandManager.literal("mymf")
+        ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
+            dispatcher.register(ClientCommandManager.literal("mymf")
                     // Branch without argument
                     .executes(mfCalc::mfFunc)
 
                     // Branch with 1 argument
-                    .then(CommandManager.argument("mf", IntegerArgumentType.integer())
+                    .then(ClientCommandManager.argument("mf", IntegerArgumentType.integer())
                             .executes(mfCalc::mfFunc)
 
                             // Branch with 2 argument
-                            .then(CommandManager.argument("kc", IntegerArgumentType.integer())
+                            .then(ClientCommandManager.argument("kc", IntegerArgumentType.integer())
                                     .executes(mfCalc::mfFunc))));
         });
     }
 
-    public static int mfFunc(CommandContext<ServerCommandSource> context)  {
+    public static int mfFunc(CommandContext<FabricClientCommandSource> context)  {
         double mf = 0;
         double kc = 0;
         int args = 0;
@@ -52,7 +52,7 @@ public class mfCalc {
 
         final String fanswer = answer;
 
-        context.getSource().sendFeedback(() -> Text.literal(fanswer), false);
+        Chat.chat(fanswer);
 
         return 1;
     }
