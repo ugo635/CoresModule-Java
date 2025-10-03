@@ -13,7 +13,7 @@ import net.minecraft.text.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Objects;
+import com.me.coresmodule.features.Diana.mfCalc;
 
 public class CoresModule implements ModInitializer {
 	public static final String MOD_ID = "coresmodule";
@@ -30,40 +30,6 @@ public class CoresModule implements ModInitializer {
 		// Proceed with mild caution.
 
 		LOGGER.info("Hello Fabric world!");
-		register();
+		mfCalc.register();
 	}
-
-	public static void register() {
-		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
-			dispatcher.register(CommandManager.literal("mymf")
-					// Branch without argument
-					.executes(CoresModule::mfFunc)
-
-					// Branch with 1 argument
-					.then(CommandManager.argument("mf", StringArgumentType.string())
-					.executes(CoresModule::mfFunc)
-
-					// Branch with 2 argument
-					.then(CommandManager.argument("kc", StringArgumentType.string())
-					.executes(CoresModule::mfFunc))));
-		});
-	}
-
-	public static int mfFunc(CommandContext<ServerCommandSource> context)  {
-		String mf = null;
-		String kc = null;
-		try {
-			mf = StringArgumentType.getString(context, "mf");
-		} catch (IllegalArgumentException ignored) {}
-
-		try {
-			kc = StringArgumentType.getString(context, "kc");
-		} catch (IllegalArgumentException ignored) {}
-		
-		context.getSource().sendFeedback(() -> Text.literal("Hi §5here §a is §b a §c color §d test §e :)"), false);
-
-		return 1;
-    }
-
-
 }
