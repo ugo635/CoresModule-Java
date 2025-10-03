@@ -1,6 +1,7 @@
 package com.me.coresmodule;
 
 
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import net.fabricmc.api.ModInitializer;
@@ -32,54 +33,37 @@ public class CoresModule implements ModInitializer {
 		register();
 	}
 
-
-
-	public static void createCommand(String name, CommandContext<ServerCommandSource> context) {
-		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
-			dispatcher.register(CommandManager.literal(name)
-					.executes(CoresModule::context)
-			);
-		});
-	}
-
 	public static void register() {
-		/*
 		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
 			dispatcher.register(CommandManager.literal("mymf")
-
-					// Branch with 2 argument
-					.then(CommandManager.argument("mf", StringArgumentType.string()))
-					.then(CommandManager.argument("kc", StringArgumentType.string())
-							.executes(context -> {
-								String mf = StringArgumentType.getString(context, "mf"); // Get the value of the arg 'mf'
-								String kc = StringArgumentType.getString(context, "mf"); // Get the value of the arg 'kc'
-
-								context.getSource().sendFeedback(() -> Text.literal("You put §5" + mf + "§r as an argument and " + kc), false);
-								LOGGER.info("Magic Find: " + mf + "\nKill Combo Percentage:§5 " + kc);
-								return 1;
-							})
-					)
+					// Branch without argument
+					.executes(CoresModule::mfFunc)
 
 					// Branch with 1 argument
 					.then(CommandManager.argument("mf", StringArgumentType.string())
-							.executes(context -> {
-								String mf = StringArgumentType.getString(context, "mf"); // use argument name "mf"
-								context.getSource().sendFeedback(() -> Text.literal("You put " + mf + " as an argument"), false);
-								LOGGER.info("Magic Find: " + mf);
-								return 1;
-							})
-					)
+					.executes(CoresModule::mfFunc)
 
-
-					// Branch without argument
-					.executes(context -> {
-						context.getSource().sendFeedback(() -> Text.literal("You need to put an argument"), false);
-						return 1;
-					})
-			);
+					// Branch with 2 argument
+					.then(CommandManager.argument("kc", StringArgumentType.string())
+					.executes(CoresModule::mfFunc))));
 		});
-		*/
-
-
 	}
+
+	public static int mfFunc(CommandContext<ServerCommandSource> context)  {
+		String mf = null;
+		String kc = null;
+		try {
+			mf = StringArgumentType.getString(context, "mf");
+		} catch (IllegalArgumentException ignored) {}
+
+		try {
+			kc = StringArgumentType.getString(context, "kc");
+		} catch (IllegalArgumentException ignored) {}
+		
+		context.getSource().sendFeedback(() -> Text.literal("Hi §5here §a is §b a §c color §d test §e :)"), false);
+
+		return 1;
+    }
+
+
 }
