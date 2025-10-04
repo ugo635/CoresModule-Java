@@ -1,0 +1,10 @@
+1. Day 1:
+    • /Mymf <mf> <kc (optionnal)> Command
+    • Helper Functions
+
+2. Day 2:
+    • Screenshot on Inquisitor Death - TODO: Screen only when getting Chimera, don't forget to set MOB_NAME to "Minos Inquisitor once testing is over."
+    • Helper Functions
+
+3. Day 3:
+    •

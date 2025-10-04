@@ -79,6 +79,14 @@ public class Helper {
         thread.start();
     }
 
+    /**
+     *
+     * @param title Title
+     * @param subtitle Subtitle
+     * @param fadeIn How long for the text to fade in (In ticks)
+     * @param time How long it stays (In ticks)
+     * @param fadeOut How long for the text to fade out (In ticks)
+     */
     public static void showTitle(String title, String subtitle, int fadeIn, int time, int fadeOut) {
         if (mc.inGameHud != null) {
             mc.inGameHud.setTitleTicks(fadeIn, time, fadeOut);

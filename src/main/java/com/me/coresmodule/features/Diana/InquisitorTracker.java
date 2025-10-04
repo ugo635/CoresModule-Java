@@ -1,5 +1,6 @@
 package com.me.coresmodule.features.Diana;
 
+import com.me.coresmodule.CoresModule;
 import com.me.coresmodule.utils.ScreenshotUtils;
 import com.me.coresmodule.utils.events.Register;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
@@ -11,8 +12,8 @@ import com.me.coresmodule.utils.events.EventBus.EventBus;
 import com.me.coresmodule.utils.chat.Chat;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 
-import static com.me.coresmodule.utils.Helper.formattedString;
-import static com.me.coresmodule.utils.Helper.showTitle;
+import static com.me.coresmodule.CoresModule.mc;
+import static com.me.coresmodule.utils.Helper.*;
 import static java.lang.Integer.parseInt;
 
 import java.util.*;
@@ -98,9 +99,13 @@ public class InquisitorTracker {
 
         if (health != null && health <= 0 && !defeated.contains(id)) {
             defeated.add(id);
-            Chat.chat("§eMob died: §b" + name);
-            showTitle("§d§lChimera!", "§c130m coins", 0, 25, 35);
-            ScreenshotUtils.takeScreenshot(50);
+            showTitle("§d§lChimera!", "§6130m coins", 0, 25, 35);
+            sleep(50, () -> {
+                mc.execute(() -> {
+                        ScreenshotUtils.takeScreenshot();
+                });
+            });
+
             EVENT_BUS.emit("mobDeath", entity);
         }
     }
