@@ -19,7 +19,7 @@ public class EventBus {
                 .add(callback);
     }
 
-    public void emit(String eventName, Object data) {
+    public static void emit(String eventName, Object data) {
         List<Consumer<Object>> callbacks = listeners.get(eventName);
         if (callbacks != null) {
             for (Consumer<Object> cb : callbacks) {

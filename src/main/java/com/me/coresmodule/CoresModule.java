@@ -1,14 +1,15 @@
 package com.me.coresmodule;
 
 
+import com.me.coresmodule.utils.chat.ClickActionManager;
 import net.fabricmc.api.ModInitializer;
 
 import net.minecraft.client.MinecraftClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.me.coresmodule.features.Diana.InquisitorTracker;
 import com.me.coresmodule.features.Diana.mfCalc;
-import com.me.coresmodule.features.Diana.inquisitorTracker;
 import com.me.coresmodule.utils.chat.simulateChat;
 
 public class CoresModule implements ModInitializer {
@@ -29,7 +30,9 @@ public class CoresModule implements ModInitializer {
 		LOGGER.info("Hello Fabric world!");
 		mfCalc.register();
 		simulateChat.register(); // TODO: Make it /cm simulateChat
-		inquisitorTracker.register();
-		//InquisitorDetector.register(); //TODO: Entities, detect cocooning, give chatgpt the 'json' abt cocoon
+		InquisitorTracker.register();
+		ClickActionManager.register();
+
+
 	}
 }

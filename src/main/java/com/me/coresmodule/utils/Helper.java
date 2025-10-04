@@ -11,6 +11,8 @@ import java.util.stream.Collectors;
 
 import java.util.function.Consumer;
 
+import static com.me.coresmodule.CoresModule.mc;
+
 public class Helper {
     private static final Map<TextColor, Formatting> colorToFormatChar =
             Arrays.stream(Formatting.values())
@@ -75,6 +77,21 @@ public class Helper {
         });
         thread.setDaemon(true);
         thread.start();
+    }
+
+    public static void showTitle(String title, String subtitle, int fadeIn, int time, int fadeOut) {
+        if (mc.inGameHud != null) {
+            mc.inGameHud.setTitleTicks(fadeIn, time, fadeOut);
+
+            if (title != null) {
+                mc.inGameHud.setTitle(net.minecraft.text.Text.of(title));
+            }
+
+            if (subtitle != null) {
+                mc.inGameHud.setSubtitle(net.minecraft.text.Text.of(subtitle));
+            }
+        }
+
     }
 
 }
