@@ -10,7 +10,7 @@ public class Chat {
      * @param s The message to display in the chat.
      */
     public static void chat(String s) {
-        mc.inGameHud.getChatHud().addMessage(Text.of(s));
+        mc.inGameHud.getChatHud().addMessage(Text.of(s.replaceAll("&", "§")));
     }
 
     /**
