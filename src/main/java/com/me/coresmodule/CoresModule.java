@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.me.coresmodule.features.Diana.mfCalc;
-import com.me.coresmodule.features.Diana.InquisitorDetector;
+import com.me.coresmodule.features.Diana.inquisitorTracker;
 import com.me.coresmodule.utils.chat.simulateChat;
 
 public class CoresModule implements ModInitializer {
@@ -29,6 +29,7 @@ public class CoresModule implements ModInitializer {
 		LOGGER.info("Hello Fabric world!");
 		mfCalc.register();
 		simulateChat.register(); // TODO: Make it /cm simulateChat
-		InquisitorDetector.register();
+		inquisitorTracker.register();
+		//InquisitorDetector.register(); //TODO: Entities, detect cocooning, give chatgpt the 'json' abt cocoon
 	}
 }

@@ -98,10 +98,19 @@ public class Register {
         });
     }
 
+    /**
+     * Registers an event that listens for chat messages that match a regex.
+     * The action receives both the message and the regex matcher for easy value extraction.
+     * If the action returns true, the message will be cancelled (not displayed in chat).
+     *
+     * @param regex The regular expression to filter messages with.
+     * @param action The action to execute. It receives the message and the `Matcher`.
+     */
     public static boolean onChatMessageCancelable(Pattern regex, BiConsumer<Text, Matcher> action) {
         throw new NotImplementedException("This is not implemented yet see https://github.com/SkyblockOverhaul/SBO-Kotlin/blob/main/src/main/kotlin/net/sbo/mod/utils/events/Register.kt#L120");
 
     }
+
 
     public static void onGuiClose(Consumer<Screen> action) {
         ScreenEvents.AFTER_INIT.register((ignored, screen, ignored1, ignored2) -> {
@@ -111,13 +120,47 @@ public class Register {
         });
     }
 
+    /**
+     * Registers an event that listens for entities being loaded (spawned) in the client world.
+     * The action receives both the entity and the client world.
+     *
+     * @param action The action to execute when an entity is loaded. It receives:
+     *               - {@code entity}: The entity that was spawned.
+     *               - {@code world}: The client world the entity belongs to.
+     * Example usage:
+     * <pre>
+     * onEntityLoad((entity, world) -> { <br>
+     *     if (entity.getName().getString().contains("Minos Inquisitor")) { <br>
+     *         System.out.println("Inquisitor spawned: " + entity); <br>
+     *     } <br>
+     * });
+     * </pre>
+     */
     public static void onEntityLoad(ClientEntityEvents.Load action) {
         ClientEntityEvents.ENTITY_LOAD.register(action);
     }
 
+    /**
+     * Registers an event that listens for entities being unloaded (removed) from the client world.
+     * The action receives both the entity and the client world.
+     *
+     * @param action The action to execute when an entity is unloaded. It receives:
+     *               - {@code entity}: The entity that was removed.
+     *               - {@code world}: The client world the entity belonged to.
+     * Example usage:
+     * <pre>
+     * onEntityUnLoad((entity, world) -> { <br>
+     *     if (entity.getName().getString().contains("Minos Inquisitor")) { <br>
+     *         System.out.println("Inquisitor left the world: " + entity); <br>
+     *     } <br>
+     * });
+     * </pre>
+     */
     public static void onEntityUnLoad(ClientEntityEvents.Unload action) {
         ClientEntityEvents.ENTITY_UNLOAD.register(action);
     }
+
+
 
     // TODO: Do others registers
     // On entity load -> cocoon
