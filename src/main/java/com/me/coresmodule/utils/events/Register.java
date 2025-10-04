@@ -38,4 +38,6 @@ public class Register {
                 );
     }
 
+    // TODO: Do others registers
+
 }

@@ -16,7 +16,7 @@ public class simulateChat {
             String message = String.join(" ", args).replace("&", "§");
             Chat.chat(message);
         });
-        
+
     }
 }
 
