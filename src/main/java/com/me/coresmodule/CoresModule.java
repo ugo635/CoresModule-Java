@@ -1,6 +1,7 @@
 package com.me.coresmodule;
 
 
+import com.me.coresmodule.utils.FilesHandler;
 import com.me.coresmodule.utils.chat.ClickActionManager;
 import net.fabricmc.api.ModInitializer;
 
@@ -11,6 +12,8 @@ import org.slf4j.LoggerFactory;
 import com.me.coresmodule.features.Diana.InquisitorTracker;
 import com.me.coresmodule.features.Diana.mfCalc;
 import com.me.coresmodule.utils.chat.simulateChat;
+
+import java.io.IOException;
 
 public class CoresModule implements ModInitializer {
 	public static MinecraftClient mc = MinecraftClient.getInstance();
@@ -30,9 +33,21 @@ public class CoresModule implements ModInitializer {
 		LOGGER.info("Hello Fabric world!");
 		mfCalc.register();
 		simulateChat.register(); // TODO: Make it /cm simulateChat
-		InquisitorTracker.register();
 		ClickActionManager.register();
 
 
-	}
+
+        try {
+            FilesHandler.register();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        try {
+            InquisitorTracker.register();
+        } catch (IOException e) {
+			System.err.println("[CoresModule] CoresModule.java:29 " + e);
+        }
+
+    }
 }

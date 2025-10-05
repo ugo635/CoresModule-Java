@@ -7,5 +7,6 @@
     • Helper Functions
 
 3. Day 3:
-    • Modified Sreenshot on Chimera Drop, haven't tested in real condition, to test next Diana
-    
+    • Modified Sreenshot on Chimera Drop
+    • Create a config folder
+    • Add chimeras message to /config/coresmodule/chimeras.txt

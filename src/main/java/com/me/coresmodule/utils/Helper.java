@@ -6,6 +6,8 @@ import net.minecraft.text.TextColor;
 import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.Nullable;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -100,6 +102,11 @@ public class Helper {
             }
         }
 
+    }
+
+    public static String getCurrentTime() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+        return "[" + LocalDateTime.now().format(formatter) + "]";
     }
 
 }
