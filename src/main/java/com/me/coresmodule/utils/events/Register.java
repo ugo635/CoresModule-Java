@@ -23,6 +23,7 @@ import java.util.regex.Matcher;
 import java.util.Arrays;
 import java.util.function.Consumer;
 
+import static com.me.coresmodule.CoresModule.mc;
 import static com.me.coresmodule.utils.Helper.formattedString;
 import static com.me.coresmodule.utils.Helper.removeFormatting;
 import static com.me.coresmodule.utils.events.TickScheduler.ScheduledTask;
@@ -89,12 +90,17 @@ public class Register {
      * The action receives both the message and the regex match result for easy value extraction.
      *
      * @param regex The regular expression to filter messages with.
+     * @param noFormating Remove the text formatting
      * @param action The action to execute. It receives the message and the `MatchResult`.
      */
     public static void onChatMessage(Pattern regex, boolean noFormating, BiConsumer<Text, MatchResult> action) {
         ClientReceiveMessageEvents.GAME.register((message, formatted) -> {
             String text = formattedString(message);
             if (noFormating) text = removeFormatting(text);
+            Matcher matcher = regex.matcher(text);
+            if (matcher.find()) {
+                action.accept(message, matcher);
+            }
         });
     }
 
@@ -159,10 +165,4 @@ public class Register {
     public static void onEntityUnLoad(ClientEntityEvents.Unload action) {
         ClientEntityEvents.ENTITY_UNLOAD.register(action);
     }
-
-
-
-    // TODO: Do others registers
-    // On entity load -> cocoon
-
 }

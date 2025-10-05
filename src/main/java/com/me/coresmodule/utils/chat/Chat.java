@@ -139,5 +139,13 @@ public class Chat {
         return getChatBreak("-", "§b");
     }
 
-
+    /**
+     * Sends a message to the server chat.
+     * @param message The message to send.
+     */
+    public static void say(String message) {
+        if (mc.player != null && mc.player.networkHandler != null) {
+            mc.player.networkHandler.sendChatMessage(message);
+        }
+    }
 }

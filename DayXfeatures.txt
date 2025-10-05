@@ -3,8 +3,9 @@
     • Helper Functions
 
 2. Day 2:
-    • Screenshot on Inquisitor Death - TODO: Screen only when getting Chimera, don't forget to set MOB_NAME to "Minos Inquisitor once testing is over."
+    • Screenshot on Inquisitor Death
     • Helper Functions
 
 3. Day 3:
-    •
+    • Modified Sreenshot on Chimera Drop, haven't tested in real condition, to test next Diana
+    
