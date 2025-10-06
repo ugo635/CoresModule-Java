@@ -3,6 +3,7 @@ package com.me.coresmodule.utils.chat;
 import static com.me.coresmodule.CoresModule.mc;
 import static java.lang.Integer.parseInt;
 
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
@@ -22,6 +23,21 @@ public class Chat {
      */
     public static void chat(String s) {
         mc.inGameHud.getChatHud().addMessage(Text.of(s.replaceAll("&", "§")));
+    }
+
+    /**
+     * Sends a command to the server.
+     * This correctly simulates a player typing a command.
+     * @param command The command to send, without the leading slash.
+     */
+    public static void command(String command) {
+        MinecraftClient mc = MinecraftClient.getInstance();
+        if (mc.player == null || mc.player.networkHandler == null) return;
+        if (!command.startsWith("/")) {
+            mc.player.networkHandler.sendChatMessage("/" + command);
+        } else {
+            mc.player.networkHandler.sendChatMessage(command);
+        }
     }
 
     /**

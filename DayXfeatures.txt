@@ -1,5 +1,5 @@
 1. Day 1:
-    • /Mymf <mf> <kc (optionnal)> Command
+    • /mymf <mf> <kc (optionnal)> Command
     • Helper Functions
 
 2. Day 2:
@@ -10,3 +10,6 @@
     • Modified Sreenshot on Chimera Drop
     • Create a config folder
     • Add chimeras message to /config/coresmodule/chimeras.txt
+
+4. Day 4:
+    • !mymf command
