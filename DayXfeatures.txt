@@ -17,3 +17,6 @@
     • Make AH chat message clickable
     • /color command
     • /fp command
+
+5. Day 5:
+    •
