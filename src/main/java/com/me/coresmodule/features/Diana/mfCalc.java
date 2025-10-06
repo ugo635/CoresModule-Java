@@ -8,6 +8,8 @@ import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 
+import java.util.regex.Pattern;
+
 public class mfCalc {
     public static void register() {
         Register.command("mymf", args -> {
@@ -21,6 +23,15 @@ public class mfCalc {
                 mf = ((mf*1.11/* Renowned + Legion */)*1.05 /* Shuriken */+ (130 /* Max Bestiary */ * 1.05 /* Shuriken */) * kc);
                 Chat.chat("§6§l[Cm] Your magic find is §b§l%.2f §6§lon Inquisitors".formatted(mf));
             }
+        });
+
+        Register.onChatMessage(message -> {
+            Pattern regexWith2Numbers = Pattern.compile("^Party > \\[?[^\\]]*\\]?\\s*(\\w+): !mymf (\\d+) (\\d+)$"); // Matches "!mymf <number> <number>"
+            Pattern regexWithNumber = Pattern.compile("^Party > \\[?[^\\]]*\\]?\\s*(\\w+): !mymf (\\d+)$"); // Matches "!mymf <number>"
+            Pattern regexWithoutNumber = Pattern.compile("^Party > \\[?[^\\]]*\\]?\\s*(\\w+): !mymf$"); // Matches only "!mymf"
+
+            
+
         });
     }
 }

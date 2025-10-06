@@ -79,10 +79,10 @@ public class Register {
      * Registers an event that listens for chat messages.
      * The action receives the message as a `Text` object.
      */
-        public static void onChatMessage(Consumer<Text> action) {
-            ClientReceiveMessageEvents.GAME.register((message, signedMessage) -> {
-                action.accept(message);
-            });
+    public static void onChatMessage(Consumer<Text> action) {
+        ClientReceiveMessageEvents.GAME.register((message, signedMessage) -> {
+            action.accept(message);
+        });
     }
 
     /**
