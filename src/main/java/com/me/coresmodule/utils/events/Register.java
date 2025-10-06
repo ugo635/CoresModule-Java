@@ -15,7 +15,10 @@ import net.minecraft.text.Text;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.logging.log4j.util.TriConsumer;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
@@ -30,6 +33,9 @@ import static com.me.coresmodule.utils.events.TickScheduler.ScheduledTask;
 import static com.me.coresmodule.utils.events.TickScheduler.tasks;
 
 public class Register {
+
+    private static final List<ChatListener> chatListeners = new ArrayList<>();
+
     /**
      * Registers a command with the specified name and aliases.
      * The action is executed when the command is invoked, with the provided arguments.
@@ -112,10 +118,23 @@ public class Register {
      * @param regex The regular expression to filter messages with.
      * @param action The action to execute. It receives the message and the `Matcher`.
      */
-    public static boolean onChatMessageCancelable(Pattern regex, BiConsumer<Text, Matcher> action) {
-        throw new NotImplementedException("This is not implemented yet see https://github.com/SkyblockOverhaul/SBO-Kotlin/blob/main/src/main/kotlin/net/sbo/mod/utils/events/Register.kt#L120");
-
+    public static void onChatMessageCancelable(Pattern regex, BiFunction<Text, Matcher, Boolean> action) {
+        chatListeners.add(new ChatListener(regex, action));
     }
+
+    public static boolean handleChatMessage(Text message) {
+        String plain = message.getString();
+        for (ChatListener listener : chatListeners) {
+            Matcher matcher = listener.regex.matcher(plain);
+            if (matcher.find()) {
+                boolean cancel = listener.action.apply(message, matcher);
+                if (cancel) return true; // cancels this message
+            }
+        }
+        return false;
+    }
+
+    private record ChatListener(Pattern regex, BiFunction<Text, Matcher, Boolean> action) {}
 
 
     public static void onGuiClose(Consumer<Screen> action) {
