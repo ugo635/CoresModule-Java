@@ -109,7 +109,7 @@ public class Chat {
      * @param command The command to execute when clicked.
      */
     public static void clickableChat(String message, String hover, String command) {
-        Text hoverText = Text.literal(hover).formatted(Formatting.YELLOW);
+        Text hoverText = Text.literal(hover);
         ClickEvent clickEvent = new ClickEvent.RunCommand(command);
         HoverEvent hoverEvent = new HoverEvent.ShowText(hoverText);
 

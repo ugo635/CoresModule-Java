@@ -31,7 +31,6 @@ public class mfCalc {
             Pattern regexWithoutNumber = Pattern.compile("^Party > \\[?[^\\]]*\\]?\\s*(\\w+): !mymf$"); // Matches only "!mymf"
 
             String msg = Helper.removeFormatting(message.getString());
-            System.out.println(msg);
 
             if (!regexWithNumber.matcher(msg).find() && !regexWithoutNumber.matcher(msg).find() && !regexWith2Numbers.matcher(msg).find()) return;
 

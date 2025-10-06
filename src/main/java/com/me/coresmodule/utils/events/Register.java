@@ -1,5 +1,6 @@
 package com.me.coresmodule.utils.events;
 
+import com.me.coresmodule.utils.Helper;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;

@@ -1,6 +1,8 @@
 package com.me.coresmodule;
 
 
+import com.me.coresmodule.features.Features;
+import com.me.coresmodule.features.Party;
 import com.me.coresmodule.utils.FilesHandler;
 import com.me.coresmodule.utils.chat.ClickActionManager;
 import net.fabricmc.api.ModInitializer;
@@ -34,7 +36,8 @@ public class CoresModule implements ModInitializer {
 		mfCalc.register();
 		simulateChat.register(); // TODO: Make it /cm simulateChat
 		ClickActionManager.register();
-
+		Features.register();
+		Party.register();
 
 
         try {
