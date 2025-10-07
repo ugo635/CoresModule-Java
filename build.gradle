@@ -43,9 +43,9 @@ dependencies {
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-	modImplementation "com.teamresourceful.resourcefulconfig:resourcefulconfig-fabric-${project.minecraft_version}:${project.rconfig_version}"
-	modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
-	modImplementation include("com.teamresourceful.resourcefulconfig:resourcefulconfig-fabric-${project.minecraft_version}:${project.rconfig_version}")
+	modImplementation "com.teamresourceful.resourcefulconfig:resourcefulconfig-common-$minecraft_version:$rconfig_version"
+	modImplementation "com.teamresourceful.resourcefulconfig:resourcefulconfig-fabric-$minecraft_version:$rconfig_version"
+
 
 
 }
@@ -84,7 +84,7 @@ jar {
 publishing {
 	publications {
 		create("mavenJava", MavenPublication) {
-			artifactId = project.archivesBaseName
+			artifactId = project.archives_base_name
 			from components.java
 		}
 	}

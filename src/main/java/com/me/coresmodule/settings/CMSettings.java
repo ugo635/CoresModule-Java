@@ -1,20 +1,18 @@
 package com.me.coresmodule.settings;
 
+import com.me.coresmodule.utils.chat.Chat;
+import com.teamresourceful.resourcefulconfig.api.annotations.Config;
+import com.teamresourceful.resourcefulconfig.api.annotations.ConfigButton;
 
-import com.teamresourceful.resourcefulconfig.api.ResourcefulConfig;
-import com.teamresourceful.resourcefulconfig.api.ConfigRegistry;
-import com.teamresourceful.resourcefulconfig.api.ConfigSettings;
-import com.teamresourceful.resourcefulconfig.api.types.info.ResourcefulConfigLink;
-import com.teamresourceful.resourcefulconfig.api.types.options.TranslatableValue;
 
-import net.minecraft.util.Util;
-
-// import com.me..coresmodule.settings.categories.CategoryName;
-
+@Config(value = "coresmodule")
 public class CMSettings {
-    public static void register() {
+    public static final CMSettings INSTANCE = new CMSettings();
+    private CMSettings() {
+        final Runnable button = () -> {
+            Chat.chat("§5Hi");
+        };
 
     }
-
 
 }
