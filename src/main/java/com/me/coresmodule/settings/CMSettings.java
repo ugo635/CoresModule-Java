@@ -12,7 +12,5 @@ public class CMSettings {
         final Runnable button = () -> {
             Chat.chat("§5Hi");
         };
-
     }
-
 }
