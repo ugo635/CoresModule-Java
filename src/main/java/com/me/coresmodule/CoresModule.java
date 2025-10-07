@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import com.me.coresmodule.features.Diana.InquisitorTracker;
 import com.me.coresmodule.features.Diana.mfCalc;
 import com.me.coresmodule.utils.chat.simulateChat;
+import com.me.coresmodule.settings.CMSettings;
 
 import java.io.IOException;
 
@@ -38,8 +39,6 @@ public class CoresModule implements ModInitializer {
 		ClickActionManager.register();
 		Features.register();
 		Party.register();
-
-
 
         try {
             FilesHandler.register();
