@@ -40,6 +40,7 @@ public class CoresModule implements ModInitializer {
 		Party.register();
 
 
+
         try {
             FilesHandler.register();
         } catch (IOException e) {
