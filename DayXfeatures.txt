@@ -7,7 +7,7 @@
     • Helper Functions
 
 3. Day 3:
-    • Modified Sreenshot on Chimera Drop
+    • Modified Sreenshot on to only happend on Chimera Drop
     • Create a config folder
     • Add chimeras message to /config/coresmodule/chimeras.txt
 
@@ -25,4 +25,5 @@
     • Finished making the setting menu
 
 7. Day 7:
-    • 
+    • Made AH clickable message toggleable in settings menu
+    • Made Chimera Drop Screenshot toggleable in settings menu
