@@ -3,9 +3,12 @@ package com.me.coresmodule;
 
 import com.me.coresmodule.features.Features;
 import com.me.coresmodule.features.Party;
+import com.me.coresmodule.settings.CMSettings;
+import com.me.coresmodule.settings.ModMenuInterop;
 import com.me.coresmodule.utils.FilesHandler;
 import com.me.coresmodule.utils.chat.ClickActionManager;
 import net.fabricmc.api.ModInitializer;
+import com.teamresourceful.resourcefulconfig.api.loader.Configurator;
 
 import net.minecraft.client.MinecraftClient;
 import org.slf4j.Logger;
@@ -14,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import com.me.coresmodule.features.Diana.InquisitorTracker;
 import com.me.coresmodule.features.Diana.mfCalc;
 import com.me.coresmodule.utils.chat.simulateChat;
-import com.me.coresmodule.settings.CMSettings;
 
 import java.io.IOException;
 
@@ -26,6 +28,9 @@ public class CoresModule implements ModInitializer {
 	// It is considered best practice to use your mod id as the logger's name.
 	// That way, it's clear which mod wrote info, warnings, and errors.
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+
+	// Resourceful Configurator instance for this mod
+	public static final Configurator CONFIGURATOR = new Configurator(MOD_ID);
 
 	@Override
 	public void onInitialize() {
@@ -39,8 +44,11 @@ public class CoresModule implements ModInitializer {
 		ClickActionManager.register();
 		Features.register();
 		Party.register();
+		CMSettings.register();
 
-        try {
+		CONFIGURATOR.register(CMSettings.class);
+
+		try {
             FilesHandler.register();
         } catch (IOException e) {
             throw new RuntimeException(e);
