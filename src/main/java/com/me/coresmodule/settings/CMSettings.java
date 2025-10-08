@@ -15,7 +15,11 @@ import net.minecraft.client.MinecraftClient;
 
 @Config(
         value = "CMSettings",
-        version = 1
+        version = 1,
+        categories = {
+                General.class
+        }
+
 )
 public class CMSettings {
 
