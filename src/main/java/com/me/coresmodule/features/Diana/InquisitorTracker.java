@@ -1,5 +1,7 @@
 package com.me.coresmodule.features.Diana;
 
+import com.me.coresmodule.settings.Settings;
+import com.me.coresmodule.settings.categories.General;
 import com.me.coresmodule.utils.Helper;
 import com.me.coresmodule.utils.ScreenshotUtils;
 
@@ -17,7 +19,7 @@ public class InquisitorTracker {
     public static void register() throws IOException {
         Register.onChatMessage(message -> {
             String text = Helper.formattedString(message);
-            if (text.contains("§6§lRARE DROP! §fEnchanted Book (§d§lChimera I§f)")) { // "§6§lRARE DROP! §fEnchanted Book (§d§lChimera I§f)"
+            if (text.contains("§6§lRARE DROP! §fEnchanted Book (§d§lChimera I§f)") && General.ScreenshotOnChimera) { // "§6§lRARE DROP! §fEnchanted Book (§d§lChimera I§f)"
                 Helper.sleep(50, () -> {
                     mc.execute(ScreenshotUtils::takeScreenshot);
                 });

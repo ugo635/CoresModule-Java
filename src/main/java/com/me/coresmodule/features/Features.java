@@ -1,5 +1,6 @@
 package com.me.coresmodule.features;
 
+import com.me.coresmodule.settings.categories.General;
 import com.me.coresmodule.utils.Helper;
 import com.me.coresmodule.utils.chat.Chat;
 import com.me.coresmodule.utils.events.Register;
@@ -38,15 +39,19 @@ public class Features {
 
         Register.onChatMessage(message -> {
             String msg = message.getString();
-            if (msg.equals("SPOOKY! A Trick or Treat Chest has appeared!")) {
+            if (msg.equals("SPOOKY! A Trick or Treat Chest has appeared!") && General.spookyChest) {
                 Chat.chat("§6§l[Cm] Sooky Chest!");
                 Helper.showTitle("§6§lSpooky Chest", "", 0, 25, 35);
             }
         });
 
         Register.onChatMessageCancelable(Pattern.compile("(You purchased|Visit the Auction House).*"), (message, matcher) -> {
-            Chat.clickableChat(Helper.formattedString(message), "§eClick To Open The AH", "/ah");
-            return true; // Cancels the Original message
+            if (General.ahMsg) {
+                Chat.clickableChat(Helper.formattedString(message), "§eClick To Open The AH", "/ah");
+                return true; // Cancels the Original message
+            } else {
+                return false;
+            }
         });
 
         Register.command("clear", ignore -> {

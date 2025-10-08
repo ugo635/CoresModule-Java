@@ -4,6 +4,7 @@ package com.me.coresmodule;
 import com.me.coresmodule.features.Features;
 import com.me.coresmodule.features.Party;
 import com.me.coresmodule.settings.Settings;
+import com.me.coresmodule.settings.categories.General;
 import com.me.coresmodule.utils.FilesHandler;
 import com.me.coresmodule.utils.chat.Chat;
 import com.me.coresmodule.utils.chat.ClickActionManager;
@@ -61,7 +62,8 @@ public class CoresModule implements ModInitializer {
 		// Register the "/welcomeMsg" command to show the welcome message if enabled
 		Register.command("welcomeMsg", arg -> {
 			if (Settings.showWelcome.get()) {
-				Chat.chat(Settings.welcomeMessage);
+				Chat.chat(Settings.welcomeMessage); // To use a setting it's ClassInWhichTheSettingIsDeclared.settingName
+				Chat.chat(String.valueOf((General.ScreenshotOnChimera)));
 			} else {
 				Chat.chat("§cWelcome message is disabled. Enable it in the settings.");
 			}

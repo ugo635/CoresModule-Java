@@ -8,9 +8,12 @@ import com.teamresourceful.resourcefulconfig.api.annotations.ConfigOption;
 
 @Category("General")
 public class General {
-    @ConfigEntry(
-            id = "demoInteger",
-            translation = "Integer:"
-    )
-    public static int demoInteger = 1;
+    @ConfigEntry(id = "ScreenshotOnChimera", translation = "Screenshot On Chimera")
+    public static boolean ScreenshotOnChimera = true;
+
+    @ConfigEntry(id = "ahMsg", translation = "Make AH message clickable to open the AH")
+    public static boolean ahMsg = true;
+
+    @ConfigEntry(id = "spookyChest", translation = "Send a message on screen when getting a Spooky Chest")
+    public static boolean spookyChest = true;
 }
