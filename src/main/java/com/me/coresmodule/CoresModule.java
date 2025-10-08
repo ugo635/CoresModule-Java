@@ -6,6 +6,7 @@ import com.me.coresmodule.features.Party;
 import com.me.coresmodule.settings.CMSettings;
 import com.me.coresmodule.settings.ModMenuInterop;
 import com.me.coresmodule.utils.FilesHandler;
+import com.me.coresmodule.utils.Helper;
 import com.me.coresmodule.utils.chat.Chat;
 import com.me.coresmodule.utils.chat.ClickActionManager;
 import com.me.coresmodule.utils.events.Register;
@@ -13,6 +14,8 @@ import com.teamresourceful.resourcefulconfig.api.client.ResourcefulConfigScreen;
 import net.fabricmc.api.ModInitializer;
 import com.teamresourceful.resourcefulconfig.api.loader.Configurator;
 
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.minecraft.client.MinecraftClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,10 +55,14 @@ public class CoresModule implements ModInitializer {
 
 		// Register the "/cm" command to open the config screen
 		Register.command("cm", arg -> {
-			var factory = ResourcefulConfigScreen.getFactory("CMSettings");
+			var factory = ResourcefulConfigScreen.getFactory("coresmodule");
 
-			MinecraftClient.getInstance().setScreen(factory.apply(null));
+			Helper.sleep(50, () -> {
+				MinecraftClient.getInstance().setScreen(factory.apply(null));
+			});
 		});
+
+
 
 		try {
             FilesHandler.register();
@@ -66,7 +73,7 @@ public class CoresModule implements ModInitializer {
         try {
             InquisitorTracker.register();
         } catch (IOException e) {
-			System.err.println("[CoresModule] CoresModule.java:29 " + e);
+			System.err.println("[CoresModule] CoresModule.java:72 " + e);
         }
 
     }
