@@ -9,6 +9,6 @@ public class ModMenuInterop implements ModMenuApi {
     @Override
     @SuppressWarnings("unchecked")
     public ConfigScreenFactory<Screen> getModConfigScreenFactory() {
-        return (ConfigScreenFactory<Screen>) ResourcefulConfigScreen.getFactory("CMSettings");
+        return (ConfigScreenFactory<Screen>) ResourcefulConfigScreen.getFactory("Settings");
     }
 }

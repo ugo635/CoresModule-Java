@@ -19,7 +19,7 @@
     • /fp command
 
 5. Day 5:
-    • Started working on settings menu
+    • Started working on settings menu, didn't worked much, was sick :c
 
 6. Day 6:
-    •
+    • Finished making the setting menu
