@@ -6,7 +6,10 @@ import com.me.coresmodule.features.Party;
 import com.me.coresmodule.settings.CMSettings;
 import com.me.coresmodule.settings.ModMenuInterop;
 import com.me.coresmodule.utils.FilesHandler;
+import com.me.coresmodule.utils.chat.Chat;
 import com.me.coresmodule.utils.chat.ClickActionManager;
+import com.me.coresmodule.utils.events.Register;
+import com.teamresourceful.resourcefulconfig.api.client.ResourcefulConfigScreen;
 import net.fabricmc.api.ModInitializer;
 import com.teamresourceful.resourcefulconfig.api.loader.Configurator;
 
@@ -44,9 +47,15 @@ public class CoresModule implements ModInitializer {
 		ClickActionManager.register();
 		Features.register();
 		Party.register();
-		CMSettings.register();
 
 		CONFIGURATOR.register(CMSettings.class);
+
+		// Register the "/cm" command to open the config screen
+		Register.command("cm", arg -> {
+			var factory = ResourcefulConfigScreen.getFactory("CMSettings");
+
+			MinecraftClient.getInstance().setScreen(factory.apply(null));
+		});
 
 		try {
             FilesHandler.register();

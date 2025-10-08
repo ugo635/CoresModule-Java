@@ -19,4 +19,7 @@
     • /fp command
 
 5. Day 5:
+    • Started working on settings menu
+
+6. Day 6:
     •
