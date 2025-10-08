@@ -3,10 +3,8 @@ package com.me.coresmodule;
 
 import com.me.coresmodule.features.Features;
 import com.me.coresmodule.features.Party;
-import com.me.coresmodule.settings.CMSettings;
-import com.me.coresmodule.settings.ModMenuInterop;
+import com.me.coresmodule.settings.Settings;
 import com.me.coresmodule.utils.FilesHandler;
-import com.me.coresmodule.utils.Helper;
 import com.me.coresmodule.utils.chat.Chat;
 import com.me.coresmodule.utils.chat.ClickActionManager;
 import com.me.coresmodule.utils.events.Register;
@@ -14,8 +12,6 @@ import com.teamresourceful.resourcefulconfig.api.client.ResourcefulConfigScreen;
 import net.fabricmc.api.ModInitializer;
 import com.teamresourceful.resourcefulconfig.api.loader.Configurator;
 
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.minecraft.client.MinecraftClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +32,8 @@ public class CoresModule implements ModInitializer {
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
 	// Resourceful Configurator instance for this mod
-	public static final Configurator CONFIGURATOR = new Configurator(MOD_ID);
+	public static final Configurator configurator = new Configurator(MOD_ID);
+
 
 	@Override
 	public void onInitialize() {
@@ -51,23 +48,30 @@ public class CoresModule implements ModInitializer {
 		Features.register();
 		Party.register();
 
-		CONFIGURATOR.register(CMSettings.class);
+		configurator.register(Settings.class);
 
 		// Register the "/cm" command to open the config screen
 		Register.command("cm", arg -> {
-			var factory = ResourcefulConfigScreen.getFactory("coresmodule");
-
-			Helper.sleep(50, () -> {
+			var factory = ResourcefulConfigScreen.getFactory(MOD_ID);
+			MinecraftClient.getInstance().send(() -> {
 				MinecraftClient.getInstance().setScreen(factory.apply(null));
 			});
 		});
 
+		// Register the "/welcomeMsg" command to show the welcome message if enabled
+		Register.command("welcomeMsg", arg -> {
+			if (Settings.showWelcome.get()) {
+				Chat.chat(Settings.welcomeMessage);
+			} else {
+				Chat.chat("§cWelcome message is disabled. Enable it in the settings.");
+			}
+		});
 
 
 		try {
             FilesHandler.register();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+			System.err.println("[CoresModule] CoresModule.java:66 " + e);
         }
 
         try {

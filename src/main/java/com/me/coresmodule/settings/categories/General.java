@@ -6,11 +6,11 @@ import com.teamresourceful.resourcefulconfig.api.annotations.ConfigEntry;
 import com.teamresourceful.resourcefulconfig.api.annotations.ConfigOption;
 
 
-@Category("category")
+@Category("General")
 public class General {
     @ConfigEntry(
             id = "demoInteger",
-            translation = "1"
+            translation = "Integer:"
     )
     public static int demoInteger = 1;
 }
