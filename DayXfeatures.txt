@@ -25,7 +25,7 @@
     • Finished making the setting menu
 
 7. Day 7:
-    • <g>Made AH clickable message toggleable in the settings menu • Made Chimera Drop Screenshot toggleable in the settings menu</g>
+    • Made AH clickable message toggleable in the settings menu • Made Chimera Drop Screenshot toggleable in the settings menu
     • Started working on ColorReplacor, my goal is to finish it in under a week, it currently have 1 bug but 'should' just change the username color
     • (Maybe not to do, if I don't need to, will see with the future stuff) TODO: Merge texts with same click/hover action/value: Make each into an array with each having text, click/hover value and merge to limit the amt of stuff -> basicly do like CT => Does editing the sibling by making it's text smth else remove it's .Style() ?
 
