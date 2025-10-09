@@ -2,6 +2,7 @@ package com.me.coresmodule.features;
 
 import com.me.coresmodule.settings.categories.General;
 import com.me.coresmodule.utils.Helper;
+import com.me.coresmodule.utils.TextHelper;
 import com.me.coresmodule.utils.chat.Chat;
 import com.me.coresmodule.utils.events.Register;
 
@@ -47,7 +48,7 @@ public class Features {
 
         Register.onChatMessageCancelable(Pattern.compile("(You purchased|Visit the Auction House).*"), (message, matcher) -> {
             if (General.ahMsg) {
-                Chat.clickableChat(Helper.formattedString(message), "§eClick To Open The AH", "/ah");
+                Chat.clickableChat(TextHelper.formattedString(message), "§eClick To Open The AH", "/ah");
                 return true; // Cancels the Original message
             } else {
                 return false;

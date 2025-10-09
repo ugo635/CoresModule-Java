@@ -22,7 +22,15 @@ public class Chat {
      * @param s The message to display in the chat.
      */
     public static void chat(String s) {
-        mc.inGameHud.getChatHud().addMessage(Text.of(s.replaceAll("&[0-9a-fkmnor]", "§$1")));
+        mc.inGameHud.getChatHud().addMessage(Text.of(s.replaceAll("&", "§")));
+    }
+
+    /**
+     * Shows a local chat message only visible to the player.
+     * @param t The Text to display in the chat.
+     */
+    public static void chat(Text t) {
+        mc.inGameHud.getChatHud().addMessage(t);
     }
 
     /**

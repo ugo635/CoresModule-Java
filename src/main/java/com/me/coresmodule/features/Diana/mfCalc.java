@@ -1,19 +1,14 @@
 package com.me.coresmodule.features.Diana;
 
 import com.me.coresmodule.utils.Helper;
+import com.me.coresmodule.utils.TextHelper;
 import com.me.coresmodule.utils.chat.Chat;
 import com.me.coresmodule.utils.events.Register;
-import com.mojang.brigadier.arguments.IntegerArgumentType;
-import com.mojang.brigadier.context.CommandContext;
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
-import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
-import net.minecraft.text.Text;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class mfCalc {
+public class MfCalc {
     public static void register() {
         Register.command("mymf", args -> {
             if (args.length > 2 || args.length == 0) {
@@ -30,7 +25,7 @@ public class mfCalc {
             Pattern regexWithNumber = Pattern.compile("^Party > \\[?[^\\]]*\\]?\\s*(\\w+): !mymf (\\d+)$"); // Matches "!mymf <number>"
             Pattern regexWithoutNumber = Pattern.compile("^Party > \\[?[^\\]]*\\]?\\s*(\\w+): !mymf$"); // Matches only "!mymf"
 
-            String msg = Helper.removeFormatting(message.getString());
+            String msg = TextHelper.removeFormatting(message.getString());
 
             if (!regexWithNumber.matcher(msg).find() && !regexWithoutNumber.matcher(msg).find() && !regexWith2Numbers.matcher(msg).find()) return;
 

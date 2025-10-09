@@ -1,6 +1,6 @@
 package com.me.coresmodule.settings;
 
-import com.me.coresmodule.CoresModule;
+import com.me.coresmodule.settings.categories.ColorReplacorSettings;
 import com.teamresourceful.resourcefulconfig.api.annotations.*;
 import com.teamresourceful.resourcefulconfig.api.types.entries.Observable;
 import com.me.coresmodule.utils.chat.Chat;
@@ -15,7 +15,8 @@ import static com.teamresourceful.resourcefulconfig.demo.Demo.configurator;
         value = "Settings",
         version = 1,
         categories = {
-                General.class
+                General.class,
+                ColorReplacorSettings.class
         }
 
 )

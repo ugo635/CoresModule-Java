@@ -1,6 +1,5 @@
 package com.me.coresmodule.utils.events;
 
-import com.me.coresmodule.utils.Helper;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
@@ -10,16 +9,13 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.Entity;
 import net.minecraft.text.Text;
-import org.apache.commons.lang3.NotImplementedException;
-import org.apache.logging.log4j.util.TriConsumer;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
+import java.util.function.Predicate;
 import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
@@ -27,9 +23,8 @@ import java.util.regex.Matcher;
 import java.util.Arrays;
 import java.util.function.Consumer;
 
-import static com.me.coresmodule.CoresModule.mc;
-import static com.me.coresmodule.utils.Helper.formattedString;
-import static com.me.coresmodule.utils.Helper.removeFormatting;
+import static com.me.coresmodule.utils.TextHelper.formattedString;
+import static com.me.coresmodule.utils.TextHelper.removeFormatting;
 import static com.me.coresmodule.utils.events.TickScheduler.ScheduledTask;
 import static com.me.coresmodule.utils.events.TickScheduler.tasks;
 
@@ -122,6 +117,14 @@ public class Register {
     public static void onChatMessageCancelable(Pattern regex, BiFunction<Text, Matcher, Boolean> action) {
         chatListeners.add(new ChatListener(regex, action));
     }
+
+    public static void onChatMessageCancelable(Predicate<Text> action) {
+        chatListeners.add(new ChatListener(
+                Pattern.compile(".*"),
+                (message, matcher) -> action.test(message)
+        ));
+    }
+
 
     public static boolean handleChatMessage(Text message) {
         String plain = message.getString();

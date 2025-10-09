@@ -1,6 +1,7 @@
 package com.me.coresmodule;
 
 
+import com.me.coresmodule.features.ColorReplacor;
 import com.me.coresmodule.features.Features;
 import com.me.coresmodule.features.Party;
 import com.me.coresmodule.settings.Settings;
@@ -18,12 +19,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.me.coresmodule.features.Diana.InquisitorTracker;
-import com.me.coresmodule.features.Diana.mfCalc;
-import com.me.coresmodule.utils.chat.simulateChat;
+import com.me.coresmodule.features.Diana.MfCalc;
+import com.me.coresmodule.utils.chat.SimulateChat;
 
 import java.io.IOException;
 
 public class CoresModule implements ModInitializer {
+	public static String player = MinecraftClient.getInstance().getSession().getUsername();
 	public static MinecraftClient mc = MinecraftClient.getInstance();
 	public static final String MOD_ID = "coresmodule";
 
@@ -43,16 +45,17 @@ public class CoresModule implements ModInitializer {
 		// Proceed with mild caution.
 
 		LOGGER.info("Hello Fabric world!");
-		mfCalc.register();
-		simulateChat.register(); // TODO: Make it /cm simulateChat
+		MfCalc.register();
+		SimulateChat.register(); // TODO: Make it /cm simulateChat
 		ClickActionManager.register();
 		Features.register();
 		Party.register();
+		ColorReplacor.register();
 
 		configurator.register(Settings.class);
 
 		// Register the "/cm" command to open the config screen
-		Register.command("cm", arg -> {
+		Register.command("cm", args -> {
 			var factory = ResourcefulConfigScreen.getFactory(MOD_ID);
 			MinecraftClient.getInstance().send(() -> {
 				MinecraftClient.getInstance().setScreen(factory.apply(null));
@@ -69,17 +72,16 @@ public class CoresModule implements ModInitializer {
 			}
 		});
 
-
 		try {
             FilesHandler.register();
         } catch (IOException e) {
-			System.err.println("[CoresModule] CoresModule.java:66 " + e);
+			System.err.println("[CoresModule] CoresModule.java:78 " + e);
         }
 
         try {
             InquisitorTracker.register();
         } catch (IOException e) {
-			System.err.println("[CoresModule] CoresModule.java:72 " + e);
+			System.err.println("[CoresModule] CoresModule.java:84 " + e);
         }
 
     }

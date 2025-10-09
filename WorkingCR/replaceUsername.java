@@ -33,9 +33,9 @@ public class ColorReplacor {
         };
 
         Register.command("colorTests", ignore -> {
-                for (String msg : testing_list) {
-                    Chat.chat(msg);
-                }
+            for (String msg : testing_list) {
+                Chat.chat(msg);
+            }
         }, "colorTest");
 
 
@@ -61,6 +61,7 @@ public class ColorReplacor {
         Register.onChatMessageCancelable(message -> {
             if (TextHelper.getFormattedString(message).contains("❈ Defense")) return false;
             String msgContent = TextHelper.getFormattedString(message);
+            System.out.println("Message detected: " + msgContent);
 
             String colorForUsername = "§5";
 
@@ -87,6 +88,7 @@ public class ColorReplacor {
 
             if (isEdited) {
                 Chat.chat(rebuilt);
+                System.out.println("Edited message: " + TextHelper.getFormattedString(rebuilt));
                 return true;
             }
             return false;

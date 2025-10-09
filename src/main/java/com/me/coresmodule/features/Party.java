@@ -16,11 +16,13 @@ import java.util.regex.Pattern;
 
 import com.me.coresmodule.utils.events.Register;
 
+import static com.me.coresmodule.CoresModule.player;
+
 public class Party {
 
     private static final Pattern PARTY_PATTERN = Pattern.compile("^(Party (Moderators|Leader|Members)):\\s?(.*)$", Pattern.CASE_INSENSITIVE);
     private static final List<String> partyMembers = new ArrayList<>();
-    private static String playerOwner = String.valueOf(MinecraftClient.getInstance().player);
+    private static final String playerOwner = player;
 
     private static Text t1, t2, t3, t4, t5, t6, t7;
 
