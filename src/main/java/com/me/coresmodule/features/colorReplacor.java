@@ -68,8 +68,35 @@ public class ColorReplacor {
 
             MutableText rebuilt = Text.empty();
 
+            List<Text> messageSiblings = new ArrayList<>(message.getSiblings());
+            /*
             for (Text t : message.getSiblings()) {
+                System.out.println(TextHelper.formattedString(t));
+            }
+
+             */
+            int i = 0;
+            int iterations = 0;
+            final int maxIterations = 1000;
+            while (i < messageSiblings.size() - 1 && iterations < maxIterations) {
+                iterations++;
+                Text elem = messageSiblings.get(i);
+                Text elem2 = messageSiblings.get(i + 1);
+                if (TextHelper.noActionsAndDontStartWithStyle(elem) && TextHelper.noActionsAndDontStartWithStyle(elem2)) {
+                    String fused = TextHelper.getFormattedString(elem) + TextHelper.getFormattedString(elem2);
+                    System.out.println("Fusing: '" + TextHelper.formattedString(elem) + "' + '" + TextHelper.formattedString(elem2) + "' -> '" + fused + "'");
+                    messageSiblings.set(i, Text.of(fused));
+                    messageSiblings.remove(i + 1);
+                } else i++;
+            }
+
+            if (iterations == maxIterations) {
+                System.out.println("Fusion stopped after reaching max iterations (possible infinite loop).");
+            }
+
+            for (Text t : messageSiblings) {
                 String part = TextHelper.getFormattedString(t);
+                System.out.println(part);
                 if (part.contains(player)) {
                     isEdited = true;
                     ClickEvent clickEvent = TextHelper.getFullClickEvent(t);

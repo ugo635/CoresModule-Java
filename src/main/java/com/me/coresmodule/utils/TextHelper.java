@@ -13,14 +13,6 @@ import java.util.stream.Collectors;
 import static java.lang.Integer.parseInt;
 
 public class TextHelper {
-    private static final Map<TextColor, Formatting> colorToFormatChar =
-            Arrays.stream(Formatting.values())
-                    .map(format -> {
-                        TextColor color = TextColor.fromFormatting(format);
-                        return color != null ? new AbstractMap.SimpleEntry<>(color, format) : null;
-                    })
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
 
     public static Text stringToText(String s, ClickEvent click, HoverEvent hover) {
@@ -103,7 +95,7 @@ public class TextHelper {
         if (hover instanceof HoverEvent.ShowText showText) {
             Text text = showText.value();
             result.put("action", "show_text");
-            result.put("value", formattedString(text));
+            result.put("value", getFormattedString(text));
         } else if (hover instanceof HoverEvent.ShowItem showItem) {
             ItemStack itemStack = showItem.item();
             result.put("action", "show_item");
@@ -111,7 +103,7 @@ public class TextHelper {
         } else if (hover instanceof HoverEvent.ShowEntity showEntity) {
             HoverEvent.EntityContent entity = showEntity.entity();
             String name = String.valueOf(entity.name);
-            String entityName = name != null ? name.toString() : "Unnamed entity";
+            String entityName = name != null ? name : "Unnamed entity";
             result.put("action", "show_entity");
             result.put("value", entityName);
         } else {
@@ -152,42 +144,8 @@ public class TextHelper {
         return (getClickEvent(t) == null && getHoverEvent(t) == null);
     }
 
-    private static @Nullable Character getColorFormatChar(TextColor color) {
-        Formatting formatting = colorToFormatChar.get(color);
-        return formatting != null ? formatting.getCode() : null;
-    }
-
-    public static String getFormatCodes(Style style) {
-        StringBuilder builder = new StringBuilder();
-
-        // Color
-        if (style.getColor() != null) {
-            Character colorChar = getColorFormatChar(style.getColor());
-            if (colorChar != null) {
-                builder.append('§').append(colorChar);
-            }
-        }
-
-        // Formatting
-        if (style.isBold()) builder.append("§l");
-        if (style.isItalic()) builder.append("§o");
-        if (style.isUnderlined()) builder.append("§n");
-        if (style.isStrikethrough()) builder.append("§m");
-        if (style.isObfuscated()) builder.append("§k");
-
-        return builder.toString();
-    }
-
-    public static String formattedString(Text text) {
-        StringBuilder builder = new StringBuilder();
-
-        text.visit((style, content) -> {
-            builder.append(getFormatCodes(style));
-            builder.append(content);
-            return Optional.empty();
-        }, Style.EMPTY);
-
-        return builder.toString();
+    public static boolean noActionsAndDontStartWithStyle(Text t) {
+        return (getClickEvent(t) == null && getHoverEvent(t) == null && getFormattedString(t).startsWith("§"));
     }
 
     public static String removeFormatting(String input) {
@@ -212,25 +170,28 @@ public class TextHelper {
         return sb.toString();
     }
 
+    public static String formattedString(Text text) {
+        return getFormattedString(text);
+    }
+
     private static char getColorCodeFromName(String name) {
-        switch (name) {
-            case "#000000": return '0';
-            case "#0000AA": return '1';
-            case "#00AA00": return '2';
-            case "#00AAAA": return '3';
-            case "#AA0000": return '4';
-            case "#AA00AA": return '5';
-            case "#FFAA00": return '6';
-            case "#AAAAAA": return '7';
-            case "#555555": return '8';
-            case "#5555FF": return '9';
-            case "#55FF55": return 'a';
-            case "#55FFFF": return 'b';
-            case "#FF5555": return 'c';
-            case "#FF55FF": return 'd';
-            case "#FFFF55": return 'e';
-            case "#FFFFFF": return 'f';
-            default: return 'f';
-        }
+        return switch (name) {
+            case "#000000" -> '0';
+            case "#0000AA" -> '1';
+            case "#00AA00" -> '2';
+            case "#00AAAA" -> '3';
+            case "#AA0000" -> '4';
+            case "#AA00AA" -> '5';
+            case "#FFAA00" -> '6';
+            case "#AAAAAA" -> '7';
+            case "#555555" -> '8';
+            case "#5555FF" -> '9';
+            case "#55FF55" -> 'a';
+            case "#55FFFF" -> 'b';
+            case "#FF5555" -> 'c';
+            case "#FF55FF" -> 'd';
+            case "#FFFF55" -> 'e';
+            default -> 'f';
+        };
     }
 }
