@@ -6,10 +6,7 @@ import com.teamresourceful.resourcefulconfig.api.types.entries.Observable;
 import com.me.coresmodule.utils.chat.Chat;
 import com.me.coresmodule.settings.categories.General;
 
-import static com.teamresourceful.resourcefulconfig.demo.Demo.configurator;
-
-// Example category, you can make your own.
-
+import static com.me.coresmodule.CoresModule.configurator;
 
 @Config(
         value = "Settings",
@@ -43,5 +40,7 @@ public class Settings {
 
     public static void save() {
         configurator.saveConfig(Settings.class);
+        configurator.saveConfig(General.class);
+        configurator.saveConfig(ColorReplacorSettings.class);
     }
 }

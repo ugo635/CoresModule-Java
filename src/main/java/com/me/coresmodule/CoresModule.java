@@ -5,6 +5,7 @@ import com.me.coresmodule.features.ColorReplacor;
 import com.me.coresmodule.features.Features;
 import com.me.coresmodule.features.Party;
 import com.me.coresmodule.settings.Settings;
+import com.me.coresmodule.settings.categories.ColorReplacorSettings;
 import com.me.coresmodule.settings.categories.General;
 import com.me.coresmodule.utils.FilesHandler;
 import com.me.coresmodule.utils.chat.Chat;
@@ -53,6 +54,7 @@ public class CoresModule implements ModInitializer {
 		ColorReplacor.register();
 
 		configurator.register(Settings.class);
+
 
 		// Register the "/cm" command to open the config screen
 		Register.command("cm", args -> {

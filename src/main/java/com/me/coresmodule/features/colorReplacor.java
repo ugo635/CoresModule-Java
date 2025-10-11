@@ -1,5 +1,6 @@
 package com.me.coresmodule.features;
 
+import com.me.coresmodule.settings.categories.ColorReplacorSettings;
 import com.me.coresmodule.utils.TextHelper;
 import com.me.coresmodule.utils.chat.Chat;
 import com.me.coresmodule.utils.events.Register;
@@ -62,19 +63,16 @@ public class ColorReplacor {
             if (TextHelper.getFormattedString(message).contains("❈ Defense")) return false;
             String msgContent = TextHelper.getFormattedString(message);
 
-            String colorForUsername = "§5";
+            String colorForUsername = ColorReplacorSettings.usernameColor.replace("&", "§")+ player;
+            String currentRank = ColorReplacorSettings.currentRank.replace("&", "§") + " " + player;
+            String wantedRank = ColorReplacorSettings.wantedRank.replace("&", "§") + " " + player;
 
             boolean isEdited = false;
 
             MutableText rebuilt = Text.empty();
 
             List<Text> messageSiblings = new ArrayList<>(message.getSiblings());
-            /*
-            for (Text t : message.getSiblings()) {
-                System.out.println(TextHelper.formattedString(t));
-            }
 
-             */
             int i = 0;
             int iterations = 0;
             final int maxIterations = 1000;
@@ -84,7 +82,6 @@ public class ColorReplacor {
                 Text elem2 = messageSiblings.get(i + 1);
                 if (TextHelper.noActionsAndDontStartWithStyle(elem) && TextHelper.noActionsAndDontStartWithStyle(elem2)) {
                     String fused = TextHelper.getFormattedString(elem) + TextHelper.getFormattedString(elem2);
-                    System.out.println("Fusing: '" + TextHelper.formattedString(elem) + "' + '" + TextHelper.formattedString(elem2) + "' -> '" + fused + "'");
                     messageSiblings.set(i, Text.of(fused));
                     messageSiblings.remove(i + 1);
                 } else i++;
@@ -96,13 +93,12 @@ public class ColorReplacor {
 
             for (Text t : messageSiblings) {
                 String part = TextHelper.getFormattedString(t);
-                System.out.println(part);
                 if (part.contains(player)) {
                     isEdited = true;
                     ClickEvent clickEvent = TextHelper.getFullClickEvent(t);
                     HoverEvent hoverEvent = TextHelper.getFullHoverEvent(t);
                     Text newText = TextHelper.stringToText(
-                            part.replace(player, colorForUsername + player),
+                            part.replace(currentRank, wantedRank).replace(player, colorForUsername),
                             clickEvent,
                             hoverEvent
                     );

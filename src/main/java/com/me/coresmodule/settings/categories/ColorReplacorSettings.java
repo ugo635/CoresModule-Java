@@ -5,6 +5,10 @@ import com.teamresourceful.resourcefulconfig.api.annotations.ConfigEntry;
 
 @Category("Color Replacor")
 public class ColorReplacorSettings {
-    @ConfigEntry(id = "temp", translation = "temp")
-    public static boolean temp = true;
+    @ConfigEntry(id = "usernameColor", translation = "Color For Username, use & + color code e.g: &a for green")
+    public static String usernameColor = "";
+    @ConfigEntry(id = "currentRank", translation = "Current Rank (with colors), replace all § with &")
+    public static String currentRank = "";
+    @ConfigEntry(id = "wantedRank", translation = "Custom Rank")
+    public static String wantedRank = "";
 }

@@ -34,6 +34,8 @@
     • Fixed formattedString() not returning what it should unlike how getFormattedString() did, so made formattedString() use getFormattedString() instead of editing the files alrd using FomattedString
 
 9. Day 9:
-    • TODO: Make a selector in settings to choose color
+    • Made a custom rank replacor
+    • Made a selector in settings to choose color & custom rank
+    • Fixed setting not saving other settings than the main one
 
 
