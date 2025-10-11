@@ -40,7 +40,5 @@ public class Settings {
 
     public static void save() {
         configurator.saveConfig(Settings.class);
-        configurator.saveConfig(General.class);
-        configurator.saveConfig(ColorReplacorSettings.class);
     }
 }

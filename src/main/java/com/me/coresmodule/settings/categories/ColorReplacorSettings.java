@@ -1,7 +1,10 @@
 package com.me.coresmodule.settings.categories;
 
+import com.me.coresmodule.settings.Settings;
 import com.teamresourceful.resourcefulconfig.api.annotations.Category;
 import com.teamresourceful.resourcefulconfig.api.annotations.ConfigEntry;
+
+import static com.me.coresmodule.CoresModule.configurator;
 
 @Category("Color Replacor")
 public class ColorReplacorSettings {
