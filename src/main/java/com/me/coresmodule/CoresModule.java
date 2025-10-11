@@ -54,6 +54,7 @@ public class CoresModule implements ModInitializer {
 		ColorReplacor.register();
 
 		configurator.register(Settings.class);
+		configurator.saveConfig(Settings.class);
 
 
 		// Register the "/cm" command to open the config screen

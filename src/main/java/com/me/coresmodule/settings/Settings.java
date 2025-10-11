@@ -23,12 +23,6 @@ public class Settings {
     @ConfigEntry(id = "showWelcome", translation = "Show Welcome Message")
     public static Observable<Boolean> showWelcome = Observable.of(true);
 
-    static {
-        showWelcome.addListener((oldValue, newValue) -> {
-            Chat.chat("Old Value: " + oldValue + " New Value: " + newValue);
-        });
-    }
-
     // Example string setting
     @ConfigEntry(id = "welcomeMessage", translation = "Welcome Message")
     public static String welcomeMessage = "§5Hi";
@@ -37,8 +31,4 @@ public class Settings {
     @ConfigEntry(id = "exampleInt", translation = "Example Integer")
     public static int exampleInt = 42;
 
-
-    public static void save() {
-        configurator.saveConfig(Settings.class);
-    }
 }

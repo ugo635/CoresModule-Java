@@ -63,9 +63,9 @@ public class ColorReplacor {
             if (TextHelper.getFormattedString(message).contains("❈ Defense")) return false;
             String msgContent = TextHelper.getFormattedString(message);
 
-            String colorForUsername = ColorReplacorSettings.usernameColor.replace("&", "§")+ player;
-            String currentRank = ColorReplacorSettings.currentRank.replace("&", "§") + " " + player;
-            String wantedRank = ColorReplacorSettings.wantedRank.replace("&", "§") + " " + player;
+            String colorForUsername = ColorReplacorSettings.usernameColor.get().replace("&", "§")+ player;
+            String currentRank = ColorReplacorSettings.currentRank.get().replace("&", "§") + " " + player;
+            String wantedRank = ColorReplacorSettings.wantedRank.get().replace("&", "§") + " " + player;
 
             boolean isEdited = false;
 

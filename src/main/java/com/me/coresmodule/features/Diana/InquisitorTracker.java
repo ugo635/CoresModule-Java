@@ -18,7 +18,7 @@ public class InquisitorTracker {
     public static void register() throws IOException {
         Register.onChatMessage(message -> {
             String text = TextHelper.formattedString(message);
-            if (text.contains("§6§lRARE DROP! §fEnchanted Book (§d§lChimera I§f)") && General.ScreenshotOnChimera) { // "§6§lRARE DROP! §fEnchanted Book (§d§lChimera I§f)"
+            if (text.contains("§6§lRARE DROP! §fEnchanted Book (§d§lChimera I§f)") && General.ScreenshotOnChimera.get()) { // "§6§lRARE DROP! §fEnchanted Book (§d§lChimera I§f)"
                 Helper.sleep(50, () -> {
                     mc.execute(ScreenshotUtils::takeScreenshot);
                 });
