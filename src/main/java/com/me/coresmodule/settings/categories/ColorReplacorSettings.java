@@ -14,4 +14,5 @@ public class ColorReplacorSettings {
     public static String currentRank = "";
     @ConfigEntry(id = "wantedRank", translation = "Custom Rank")
     public static String wantedRank = "";
+
 }

@@ -19,4 +19,5 @@ public class General {
 
     @ConfigEntry(id = "spookyChest", translation = "Send a message on screen when getting a Spooky Chest")
     public static boolean spookyChest = true;
+
 }
