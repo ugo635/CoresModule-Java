@@ -38,4 +38,6 @@
     • Made a selector in settings to choose color & custom rank
     • Fixed setting not saving other settings than the main one
 
+10. Day 10:
+    • 
 
