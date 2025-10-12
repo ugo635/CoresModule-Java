@@ -65,16 +65,6 @@ public class CoresModule implements ModInitializer {
 			});
 		});
 
-		// Register the "/welcomeMsg" command to show the welcome message if enabled
-		Register.command("welcomeMsg", arg -> {
-			if (Settings.showWelcome.get()) {
-				Chat.chat(Settings.welcomeMessage); // To use a setting it's ClassInWhichTheSettingIsDeclared.settingName
-				Chat.chat(String.valueOf((General.ScreenshotOnChimera)));
-			} else {
-				Chat.chat("§cWelcome message is disabled. Enable it in the settings.");
-			}
-		});
-
 		try {
             FilesHandler.register();
         } catch (IOException e) {

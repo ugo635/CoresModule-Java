@@ -9,7 +9,7 @@ import com.me.coresmodule.settings.categories.General;
 import static com.me.coresmodule.CoresModule.configurator;
 
 @Config(
-        value = "Settings",
+        value = "CoresModule",
         version = 1,
         categories = {
                 General.class,
@@ -22,13 +22,5 @@ public class Settings {
     // Example boolean setting
     @ConfigEntry(id = "showWelcome", translation = "Show Welcome Message")
     public static Observable<Boolean> showWelcome = Observable.of(true);
-
-    // Example string setting
-    @ConfigEntry(id = "welcomeMessage", translation = "Welcome Message")
-    public static String welcomeMessage = "§5Hi";
-
-    // Example integer setting
-    @ConfigEntry(id = "exampleInt", translation = "Example Integer")
-    public static int exampleInt = 42;
 
 }
