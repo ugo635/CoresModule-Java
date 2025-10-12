@@ -1,26 +1,27 @@
 package com.me.coresmodule.settings;
 
-import com.me.coresmodule.settings.categories.ColorReplacorSettings;
 import com.teamresourceful.resourcefulconfig.api.annotations.*;
 import com.teamresourceful.resourcefulconfig.api.types.entries.Observable;
-import com.me.coresmodule.utils.chat.Chat;
-import com.me.coresmodule.settings.categories.General;
-
-import static com.me.coresmodule.CoresModule.configurator;
+import com.me.coresmodule.settings.categories.*;
 
 @Config(
         value = "CoresModule",
         version = 1,
         categories = {
                 General.class,
-                ColorReplacorSettings.class
+                ColorReplacorSettings.class,
+                Credits.class
         }
 
 )
+@ConfigInfo(
+        title = "CoresModule beta 0.0.1", // Mod title
+        description = "CoresModule is a QOL mod" // Mod description
+)
 public class Settings {
+    @ConfigOption.Separator(value = "Welcome to CoresModule", description = "Made by JudgementCorePls")
 
-    // Example boolean setting
+    @Comment("This is a description")
     @ConfigEntry(id = "showWelcome", translation = "Show Welcome Message")
     public static Observable<Boolean> showWelcome = Observable.of(true);
-
 }

@@ -39,5 +39,7 @@
     • Fixed setting not saving other settings than the main one
 
 10. Day 10:
-    •
+    • Made a credit part in the settings menu
+    • Added a few credits
+    • Made main setting look better
 
