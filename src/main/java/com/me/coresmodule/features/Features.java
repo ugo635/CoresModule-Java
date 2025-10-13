@@ -56,7 +56,7 @@ public class Features {
         });
 
         Register.onChatMessageCancelable(message -> {
-            if (General.hideHoppityHunt.get() && TextHelper.formattedString(message).contains("Get the formatted text from in game")) {
+            if (General.hideHoppityHunt.get() && TextHelper.formattedString(message).contains("§dHoppity's Hunt §ehas begun! Help §aHoppity §efind his §6Chocolate Rabbit Eggs §eacross SkyBlock each day during the §aSpring§e!")) {
                 return true;
             } else return false;
         });
