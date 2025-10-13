@@ -21,4 +21,6 @@ public class General {
     @ConfigEntry(id = "spookyChest", translation = "Send a message on screen when getting a Spooky Chest")
     public static Observable<Boolean> spookyChest = Observable.of(true);
 
+    @ConfigEntry(id = "hideHoppityHunt", translation = "Hide hoppity hunt message")
+    public static Observable<Boolean> hideHoppityHunt = Observable.of(true);
 }

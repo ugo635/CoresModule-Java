@@ -55,6 +55,12 @@ public class Features {
             }
         });
 
+        Register.onChatMessageCancelable(message -> {
+            if (General.hideHoppityHunt.get() && TextHelper.formattedString(message).contains("Get the formatted text from in game")) {
+                return true;
+            } else return false;
+        });
+
         Register.command("clear", ignore -> {
             mc.inGameHud.getChatHud().clear(true);
         });
