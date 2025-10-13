@@ -44,5 +44,8 @@
     • Made main setting look better
 
 11. Day 11:
-    •
+    • Hide Hoppity's hunt message
+
+12. Day 12:
+    • 
 
