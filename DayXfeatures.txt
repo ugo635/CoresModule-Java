@@ -50,5 +50,5 @@
     • Fixed few things & removed color replacor
 
 13. Day 13:
-    • TODO: Make the register OnChatCancelable 
+    • TODO: Make the register OnChatCancelable
 
