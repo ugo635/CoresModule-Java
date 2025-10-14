@@ -47,5 +47,8 @@
     • Hide Hoppity's hunt message
 
 12. Day 12:
-    • 
+    • Fixed few things & removed color replacor
+
+13. Day 13:
+    • TODO: Make the register OnChatCancelable 
 

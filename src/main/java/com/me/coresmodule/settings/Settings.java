@@ -9,7 +9,6 @@ import com.me.coresmodule.settings.categories.*;
         version = 1,
         categories = {
                 General.class,
-                ColorReplacorSettings.class,
                 Credits.class
         }
 

@@ -49,7 +49,7 @@ public class Features {
         Register.onChatMessageCancelable(Pattern.compile("(You purchased|Visit the Auction House).*"), (message, matcher) -> {
             if (General.ahMsg.get()) {
                 Chat.clickableChat(TextHelper.formattedString(message), "§eClick To Open The AH", "/ah");
-                return true; // Cancels the Original message
+                return true;
             } else {
                 return false;
             }
