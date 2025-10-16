@@ -67,7 +67,6 @@ public class Features {
 
         Register.onChatMessage(message -> {
             if (General.pickaceAbility.get() && TextHelper.formattedString(message).contains("§aYou used your §6Maniac Miner §aPickaxe Ability!")) { // TODO make it compatible with other pickaxe abilities
-                Chat.chat("Message detected");
                 Helper.exactSleep(103000, () -> {
                     Chat.chat("§6§l[Cm] Pickaxe Ability Ready!");
                     Helper.showTitle("§6§lPickaxe Ability", "§aReady!", 0, 25, 35);

@@ -53,4 +53,7 @@
     • Fixed a bug & made pickaxe ability message show on screen
 
 14. Day 14:
+    • Did nothing
+
+15. Day 15:
     • 
