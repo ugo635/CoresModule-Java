@@ -191,6 +191,22 @@ public class TextHelper {
             case "#FF5555" -> 'c';
             case "#FF55FF" -> 'd';
             case "#FFFF55" -> 'e';
+            // case if it's as name rather than hex:
+            case "black" -> '0';
+            case "dark_blue" -> '1';
+            case "dark_green" -> '2';
+            case "dark_aqua" -> '3';
+            case "dark_red" -> '4';
+            case "dark_purple" -> '5';
+            case "gold" -> '6';
+            case "gray" -> '7';
+            case "dark_gray" -> '8';
+            case "blue" -> '9';
+            case "green" -> 'a';
+            case "aqua" -> 'b';
+            case "red" -> 'c';
+            case "light_purple" -> 'd';
+            case "yellow" -> 'e';
             default -> 'f';
         };
     }

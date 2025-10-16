@@ -46,6 +46,7 @@ public class Features {
             }
         });
 
+        /*
         Register.onChatMessageCancelable(Pattern.compile("(You purchased|Visit the Auction House).*"), (message, matcher) -> {
             if (General.ahMsg.get()) {
                 Chat.clickableChat(TextHelper.formattedString(message), "§eClick To Open The AH", "/ah");
@@ -56,13 +57,24 @@ public class Features {
         });
 
         Register.onChatMessageCancelable(message -> {
-            if (General.hideHoppityHunt.get() && TextHelper.formattedString(message).contains("§dHoppity's Hunt §ehas begun! Help §aHoppity §efind his §6Chocolate Rabbit Eggs §eacross SkyBlock each day during the §aSpring§e!")) {
-                return true;
-            } else return false;
+            return General.hideHoppityHunt.get() && TextHelper.formattedString(message).contains("§dHoppity's Hunt §ehas begun! Help §aHoppity §efind his §6Chocolate Rabbit Eggs §eacross SkyBlock each day during the §aSpring§e!");
         });
+         */
 
         Register.command("clear", ignore -> {
             mc.inGameHud.getChatHud().clear(true);
         });
+
+        Register.onChatMessage(message -> {
+            if (General.pickaceAbility.get() && TextHelper.formattedString(message).contains("§aYou used your §6Maniac Miner §aPickaxe Ability!")) { // TODO make it compatible with other pickaxe abilities
+                Chat.chat("Message detected");
+                Helper.exactSleep(103000, () -> {
+                    Chat.chat("§6§l[Cm] Pickaxe Ability Ready!");
+                    Helper.showTitle("§6§lPickaxe Ability", "§aReady!", 0, 25, 35);
+                });
+            }
+        });
+
+
     }
 }

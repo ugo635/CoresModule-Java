@@ -49,5 +49,25 @@ public class Helper {
         return "[" + LocalDateTime.now().format(formatter) + "]";
     }
 
+    public static void exactSleep(long milliseconds, Runnable callback) {
+        Thread thread = new Thread(() -> {
+            long nanos = milliseconds * 1000000L;
+            long start = System.nanoTime();
 
+            try {
+                if (milliseconds > 1) Thread.sleep(milliseconds - 1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            while (System.nanoTime() - start < nanos) {
+                Thread.onSpinWait();
+            }
+
+            callback.run();
+        });
+
+        thread.setDaemon(true);
+        thread.start();
+    }
 }
