@@ -89,10 +89,10 @@ public class Chat {
 
         clickEvent = switch (typeC) {
             case "OpenUrl" -> new ClickEvent.OpenUrl(new URI(command));
-            case "OpenFile" -> new ClickEvent.OpenFile(command);
             case "ChangePage" -> new ClickEvent.ChangePage(parseInt(command));
-            case "SuggestCommand" -> new ClickEvent.SuggestCommand(command);
             case "CopyToClipboard" -> new ClickEvent.CopyToClipboard(command);
+            case "SuggestCommand" -> new ClickEvent.SuggestCommand(command);
+            case "OpenFile" -> new ClickEvent.OpenFile(command);
             default -> new ClickEvent.RunCommand(command);
         };
 

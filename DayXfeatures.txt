@@ -56,4 +56,7 @@
     • Did nothing
 
 15. Day 15:
-    • 
+    • Did nothing
+
+16. Day 16:
+    • Added /cm help command
