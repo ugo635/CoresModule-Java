@@ -1,4 +1,4 @@
-1. Day 1:
+1. Day 1: 03/10/2025 (DD/MM/YYYY)
     • /mymf <mf> <kc (optionnal)> Command
     • Helper Functions
 
@@ -65,4 +65,7 @@
     • Did nothing
 
 18. Day 18:
-    • 
+    • Did nothing
+
+19. Day 19:
+    •
