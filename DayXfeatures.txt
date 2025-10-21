@@ -68,4 +68,4 @@
     • Did nothing
 
 19. Day 19:
-    •
+    • ftax <player> command

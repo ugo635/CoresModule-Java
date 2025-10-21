@@ -12,9 +12,8 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
 
 import java.util.*;
-import java.util.regex.*;
 import java.util.function.*;
-import java.util.stream.*;
+import java.util.regex.*;
 
 import static com.me.coresmodule.utils.TextHelper.formattedString;
 import static com.me.coresmodule.utils.TextHelper.removeFormatting;
@@ -82,7 +81,63 @@ public class Register {
             String text = formattedString(message);
             if (noFormating) text = removeFormatting(text);
             Matcher matcher = regex.matcher(text);
-            if (matcher.find()) action.accept(message, matcher);
+            if (matcher.find()) action.accept(message, matcher.toMatchResult());
+        });
+    }
+
+    /**
+     * Registers a cancelable chat listener.
+     * The provided Function receives the incoming message and returns:
+     * - true to CANCEL/HIDE the message
+     * - false to allow the message
+     *
+     * Note: Fabric's ALLOW_GAME expects a boolean indicating whether the message is allowed.
+     * We invert the handler's boolean so that handler returning true => message hidden (ALLOW_GAME returns false).
+     *
+     * Example usage:
+     * Register.onChatMessageCancelable(message -> {
+     *     return TextHelper.formattedString(message).contains("some spammy text"); // true => hide
+     * });
+     */
+    public static void onChatMessageCancelable(Function<Text, Boolean> action) {
+        ClientReceiveMessageEvents.ALLOW_GAME.register((message, signed) -> {
+            try {
+                Boolean cancel = action.apply(message);
+                // If handler returns true => cancel/hide message -> ALLOW_GAME must return false
+                if (cancel == null) return true; // default: allow
+                return !cancel;
+            } catch (Exception e) {
+                // On error, do not block messages
+                return true;
+            }
+        });
+    }
+
+    /**
+     * Registers a cancelable pattern-based chat listener.
+     * The action receives the message and a MatchResult; return true to cancel/hide the message.
+     *
+     * Example:
+     * Register.onChatMessageCancelable(Pattern.compile("foo (\\d+)"), true, (message, matcher) -> {
+     *     // match and decide; return true to hide message
+     *     return true;
+     * });
+     */
+    public static void onChatMessageCancelable(Pattern regex, boolean noFormating, BiFunction<Text, MatchResult, Boolean> action) {
+        ClientReceiveMessageEvents.ALLOW_GAME.register((message, signed) -> {
+            String text = formattedString(message);
+            if (noFormating) text = removeFormatting(text);
+            Matcher matcher = regex.matcher(text);
+            if (matcher.find()) {
+                try {
+                    Boolean cancel = action.apply(message, matcher.toMatchResult());
+                    if (cancel == null) return true;
+                    return !cancel;
+                } catch (Exception e) {
+                    return true;
+                }
+            }
+            return true;
         });
     }
 
@@ -104,10 +159,10 @@ public class Register {
      *               - {@code world}: The client world the entity belonged to.
      * Example usage:
      * <pre>
-     * onEntityUnLoad((entity, world) -> { <br>
-     *     if (entity.getName().getString().contains("Minos Inquisitor")) { <br>
-     *         System.out.println("Inquisitor left the world: " + entity); <br>
-     *     } <br>
+     * onEntityUnLoad((entity, world) -> {
+     *     if (entity.getName().getString().contains("Minos Inquisitor")) {
+     *         System.out.println("Inquisitor left the world: " + entity);
+     *     }
      * });
      * </pre>
      */

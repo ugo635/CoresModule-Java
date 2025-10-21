@@ -2,13 +2,10 @@ package com.me.coresmodule.utils;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.*;
-import net.minecraft.util.Formatting;
-import org.jetbrains.annotations.Nullable;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static java.lang.Integer.parseInt;
 
@@ -168,6 +165,22 @@ public class TextHelper {
             return Optional.empty();
         }, Style.EMPTY);
         return sb.toString();
+    }
+
+    public static String getUnFormattedString(Text input) {
+        return getFormattedString(input).replaceAll("§.", "");
+    }
+
+    public static String unFormattedString(Text input) {
+        return getFormattedString(input).replaceAll("§.", "");
+    }
+
+    public static String getUnFormattedString(String input) {
+        return input.replaceAll("§.", "");
+    }
+
+    public static String unFormattedString(String input) {
+        return input.replaceAll("§.", "");
     }
 
     public static String formattedString(Text text) {

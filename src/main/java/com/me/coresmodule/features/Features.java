@@ -46,8 +46,7 @@ public class Features {
             }
         });
 
-        /*
-        Register.onChatMessageCancelable(Pattern.compile("(You purchased|Visit the Auction House).*"), (message, matcher) -> {
+        Register.onChatMessageCancelable(Pattern.compile("(You purchased|Visit the Auction House).*"), false, (message, matcher) -> {
             if (General.ahMsg.get()) {
                 Chat.clickableChat(TextHelper.formattedString(message), "§eClick To Open The AH", "/ah");
                 return true;
@@ -55,11 +54,10 @@ public class Features {
                 return false;
             }
         });
-
+        
         Register.onChatMessageCancelable(message -> {
             return General.hideHoppityHunt.get() && TextHelper.formattedString(message).contains("§dHoppity's Hunt §ehas begun! Help §aHoppity §efind his §6Chocolate Rabbit Eggs §eacross SkyBlock each day during the §aSpring§e!");
         });
-         */
 
         Register.command("clear", ignore -> {
             mc.inGameHud.getChatHud().clear(true);
@@ -74,6 +72,11 @@ public class Features {
             }
         });
 
-
+        Register.command("ftax", player -> {
+            Chat.command("pc Sry bud, friend tax!");
+            Helper.sleep(1000, () -> {
+                Chat.command("p kick " + player[0]);
+            });
+        });
     }
 }
