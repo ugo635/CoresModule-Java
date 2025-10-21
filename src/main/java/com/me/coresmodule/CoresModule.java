@@ -85,12 +85,11 @@ public class CoresModule implements ModInitializer {
 			if (args.length > 0) arg = args[0].toLowerCase();
 			else arg = "";
 
-			if (arg == "config" || arg == "settings" || arg == "") {
+			if (arg.equals("config") || arg.equals("settings") || arg.isEmpty()) {
 				MinecraftClient.getInstance().send(() -> {
 					MinecraftClient.getInstance().setScreen(ResourcefulConfigScreen.getFactory(MOD_ID).apply(null));
 				});
 				return;
-
 			} else {
 				switch (arg) {
 					case "help" -> {
