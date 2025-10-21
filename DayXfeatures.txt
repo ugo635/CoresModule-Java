@@ -69,3 +69,8 @@
 
 19. Day 19:
     • ftax <player> command
+    • Made a Register.onChatMessageCancelable(), looks like it do replace at the correct emplacement and not before (e.g: if we replace a msg in /pl it will indeed appear in the right spot and not above the ------- as before)
+    • Made a @CmEvent, not complete yet
+
+20. Day 20:
+    • 
