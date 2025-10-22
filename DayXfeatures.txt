@@ -73,4 +73,7 @@
     • Made a @CmEvent, not complete yet
 
 20. Day 20:
-    •
+    • Did nothing
+
+21. Day 21:
+    • 
