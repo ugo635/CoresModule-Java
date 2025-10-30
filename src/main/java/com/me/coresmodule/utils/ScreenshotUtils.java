@@ -11,11 +11,12 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.function.Consumer;
 
 
 public class ScreenshotUtils {
 
-    public static void takeScreenshot(int delay) {
+    public static void takeScreenshot() {
         MinecraftClient client = MinecraftClient.getInstance();
         if (client.player == null) return;
 
@@ -32,44 +33,59 @@ public class ScreenshotUtils {
                     }
                 }
 
-                if (GraphicsEnvironment.isHeadless()) {
                     String savedPath = saveToFile(bufferedImage);
                     Chat.clickableChat(
-                            "§6[CM] §cHeadless environment detected! Screenshot saved here.",
-                            "§e"+savedPath,
-                            savedPath,
-                            "OpenFile" // Opens the folder in system file explorer
-                    );
-                } else {
-                    copyToClipboard(bufferedImage);
-                    Chat.chat("§6[CM] §aScreenshot copied to clipboard!");
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                try {
-                    String savedPath = saveToFileFromError(e);
-                    Chat.clickableChat(
-                            "§6[CM] §cClipboard copy failed! Screenshot saved here.",
+                            "§6[CM] §aScreenshot saved here.",
                             "§e"+savedPath,
                             savedPath,
                             "OpenFile"
                     );
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                    Chat.chat("§6[CM]] Failed to take screenshot.");
-                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                Chat.chat("§6[CM]] Failed to take screenshot.");
             } finally {
                 nativeImage.close();
             }
         });
     }
 
-    public static void takeScreenshot() {takeScreenshot(0);}
 
-    private static void copyToClipboard(BufferedImage image) throws Exception {
-        ImageSelection imgSel = new ImageSelection(image);
-        Toolkit.getDefaultToolkit().getSystemClipboard().setContents(imgSel, null);
+
+
+    public static void takeScreenshotAsync(Consumer<String> callback) {
+        MinecraftClient client = MinecraftClient.getInstance();
+        if (client.player == null) {
+            callback.accept("");
+            return;
+        }
+
+        Framebuffer framebuffer = client.getFramebuffer();
+
+        MinecraftClient.getInstance().execute(() -> {
+            ScreenshotRecorder.takeScreenshot(framebuffer, nativeImage -> {
+                try {
+                    BufferedImage bufferedImage = new BufferedImage(
+                            nativeImage.getWidth(), nativeImage.getHeight(), BufferedImage.TYPE_INT_ARGB
+                    );
+                    for (int y = 0; y < nativeImage.getHeight(); y++) {
+                        for (int x = 0; x < nativeImage.getWidth(); x++) {
+                            bufferedImage.setRGB(x, y, nativeImage.getColorArgb(x, y));
+                        }
+                    }
+
+                    String savedPath = "";
+                    savedPath = saveToFileWithName(bufferedImage);
+                    callback.accept(savedPath);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    callback.accept("");
+                } finally {
+                    nativeImage.close();
+                }
+            });
+        });
     }
 
     private static String saveToFile(BufferedImage image) throws Exception {
@@ -84,28 +100,17 @@ public class ScreenshotUtils {
         return screenshotDir.getAbsolutePath();
     }
 
-    private static String saveToFileFromError(Exception e) throws Exception {
+    private static String saveToFileWithName(BufferedImage image) throws Exception {
         MinecraftClient client = MinecraftClient.getInstance();
-
         File screenshotDir = new File(client.runDirectory, "screenshots");
         if (!screenshotDir.exists()) screenshotDir.mkdirs();
 
         String timestamp = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date());
-        String fileName = "screenshot_error_" + timestamp + ".png";
-        File outputFile = new File(screenshotDir, fileName);
+        File outputFile = new File(screenshotDir, "screenshot_" + timestamp + ".png");
+        javax.imageio.ImageIO.write(image, "png", outputFile);
 
-        BufferedImage img = new BufferedImage(200, 50, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g = img.createGraphics();
-        g.setColor(Color.RED);
-        g.drawString("Screenshot failed: " + e.getMessage(), 10, 25);
-        g.dispose();
-
-        javax.imageio.ImageIO.write(img, "png", outputFile);
-
-        return screenshotDir.getAbsolutePath();
+        return outputFile.getAbsolutePath();
     }
-
-
 
     private static class ImageSelection implements Transferable {
         private final Image image;

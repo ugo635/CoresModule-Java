@@ -20,6 +20,14 @@ public class FilesHandler {
 
     }
 
+    public static void createNewFolder(String name) throws IOException {
+        if (!new File(configFolder + '/' + name).exists()) {
+            File f = new File(configFolder + '/' + name);
+            f.mkdir();
+        }
+
+    }
+
     public static File createFile(String name) throws IOException {
         File f = new File(configFolder + "/" + name);
         if (!f.exists()) {
@@ -38,7 +46,12 @@ public class FilesHandler {
         return Files.readString(f.toPath(), StandardCharsets.UTF_8);
     }
 
+    public static void appendToFile(String name, String content) throws IOException {
+        Files.writeString(getFile(name).toPath(), content + "\n", StandardCharsets.UTF_8, StandardOpenOption.APPEND);
+    }
+
     public static void writeToFile(String name, String content) throws IOException {
+        clearFile(name);
         Files.writeString(getFile(name).toPath(), content + "\n", StandardCharsets.UTF_8, StandardOpenOption.APPEND);
     }
 

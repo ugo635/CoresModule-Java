@@ -2,6 +2,7 @@ package com.me.coresmodule;
 
 import com.me.coresmodule.features.Features;
 import com.me.coresmodule.features.Party;
+import com.me.coresmodule.features.bot.Bot;
 import com.me.coresmodule.settings.Settings;
 import com.me.coresmodule.settings.categories.General;
 import com.me.coresmodule.utils.FilesHandler;
@@ -52,6 +53,8 @@ public class CoresModule implements ModInitializer {
 		ClickActionManager.register();
 		Features.register();
 		Party.register();
+		Bot.register();
+
 
 		configurator.register(Settings.class);
 		configurator.saveConfig(Settings.class);
@@ -128,14 +131,13 @@ public class CoresModule implements ModInitializer {
 		try {
             FilesHandler.register();
         } catch (IOException e) {
-			System.err.println("[CoresModule] CoresModule.java:78 " + e);
+			System.err.println("[CoresModule] CoresModule.java:133 " + e);
         }
 
         try {
             InquisitorTracker.register();
         } catch (IOException e) {
-			System.err.println("[CoresModule] CoresModule.java:84 " + e);
+			System.err.println("[CoresModule] CoresModule.java:139 " + e);
         }
-
     }
 }

@@ -24,7 +24,7 @@ public class InquisitorTracker {
                 });
 
                 try {
-                    FilesHandler.writeToFile("chimeras.txt", Helper.getCurrentTime() + " " + TextHelper.removeFormatting(text));
+                    FilesHandler.appendToFile("chimeras.txt", Helper.getCurrentTime() + " " + TextHelper.removeFormatting(text));
                 } catch (IOException e) {
                     System.err.println("[CoresModule] InquisitorTracker.java:27" + e);
                 }

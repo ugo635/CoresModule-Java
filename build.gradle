@@ -47,6 +47,7 @@ dependencies {
 	modImplementation "com.teamresourceful.resourcefulconfig:resourcefulconfig-fabric-$minecraft_version:$rconfig_version"
 
 
+	implementation "org.json:json:$json_version"
 
 }
 
