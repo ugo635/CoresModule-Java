@@ -14,6 +14,12 @@ import net.fabricmc.api.ModInitializer;
 import com.teamresourceful.resourcefulconfig.api.loader.Configurator;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.sound.SoundInstance;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvent;
+import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,6 +32,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 public class CoresModule implements ModInitializer {
 	public static String player = MinecraftClient.getInstance().getSession().getUsername();
@@ -131,13 +138,25 @@ public class CoresModule implements ModInitializer {
 		try {
             FilesHandler.register();
         } catch (IOException e) {
-			System.err.println("[CoresModule] CoresModule.java:133 " + e);
+			System.err.println("[CoresModule] CoresModule.java:140 " + e);
         }
 
         try {
             InquisitorTracker.register();
         } catch (IOException e) {
-			System.err.println("[CoresModule] CoresModule.java:139 " + e);
+			System.err.println("[CoresModule] CoresModule.java:147 " + e);
         }
+
+		Registry.register(Registries.SOUND_EVENT, Identifier.of(MOD_ID, "emergencymeeting"),
+				SoundEvent.of(Identifier.of(MOD_ID, "emergencymeeting")));
+
+		SoundEvent emergencyMeetingSound = SoundEvent.of(Identifier.of(MOD_ID, "emergencymeeting"));
+
+		Register.onChatMessage(Pattern.compile("^(?<channel>.*> )?(?<playerName>.+?)[§&]f: (?:[§&]r)?x: (?<x>[^ ,]+),? y: (?<y>[^ ,]+),? z: (?<z>[^ ,]+)(?<trailing>.*)$"),false, (msg, result) -> {
+			Chat.chat("§c[CoresModule] Coords Delected");
+			if (mc.world != null) {
+				mc.world.playSound(mc.player, mc.player.getBlockPos(), emergencyMeetingSound, SoundCategory.MASTER, 1.0f, 1.0f);
+			}
+		});
     }
 }

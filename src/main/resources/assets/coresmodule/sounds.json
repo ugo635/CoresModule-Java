@@ -1,0 +1,8 @@
+{
+  "emergencymeeting": {
+    "subtitle": "sound.coresmodule.emergencymeeting",
+    "sounds": [
+      "coresmodule:emergencymeeting"
+    ]
+  }
+}
