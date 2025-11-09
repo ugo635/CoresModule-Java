@@ -26,5 +26,4 @@ public class General {
 
     @ConfigEntry(id = "pickaceAbility", translation = "Shows a message on screen when your pickaxe ability is ready")
     public static Observable<Boolean> pickaceAbility = Observable.of(true);
-
 }

@@ -9,7 +9,8 @@ import com.me.coresmodule.settings.categories.*;
         version = 1,
         categories = {
                 General.class,
-                Credits.class
+                Credits.class,
+                Diana.class
         }
 
 )

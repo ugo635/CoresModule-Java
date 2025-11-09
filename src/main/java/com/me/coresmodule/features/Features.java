@@ -5,6 +5,7 @@ import com.me.coresmodule.utils.Helper;
 import com.me.coresmodule.utils.TextHelper;
 import com.me.coresmodule.utils.chat.Chat;
 import com.me.coresmodule.utils.events.Register;
+import com.me.coresmodule.settings.categories.Diana;
 
 import java.util.regex.Pattern;
 
@@ -77,6 +78,17 @@ public class Features {
             Helper.sleep(1000, () -> {
                 Chat.command("p kick " + player[0]);
             });
+        });
+
+        Register.onChatMessage(msg -> {
+            //if (!TextHelper.unFormattedString(msg).contains("❈") && !TextHelper.unFormattedString(msg).contains("❤")) System.out.println(TextHelper.formattedString(msg));
+            if (TextHelper.formattedString(msg).contains("§eYou dug out a §2Minotaur§e!") && Diana.minotaurOnScreen.get()) Helper.showTitle("§c§lMinotaur", "", 0, 25, 35);
+        });
+
+        Register.onChatMessage(msg -> {
+            if (TextHelper.formattedString(msg).contains("§6§lRARE DROP! §eYou dug out a §9Mythos Fragment§e!") && Diana.announceMythosFrag.get()) {
+                Chat.command("pc RARE DROP! You dug out a Mythos Fragment!");
+            };
         });
     }
 }
