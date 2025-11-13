@@ -161,7 +161,7 @@ public class Register {
      * <pre>
      * onEntityUnLoad((entity, world) -> {
      *     if (entity.getName().getString().contains("Minos Inquisitor")) {
-     *         System.out.println("Inquisitor left the world: " + entity);
+     *         Helper.print("Inquisitor left the world: " + entity);
      *     }
      * });
      * </pre>

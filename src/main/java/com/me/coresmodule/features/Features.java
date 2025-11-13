@@ -2,13 +2,18 @@ package com.me.coresmodule.features;
 
 import com.me.coresmodule.settings.categories.General;
 import com.me.coresmodule.utils.Helper;
+import com.me.coresmodule.utils.SoundHandler;
 import com.me.coresmodule.utils.TextHelper;
 import com.me.coresmodule.utils.chat.Chat;
 import com.me.coresmodule.utils.events.Register;
 import com.me.coresmodule.settings.categories.Diana;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvent;
+import net.minecraft.util.Identifier;
 
 import java.util.regex.Pattern;
 
+import static com.me.coresmodule.CoresModule.MOD_ID;
 import static com.me.coresmodule.CoresModule.mc;
 
 public class Features {
@@ -74,14 +79,26 @@ public class Features {
         });
 
         Register.command("ftax", player -> {
-            Chat.command("pc Sry bud, friend tax!");
-            Helper.sleep(1000, () -> {
-                Chat.command("p kick " + player[0]);
-            });
+            if (player.length > 0) {
+                if (player.length == 1) {
+                    Chat.command("pc Sry bud, friend tax!");
+                    Helper.sleep(1000, () -> {
+                        Chat.command("p kick " + player[0]);
+                    });
+                } else if (player.length == 2) {
+                    Chat.command("pc Sry bud, friend tax!");
+                    Helper.sleep(1000, () -> {
+                        Chat.command("p kick " + player[0]);
+                    });
+                    Helper.sleep(2000, () -> {
+                        Chat.command("p " + player[1]);
+                    });
+                }
+            }
+
         });
 
         Register.onChatMessage(msg -> {
-            //if (!TextHelper.unFormattedString(msg).contains("❈") && !TextHelper.unFormattedString(msg).contains("❤")) System.out.println(TextHelper.formattedString(msg));
             if (TextHelper.formattedString(msg).contains("§eYou dug out a §2Minotaur§e!") && Diana.minotaurOnScreen.get()) Helper.showTitle("§c§lMinotaur", "", 0, 25, 35);
         });
 
@@ -89,6 +106,15 @@ public class Features {
             if (TextHelper.formattedString(msg).contains("§6§lRARE DROP! §eYou dug out a §9Mythos Fragment§e!") && Diana.announceMythosFrag.get()) {
                 Chat.command("pc RARE DROP! You dug out a Mythos Fragment!");
             };
+        });
+
+        Register.onChatMessage(msg -> {
+            if (TextHelper.formattedString(msg).contains("§eYou need to equip a §d§lMYTHIC §egriffin pet to fight this!") && Diana.wrongPet.get()) Helper.showTitle("§4§l Wrong Pet", "", 0, 20, 20);
+        });
+
+        Register.onChatMessage(Pattern.compile("^(?<channel>.*> )?(?<playerName>.+?)[§&]f: (?:[§&]r)?x: (?<x>[^ ,]+),? y: (?<y>[^ ,]+),? z: (?<z>[^ ,]+)(?<trailing>.*)$"),false, (msg, result) -> {
+            Chat.chat("§c[CoresModule] Coords Delected");
+            SoundHandler.playSound("emergencymeeting");
         });
     }
 }

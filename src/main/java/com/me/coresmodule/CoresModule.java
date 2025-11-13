@@ -3,9 +3,12 @@ package com.me.coresmodule;
 import com.me.coresmodule.features.Features;
 import com.me.coresmodule.features.Party;
 import com.me.coresmodule.features.bot.Bot;
+import com.me.coresmodule.features.priv.MainPrivate;
 import com.me.coresmodule.settings.Settings;
 import com.me.coresmodule.settings.categories.General;
 import com.me.coresmodule.utils.FilesHandler;
+import com.me.coresmodule.utils.Helper;
+import com.me.coresmodule.utils.SoundHandler;
 import com.me.coresmodule.utils.chat.Chat;
 import com.me.coresmodule.utils.chat.ClickActionManager;
 import com.me.coresmodule.utils.events.Register;
@@ -56,11 +59,13 @@ public class CoresModule implements ModInitializer {
 
 		LOGGER.info("Hello Fabric world!");
 		MfCalc.register();
-		SimulateChat.register(); // TODO: Make it /cm simulateChat
+		SimulateChat.register();
 		ClickActionManager.register();
 		Features.register();
 		Party.register();
 		Bot.register();
+		SoundHandler.register();
+		MainPrivate.register();
 
 
 		configurator.register(Settings.class);
@@ -138,25 +143,13 @@ public class CoresModule implements ModInitializer {
 		try {
             FilesHandler.register();
         } catch (IOException e) {
-			System.err.println("[CoresModule] CoresModule.java:140 " + e);
+			Helper.printErr("[CoresModule] CoresModule.java:140 " + e);
         }
 
         try {
             InquisitorTracker.register();
         } catch (IOException e) {
-			System.err.println("[CoresModule] CoresModule.java:147 " + e);
+			Helper.printErr("[CoresModule] CoresModule.java:147 " + e);
         }
-
-		Registry.register(Registries.SOUND_EVENT, Identifier.of(MOD_ID, "emergencymeeting"),
-				SoundEvent.of(Identifier.of(MOD_ID, "emergencymeeting")));
-
-		SoundEvent emergencyMeetingSound = SoundEvent.of(Identifier.of(MOD_ID, "emergencymeeting"));
-
-		Register.onChatMessage(Pattern.compile("^(?<channel>.*> )?(?<playerName>.+?)[§&]f: (?:[§&]r)?x: (?<x>[^ ,]+),? y: (?<y>[^ ,]+),? z: (?<z>[^ ,]+)(?<trailing>.*)$"),false, (msg, result) -> {
-			Chat.chat("§c[CoresModule] Coords Delected");
-			if (mc.world != null) {
-				mc.world.playSound(mc.player, mc.player.getBlockPos(), emergencyMeetingSound, SoundCategory.MASTER, 1.0f, 1.0f);
-			}
-		});
     }
 }

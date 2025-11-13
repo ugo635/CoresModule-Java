@@ -12,4 +12,10 @@ public class Diana {
 
     @ConfigEntry(id = "announceMythosFrag", translation = "Announce Mythos Fragments in chat")
     public static Observable<Boolean> announceMythosFrag = Observable.of(true);
+
+    @ConfigEntry(id = "wrongPet", translation = "Message on screen if wrong pet eqquipped")
+    public static Observable<Boolean> wrongPet = Observable.of(true);
+
+    @ConfigEntry(id = "RareMobSs", translation = "Take a screenshot when getting a rare drop (e.g: Chimera, Wool, Core, etc...)")
+    public static Observable<Boolean> RareMobSs = Observable.of(true);
 }

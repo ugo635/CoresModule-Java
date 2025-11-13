@@ -12,9 +12,6 @@ import static com.me.coresmodule.CoresModule.configurator;
 
 @Category("General")
 public class General {
-    @ConfigEntry(id = "ScreenshotOnChimera", translation = "Screenshot On Chimera")
-    public static Observable<Boolean> ScreenshotOnChimera = Observable.of(true);
-
     @ConfigEntry(id = "ahMsg", translation = "Make AH message clickable to open the AH")
     public static Observable<Boolean> ahMsg = Observable.of(true);
 

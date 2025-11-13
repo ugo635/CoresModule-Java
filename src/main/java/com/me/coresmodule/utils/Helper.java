@@ -21,6 +21,14 @@ public class Helper {
         thread.start();
     }
 
+    public static void print(String s) {
+        if (!s.contains("❈") && !s.contains("❤")) System.out.println("[CoresModule] " + s);
+    }
+
+    public static void printErr(String s) {
+        System.err.println("[CoresModule] " + s);
+    }
+
     /**
      *
      * @param title Title

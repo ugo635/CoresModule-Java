@@ -1,6 +1,7 @@
 package com.me.coresmodule.features.bot;
 
 import com.me.coresmodule.utils.FilesHandler;
+import com.me.coresmodule.utils.Helper;
 import com.me.coresmodule.utils.ScreenshotUtils;
 import com.me.coresmodule.utils.chat.Chat;
 import com.me.coresmodule.utils.events.Register;
@@ -102,7 +103,7 @@ public class Bot {
             for (String resourceName : resources) {
                 InputStream is = Bot.class.getResourceAsStream("/" + resourceName);
                 if (is == null) {
-                    System.out.println(resourceName + " not found in resources!");
+                    Helper.print(resourceName + " not found in resources!");
                     continue;
                 }
 
@@ -110,7 +111,7 @@ public class Bot {
                 Files.copy(is, targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
                 is.close();
 
-                System.out.println(resourceName + " copied to " + targetFile.getAbsolutePath());
+                Helper.print(resourceName + " copied to " + targetFile.getAbsolutePath());
             }
 
         } catch (IOException e) {
@@ -189,7 +190,7 @@ public class Bot {
         });
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            System.out.println("Game closing, stopping bot...");
+            Helper.print("Game closing, stopping bot...");
             try {
                 FilesHandler.writeToFile("bot/stop.txt", "true");
             } catch (IOException e) {
