@@ -23,35 +23,35 @@ public class playerTracker {
 
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
             dispatcher.register(
-                    ClientCommandManager.literal("trackPlayer")
-                            .then(ClientCommandManager.argument("player", StringArgumentType.word())
-                                    .suggests((ctx, builder) -> {
-                                        String typed = builder.getRemaining().toLowerCase();
+                ClientCommandManager.literal("trackPlayer")
+                        .then(ClientCommandManager.argument("player", StringArgumentType.word())
+                            .suggests((ctx, builder) -> {
+                                String typed = builder.getRemaining().toLowerCase();
 
-                                        for (AbstractClientPlayerEntity p : getAllPlayers()) {
-                                            String name = TextHelper.unFormattedString(p.getName());
+                                for (AbstractClientPlayerEntity p : getAllPlayers()) {
+                                    String name = TextHelper.unFormattedString(p.getName());
 
-                                            if (name.toLowerCase().startsWith(typed)) {
-                                                builder.suggest(name);
-                                            }
-                                        }
+                                    if (name.toLowerCase().startsWith(typed)) {
+                                        builder.suggest(name);
+                                    }
+                                }
 
-                                        return builder.buildFuture();
-                                    })
+                                return builder.buildFuture();
+                            })
 
-                                    .executes(ctx -> {
-                                        String name = StringArgumentType.getString(ctx, "player");
-                                        Entity target = getEntityByName(getAllPlayers(), name);
+                            .executes(ctx -> {
+                                String name = StringArgumentType.getString(ctx, "player");
+                                Entity target = getEntityByName(getAllPlayers(), name);
 
-                                        if (target == null) {
-                                            Chat.chat("§cPlayer not found: " + name);
-                                            return 0;
-                                        }
+                                if (target == null) {
+                                    Chat.chat("§cPlayer not found: " + name);
+                                    return 0;
+                                }
 
-                                        commandExec(target);
-                                        return 1;
-                                    })
-                            )
+                                commandExec(target);
+                                return 1;
+                            })
+                    )
             );
         });
 
