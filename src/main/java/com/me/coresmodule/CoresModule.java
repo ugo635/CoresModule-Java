@@ -32,7 +32,6 @@ public class CoresModule implements ModInitializer {
 	public static String player = MinecraftClient.getInstance().getSession().getUsername();
 	public static MinecraftClient mc = MinecraftClient.getInstance();
 	public static final String MOD_ID = "coresmodule";
-	public static CoresModule instance;
 
 	// This logger is used to write text to the console and the log file.
 	// It is considered best practice to use your mod id as the logger's name.
@@ -48,8 +47,6 @@ public class CoresModule implements ModInitializer {
 		// This code runs as soon as Minecraft is in a mod-load-ready state.
 		// However, some things (like resources) may still be uninitialized.
 		// Proceed with mild caution.
-
-		instance = this;
 
 		LOGGER.info("Hello Fabric world!");
 		MfCalc.register();
@@ -147,8 +144,4 @@ public class CoresModule implements ModInitializer {
 			Helper.printErr("[CoresModule] CoresModule.java:147 " + e);
         }
     }
-
-	public static CoresModule getInstance() {
-		return instance;
-	}
 }

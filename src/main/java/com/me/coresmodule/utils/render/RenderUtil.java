@@ -1,6 +1,5 @@
 package com.me.coresmodule.utils.render;
 
-import com.me.coresmodule.CoresModule;
 import com.me.coresmodule.utils.math.CmVectors;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.platform.DepthTestFunction;
@@ -8,10 +7,7 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexFormats;
-import net.minecraft.client.render.VertexRendering;
+import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.RotationAxis;
@@ -20,14 +16,41 @@ import org.apache.commons.lang3.function.Consumers;
 
 import java.util.Objects;
 
+import static com.me.coresmodule.CoresModule.MOD_ID;
 import static com.me.coresmodule.CoresModule.mc;
 
 public class RenderUtil {
-    private static final RenderPipeline FILLED_THROUGH_WALLS = RenderPipelines.register(RenderPipeline.builder(RenderPipelines.POSITION_COLOR_SNIPPET)
-            .withLocation(Identifier.of(CoresModule.MOD_ID, "pipeline/debug_filled_box_through_walls"))
-            .withVertexFormat(VertexFormats.POSITION_COLOR, VertexFormat.DrawMode.TRIANGLE_STRIP)
-            .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
-            .build()
+    private static final RenderPipeline FILLED_BOX_THROUGH_WALLS_PIPELINE = RenderPipelines.register(
+            RenderPipeline.builder(RenderPipelines.POSITION_COLOR_SNIPPET) // snippet that exists in your mappings
+                    .withLocation(Identifier.of(MOD_ID, "pipeline/debug_filled_box_through_walls"))
+                    // IMPORTANT: use a vertex format that contains normals because drawFilledBox emits normals
+                    .withVertexFormat(VertexFormats.POSITION_COLOR_NORMAL, VertexFormat.DrawMode.TRIANGLE_STRIP)
+                    .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
+                    .build()
+    );
+
+    // 2) Create a RenderLayer that uses that pipeline so getBuffer(...) accepts it
+    private static final RenderLayer FILLED_BOX_THROUGH_WALLS = RenderLayer.of(
+            "debug_filled_box_through_walls",
+            RenderLayer.DEFAULT_BUFFER_SIZE,
+            false,
+            true,
+            FILLED_BOX_THROUGH_WALLS_PIPELINE,
+            RenderLayer.MultiPhaseParameters.builder()
+                    .layering(RenderPhase.VIEW_OFFSET_Z_LAYERING)
+                    .build(false)
+    );
+
+    // Example existing filled-box RenderLayer (leave as-is)
+    private static final RenderLayer FILLED_BOX = RenderLayer.of(
+            "filled_box",
+            RenderLayer.DEFAULT_BUFFER_SIZE,
+            false,
+            true,
+            RenderPipelines.DEBUG_FILLED_BOX,
+            RenderLayer.MultiPhaseParameters.builder()
+                    .layering(RenderPhase.VIEW_OFFSET_Z_LAYERING)
+                    .build(false)
     );
 
     public static void renderWaypoint(
@@ -72,7 +95,7 @@ public class RenderUtil {
         matrices.push();
         matrices.translate(pos.x + 0.5 - cameraPos.x, pos.y - cameraPos.y, pos.z + 0.5 - cameraPos.z);
 
-        VertexConsumer buffer = context.consumers().getBuffer(RenderLayer.getLines()); // Placeholder layer
+        VertexConsumer buffer = (throughWalls) ? context.consumers().getBuffer(FILLED_BOX_THROUGH_WALLS) : context.consumers().getBuffer(FILLED_BOX); // TODO: Buffer.vertex().normal()
         float minX = -width / 2f;
         float minY = 0f;
         float minZ = -depth / 2f;
