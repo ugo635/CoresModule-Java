@@ -1,41 +1,31 @@
 package com.me.coresmodule;
 
+import com.me.coresmodule.features.Diana.InquisitorTracker;
+import com.me.coresmodule.features.Diana.MfCalc;
 import com.me.coresmodule.features.Features;
 import com.me.coresmodule.features.Party;
 import com.me.coresmodule.features.bot.Bot;
 import com.me.coresmodule.features.priv.MainPrivate;
 import com.me.coresmodule.settings.Settings;
-import com.me.coresmodule.settings.categories.General;
 import com.me.coresmodule.utils.FilesHandler;
 import com.me.coresmodule.utils.Helper;
 import com.me.coresmodule.utils.SoundHandler;
 import com.me.coresmodule.utils.chat.Chat;
 import com.me.coresmodule.utils.chat.ClickActionManager;
+import com.me.coresmodule.utils.chat.SimulateChat;
 import com.me.coresmodule.utils.events.Register;
 import com.teamresourceful.resourcefulconfig.api.client.ResourcefulConfigScreen;
-import net.fabricmc.api.ModInitializer;
 import com.teamresourceful.resourcefulconfig.api.loader.Configurator;
-
+import net.fabricmc.api.ModInitializer;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.sound.SoundInstance;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.me.coresmodule.features.Diana.InquisitorTracker;
-import com.me.coresmodule.features.Diana.MfCalc;
-import com.me.coresmodule.utils.chat.SimulateChat;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 public class CoresModule implements ModInitializer {
 	public static String player = MinecraftClient.getInstance().getSession().getUsername();

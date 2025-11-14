@@ -11,9 +11,14 @@ import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
 
-import java.util.*;
-import java.util.function.*;
-import java.util.regex.*;
+import java.util.Arrays;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.regex.MatchResult;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.me.coresmodule.utils.TextHelper.formattedString;
 import static com.me.coresmodule.utils.TextHelper.removeFormatting;
