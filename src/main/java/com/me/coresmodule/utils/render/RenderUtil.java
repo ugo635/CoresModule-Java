@@ -1,66 +1,28 @@
 package com.me.coresmodule.utils.render;
 
+import com.me.coresmodule.mixin.BeaconBlockEntityRendererInvoker;
 import com.me.coresmodule.utils.math.CmVectors;
-import com.mojang.blaze3d.pipeline.RenderPipeline;
-import com.mojang.blaze3d.platform.DepthTestFunction;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.RenderPhase;
 import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.VertexRendering;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
-import org.joml.Matrix4f;
 
-import java.util.function.BiConsumer;
+import java.awt.*;
 
-import static com.me.coresmodule.CoresModule.MOD_ID;
 import static com.me.coresmodule.CoresModule.mc;
+import static java.lang.Math.max;
 
 public class RenderUtil {
-    private static final RenderPipeline FILLED_BOX_THROUGH_WALLS_PIPELINE = RenderPipelines.register(
-            RenderPipeline.builder(RenderPipelines.POSITION_COLOR_SNIPPET) // snippet that exists in your mappings
-                    .withLocation(Identifier.of(MOD_ID, "pipeline/debug_filled_box_through_walls"))
-                    // IMPORTANT: use a vertex format that contains normals because drawFilledBox emits normals
-                    .withVertexFormat(VertexFormats.POSITION_COLOR_NORMAL, VertexFormat.DrawMode.TRIANGLE_STRIP)
-                    .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
-                    .build()
-    );
-
-    // 2) Create a RenderLayer that uses that pipeline so getBuffer(...) accepts it
-    private static final RenderLayer FILLED_BOX_THROUGH_WALLS = RenderLayer.of(
-            "debug_filled_box_through_walls",
-            RenderLayer.DEFAULT_BUFFER_SIZE,
-            false,
-            true,
-            FILLED_BOX_THROUGH_WALLS_PIPELINE,
-            RenderLayer.MultiPhaseParameters.builder()
-                    .layering(RenderPhase.VIEW_OFFSET_Z_LAYERING)
-                    .build(false)
-    );
-
-    // Example existing filled-box RenderLayer (leave as-is)
-    private static final RenderLayer FILLED_BOX = RenderLayer.of(
-            "filled_box",
-            RenderLayer.DEFAULT_BUFFER_SIZE,
-            false,
-            true,
-            RenderPipelines.DEBUG_FILLED_BOX,
-            RenderLayer.MultiPhaseParameters.builder()
-                    .layering(RenderPhase.VIEW_OFFSET_Z_LAYERING)
-                    .build(false)
-    );
-
     public static void renderWaypoint(
             WorldRenderContext context,
             String text,
             CmVectors pos,
-            Float[] colorComponents,
+            float[] colorComponents,
             int hexColor,
             float alpha,
             boolean throughWalls,
@@ -86,33 +48,32 @@ public class RenderUtil {
     public static void drawFilledBox(
             WorldRenderContext context,
             CmVectors pos,
-            float width,
-            float height,
-            float depth,
-            Float[] colorComponents,
+            double width,
+            double height,
+            double depth,
+            float[] colorComponents,
             float alpha,
             boolean throughWalls
     ) {
         MatrixStack matrices = context.matrixStack();
         Vec3d cameraPos = context.camera().getPos();
+
         matrices.push();
         matrices.translate(pos.x + 0.5 - cameraPos.x, pos.y - cameraPos.y, pos.z + 0.5 - cameraPos.z);
 
-        VertexConsumer buffer = (throughWalls)
-                ? context.consumers().getBuffer(FILLED_BOX_THROUGH_WALLS)
-                : context.consumers().getBuffer(FILLED_BOX); // TODO: Buffer.vertex().normal()
+        VertexConsumer buffer = context.consumers().getBuffer(
+                throughWalls ? CmRenderLayers.FILLED_BOX_THROUGH_WALLS : CmRenderLayers.FILLED_BOX
+        );
 
-
-        float minX = -width / 2f;
+        float minX = (float)(-width / 2.0);
         float minY = 0f;
-        float minZ = -depth / 2f;
-        float maxX = width / 2f;
-        float maxY = height;
-        float maxZ = depth / 2f;
+        float minZ = (float)(-depth / 2.0);
+        float maxX = (float)(width / 2.0);
+        float maxY = (float)height;
+        float maxZ = (float)(depth / 2.0);
 
-        drawFilledBox(
-                matrices,
-                buffer,
+        VertexRendering.drawFilledBox(
+                matrices, buffer,
                 minX, minY, minZ,
                 maxX, maxY, maxZ,
                 colorComponents[0], colorComponents[1], colorComponents[2], alpha
@@ -121,6 +82,7 @@ public class RenderUtil {
         matrices.pop();
     }
 
+    /*
     public static void drawFilledBox(
             MatrixStack matrices,
             VertexConsumer buffer,
@@ -173,17 +135,18 @@ public class RenderUtil {
         v.accept(new float[]{maxX, minY, maxZ}, new float[]{0,-1,0});
         v.accept(new float[]{maxX, minY, minZ}, new float[]{0,-1,0});
     }
+    */
 
 
 
     public static void drawString(
             WorldRenderContext context,
             CmVectors pos,
-            float yOffset,
+            double yOffset,
             String text,
             int color,
             boolean shadow,
-            float scale,
+            double scale,
             boolean throughWalls
     ) {
         MatrixStack matrices = context.matrixStack();
@@ -193,22 +156,32 @@ public class RenderUtil {
         TextRenderer textRenderer = mc.textRenderer;
 
         matrices.push();
+
+        Vec3d textWorldPos = new Vec3d(pos.x + 0.5, pos.y + 0.5, pos.z + 0.5);
+        double distance = cameraPos.distanceTo(textWorldPos);
+        double dynamicScale = max(distance, 2.5) * scale;
+
         matrices.translate(pos.x + 0.5 - cameraPos.x, pos.y + yOffset - cameraPos.y, pos.z + 0.5 - cameraPos.z);
+
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-cameraYaw));
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(cameraPitch));
-        matrices.scale(-scale, -scale, scale);
 
-        float textWidth = textRenderer.getWidth(text) / 2f;
+        matrices.scale((float)-dynamicScale, (float)-dynamicScale, (float)dynamicScale);
+
+        int textWidth = textRenderer.getWidth(text);
+        float xOffset = -textWidth / 2f;
+
+        TextRenderer.TextLayerType layerType = throughWalls ? TextRenderer.TextLayerType.SEE_THROUGH : TextRenderer.TextLayerType.NORMAL;
 
         textRenderer.draw(
                 text,
-                -textWidth,
+                xOffset,
                 0f,
                 color,
                 shadow,
                 matrices.peek().getPositionMatrix(),
                 context.consumers(),
-                throughWalls ? TextRenderer.TextLayerType.SEE_THROUGH : TextRenderer.TextLayerType.NORMAL,
+                layerType,
                 0,
                 0xF000F0
         );
@@ -220,13 +193,32 @@ public class RenderUtil {
             WorldRenderContext context,
             CmVectors pos,
             int yOffset,
-            Float[] colorComponents
+            float[] colorComponents
     ) {
         MatrixStack matrices = context.matrixStack();
         Vec3d cameraPos = context.camera().getPos();
+        ClientWorld world = context.world();
 
         matrices.push();
         matrices.translate(pos.x - cameraPos.x, pos.y - cameraPos.y, pos.z - cameraPos.z);
+
+        VertexConsumerProvider consumers = context.consumers();
+        float partialTicks = context.tickCounter().getTickProgress(true);
+        long worldAge = world.getTime();
+
+        int beamHeight = context.world().getHeight();
+        float[] beamColor = new float[] {colorComponents[0], colorComponents[1], colorComponents[2], 1.0f};
+
+        BeaconBlockEntityRendererInvoker.renderBeam(
+                matrices,
+                consumers,
+                partialTicks,
+                1.0f,
+                worldAge,
+                yOffset,
+                beamHeight,
+                new Color(beamColor[0], beamColor[1], beamColor[2]).getRGB()
+        );
 
         // TODO: Add through walls option
         matrices.pop();
@@ -235,23 +227,26 @@ public class RenderUtil {
     public static void drawLineFromCursor(
             WorldRenderContext context,
             CmVectors target,
-            Float[] color,
+            float[] color,
             float lineWidth,
             boolean throughWalls,
             float alpha
     ) {
-        Vec3d cameraPos = context.camera().getPos();
-        MatrixStack matrices = context.matrixStack();
+        if (alpha == 0) alpha = 0.5f;
+
+        var camera = context.camera();
+        var cameraPos = camera.getPos();
+        var matrices = context.matrixStack();
+
         matrices.push();
         matrices.translate(-cameraPos.x, -cameraPos.y, -cameraPos.z);
 
-        VertexConsumer buffer = context.consumers().getBuffer(RenderLayer.getLines());
-        Vec3d startPos = cameraPos;
+        VertexConsumer buffer = context.consumers().getBuffer(CmRenderLayers.getLines(lineWidth, throughWalls));
+        Vec3d startPos = cameraPos.add(Vec3d.fromPolar(camera.getPitch(), camera.getYaw()));
         Vec3d endPos = target.center().toVec3d().add(0.0, 0.5, 0.0);
 
         Vec3d lineDir = endPos.subtract(startPos);
         Vec3d viewDir = startPos.subtract(cameraPos);
-
         Vec3d sideVec = lineDir.crossProduct(viewDir).normalize();
         Vec3d upVec = sideVec.crossProduct(lineDir).normalize();
 
@@ -262,15 +257,16 @@ public class RenderUtil {
         MatrixStack.Entry entry = matrices.peek();
 
         buffer.vertex(entry.getPositionMatrix(), (float) startPos.x, (float) startPos.y, (float) startPos.z)
-                .color(color[0], color[1], color[2], alpha)
-                .normal(entry, nx, ny, nz);
+                .normal(entry, nx, ny, nz)
+                .color(color[0], color[1], color[2], alpha);
 
         buffer.vertex(entry.getPositionMatrix(), (float) endPos.x, (float) endPos.y, (float) endPos.z)
-                .color(color[0], color[1], color[2], alpha)
-                .normal(entry, nx, ny, nz);
+                .normal(entry, nx, ny, nz)
+                .color(color[0], color[1], color[2], alpha);
 
         matrices.pop();
     }
+
 
 
 }

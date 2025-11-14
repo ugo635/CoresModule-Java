@@ -1,6 +1,6 @@
 package com.me.coresmodule.utils.render;
 
-import com.me.coresmodule.utils.events.Register;
+import com.me.coresmodule.settings.categories.Tracker;
 import com.me.coresmodule.utils.math.CmVectors;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
@@ -12,20 +12,19 @@ import java.util.List;
 import static com.me.coresmodule.CoresModule.mc;
 
 public class WaypointManager {
-    public static List<Waypoint> waypoints = List.of(new Waypoint("Hellooo", 0.0, 100.0, 0.0, 1f, 1f, 1f, 0, "none", true, true, true));
+    public static List<Waypoint> waypoints = List.of(
+            new Waypoint("Hellooo", 0.0, 100.0, 0.0, 1f, 1f, 1f, 0, "none",
+                    Tracker.doWaypoint.get(), Tracker.doBeam.get(), true, Tracker.lineWidth.get())
+    );
 
     public static void register() {
         WorldRenderEvents.AFTER_TRANSLUCENT.register(context -> {
             waypoints.forEach(waypoint -> {
+                waypoint.setText("§bDistance: %d");
+                waypoint.format(waypoint.distanceToPlayer());
                 waypoint.render(context);
             });
         });
-
-        Register.command("turnOnWaypointCM", args -> {
-            Waypoint wp = waypoints.getFirst();
-            wp.hidden = !wp.hidden;
-        });
-
     }
 
 
@@ -45,6 +44,7 @@ class Waypoint {
     public boolean line;
     public boolean beam;
     public boolean distance;
+    public float lineWidth;
 
     public CmVectors pos;
     public Color color;
@@ -77,7 +77,7 @@ class Waypoint {
     public Waypoint(String text, double x, double y, double z,
                     float r, float g, float b,
                     int ttl, String type,
-                    boolean line, boolean beam, boolean distance) {
+                    boolean line, boolean beam, boolean distance, float lineWidth) {
 
         this.text = text;
         this.x = x;
@@ -91,6 +91,7 @@ class Waypoint {
         this.line = line;
         this.beam = beam;
         this.distance = distance;
+        this.lineWidth = lineWidth;
 
         this.pos = new CmVectors(x, y, z);
         this.color = new Color(r, g, b);
@@ -109,8 +110,8 @@ class Waypoint {
      * @param b        The blue color component of the waypoint.
      */
     public Waypoint(String text, double x, double y, double z,
-                    float r, float g, float b) {
-        this(text, x, y, z, r, g, b, 0, "normal", false, true, true);
+                    float r, float g, float b, float lineWidth) {
+        this(text, x, y, z, r, g, b, 0, "normal", false, true, true, lineWidth);
     }
 
     public double distanceToPlayer() {
@@ -121,7 +122,7 @@ class Waypoint {
     }
 
     public void setText(String s) {
-        this.formattedText = s;
+        this.text = s;
     }
 
     public void format(Object... formatters) {
@@ -143,13 +144,13 @@ class Waypoint {
                 context,
                 this.formattedText,
                 this.pos,
-                new Float[] {this.r, this.g, this.b},
+                new float[] {this.r, this.g, this.b},
                 this.hexCode,
                 (float) this.alpha,
                 true,
                 this.line,
                 this.beam,
-                0.2f
+                this.lineWidth
         );
     }
 }

@@ -5,14 +5,11 @@ import com.teamresourceful.resourcefulconfig.api.annotations.ConfigEntry;
 import com.teamresourceful.resourcefulconfig.api.annotations.ConfigOption;
 import com.teamresourceful.resourcefulconfig.api.types.entries.Observable;
 
-@Category("Credits")
-public class Credits {
+@Category("-----------")
+public class Space2 {
     @ConfigOption.Separator(
-            value = "Special Thanks to",
-            description = """
-                    • Resourceful Config by Team Resourceful: Made this config API
-                    • D4rkSwift for helping me getting started with modding and fabric
-                    """
+            value = "",
+            description = ""
     )
 
     @ConfigOption.Hidden

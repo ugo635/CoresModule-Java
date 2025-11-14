@@ -10,7 +10,12 @@ import com.me.coresmodule.settings.categories.*;
         categories = {
                 General.class,
                 Credits.class,
-                Diana.class
+                Diana.class,
+                Space.class,
+                CmPriv.class,
+                Space2.class,
+                Tracker.class
+
         }
 
 )
