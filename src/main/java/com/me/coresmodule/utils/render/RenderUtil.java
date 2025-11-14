@@ -7,14 +7,17 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.client.render.*;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.RenderPhase;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
-import org.apache.commons.lang3.function.Consumers;
+import org.joml.Matrix4f;
 
-import java.util.Objects;
+import java.util.function.BiConsumer;
 
 import static com.me.coresmodule.CoresModule.MOD_ID;
 import static com.me.coresmodule.CoresModule.mc;
@@ -95,7 +98,11 @@ public class RenderUtil {
         matrices.push();
         matrices.translate(pos.x + 0.5 - cameraPos.x, pos.y - cameraPos.y, pos.z + 0.5 - cameraPos.z);
 
-        VertexConsumer buffer = (throughWalls) ? context.consumers().getBuffer(FILLED_BOX_THROUGH_WALLS) : context.consumers().getBuffer(FILLED_BOX); // TODO: Buffer.vertex().normal()
+        VertexConsumer buffer = (throughWalls)
+                ? context.consumers().getBuffer(FILLED_BOX_THROUGH_WALLS)
+                : context.consumers().getBuffer(FILLED_BOX); // TODO: Buffer.vertex().normal()
+
+
         float minX = -width / 2f;
         float minY = 0f;
         float minZ = -depth / 2f;
@@ -103,7 +110,7 @@ public class RenderUtil {
         float maxY = height;
         float maxZ = depth / 2f;
 
-        VertexRendering.drawFilledBox(
+        drawFilledBox(
                 matrices,
                 buffer,
                 minX, minY, minZ,
@@ -113,6 +120,61 @@ public class RenderUtil {
 
         matrices.pop();
     }
+
+    public static void drawFilledBox(
+            MatrixStack matrices,
+            VertexConsumer buffer,
+            float minX, float minY, float minZ,
+            float maxX, float maxY, float maxZ,
+            float red, float green, float blue, float alpha
+    ) {
+        Matrix4f mat = matrices.peek().getPositionMatrix();
+
+        // Helper to reduce repetition
+        BiConsumer<float[], float[]> v = (p, n) -> {
+            buffer.vertex(mat, p[0], p[1], p[2])
+                    .color(red, green, blue, alpha)
+                    .normal(n[0], n[1], n[2]);
+        };
+
+        // NORTH (0,0,-1)
+        v.accept(new float[]{minX, minY, minZ}, new float[]{0,0,-1});
+        v.accept(new float[]{maxX, minY, minZ}, new float[]{0,0,-1});
+        v.accept(new float[]{maxX, maxY, minZ}, new float[]{0,0,-1});
+        v.accept(new float[]{minX, maxY, minZ}, new float[]{0,0,-1});
+
+        // SOUTH (0,0,1)
+        v.accept(new float[]{minX, minY, maxZ}, new float[]{0,0,1});
+        v.accept(new float[]{minX, maxY, maxZ}, new float[]{0,0,1});
+        v.accept(new float[]{maxX, maxY, maxZ}, new float[]{0,0,1});
+        v.accept(new float[]{maxX, minY, maxZ}, new float[]{0,0,1});
+
+        // WEST (-1,0,0)
+        v.accept(new float[]{minX, minY, minZ}, new float[]{-1,0,0});
+        v.accept(new float[]{minX, maxY, minZ}, new float[]{-1,0,0});
+        v.accept(new float[]{minX, maxY, maxZ}, new float[]{-1,0,0});
+        v.accept(new float[]{minX, minY, maxZ}, new float[]{-1,0,0});
+
+        // EAST (1,0,0)
+        v.accept(new float[]{maxX, minY, minZ}, new float[]{1,0,0});
+        v.accept(new float[]{maxX, minY, maxZ}, new float[]{1,0,0});
+        v.accept(new float[]{maxX, maxY, maxZ}, new float[]{1,0,0});
+        v.accept(new float[]{maxX, maxY, minZ}, new float[]{1,0,0});
+
+        // UP (0,1,0)
+        v.accept(new float[]{minX, maxY, minZ}, new float[]{0,1,0});
+        v.accept(new float[]{maxX, maxY, minZ}, new float[]{0,1,0});
+        v.accept(new float[]{maxX, maxY, maxZ}, new float[]{0,1,0});
+        v.accept(new float[]{minX, maxY, maxZ}, new float[]{0,1,0});
+
+        // DOWN (0,-1,0)
+        v.accept(new float[]{minX, minY, minZ}, new float[]{0,-1,0});
+        v.accept(new float[]{minX, minY, maxZ}, new float[]{0,-1,0});
+        v.accept(new float[]{maxX, minY, maxZ}, new float[]{0,-1,0});
+        v.accept(new float[]{maxX, minY, minZ}, new float[]{0,-1,0});
+    }
+
+
 
     public static void drawString(
             WorldRenderContext context,
@@ -187,29 +249,28 @@ public class RenderUtil {
         Vec3d startPos = cameraPos;
         Vec3d endPos = target.center().toVec3d().add(0.0, 0.5, 0.0);
 
-        Consumers consumers = (Consumers) Objects.requireNonNull(context.consumers());
-
         Vec3d lineDir = endPos.subtract(startPos);
         Vec3d viewDir = startPos.subtract(cameraPos);
 
         Vec3d sideVec = lineDir.crossProduct(viewDir).normalize();
-
         Vec3d upVec = sideVec.crossProduct(lineDir).normalize();
 
         float nx = (float) upVec.x;
         float ny = (float) upVec.y;
         float nz = (float) upVec.z;
 
+        MatrixStack.Entry entry = matrices.peek();
 
-        buffer.vertex(matrices.peek().getPositionMatrix(), (float) startPos.x, (float) startPos.y, (float) startPos.z)
-                .normal(matrices.peek(), nx, ny, nz)
-                .color(color[0], color[1], color[2], alpha);
+        buffer.vertex(entry.getPositionMatrix(), (float) startPos.x, (float) startPos.y, (float) startPos.z)
+                .color(color[0], color[1], color[2], alpha)
+                .normal(entry, nx, ny, nz);
 
-        buffer.vertex(matrices.peek().getPositionMatrix(), (float) endPos.x, (float) endPos.y, (float) endPos.z)
-                .normal(matrices.peek(), nx, ny, nz)
-                .color(color[0], color[1], color[2], alpha);
+        buffer.vertex(entry.getPositionMatrix(), (float) endPos.x, (float) endPos.y, (float) endPos.z)
+                .color(color[0], color[1], color[2], alpha)
+                .normal(entry, nx, ny, nz);
 
         matrices.pop();
     }
+
 
 }
