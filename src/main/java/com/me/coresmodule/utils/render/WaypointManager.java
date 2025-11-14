@@ -20,7 +20,7 @@ public class WaypointManager {
     public static void register() {
         WorldRenderEvents.AFTER_TRANSLUCENT.register(context -> {
             waypoints.forEach(waypoint -> {
-                waypoint.setText("§bDistance: %d");
+                waypoint.setText("§bDistance: %f");
                 waypoint.format(waypoint.distanceToPlayer());
                 waypoint.render(context);
             });
