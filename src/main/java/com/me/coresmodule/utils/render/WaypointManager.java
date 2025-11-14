@@ -1,17 +1,34 @@
 package com.me.coresmodule.utils.render;
 
+import com.me.coresmodule.utils.events.Register;
 import com.me.coresmodule.utils.math.CmVectors;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.minecraft.util.math.BlockPos;
 
 import java.awt.*;
+import java.util.List;
 
 import static com.me.coresmodule.CoresModule.mc;
 
 public class WaypointManager {
+    public static List<Waypoint> waypoints = List.of(new Waypoint("Hellooo", 0.0, 100.0, 0.0, 1f, 1f, 1f, 0, "none", true, true, true));
+
     public static void register() {
+        WorldRenderEvents.AFTER_TRANSLUCENT.register(context -> {
+            waypoints.forEach(waypoint -> {
+                waypoint.render(context);
+            });
+        });
+
+        Register.command("turnOnWaypointCM", args -> {
+            Waypoint wp = waypoints.getFirst();
+            wp.hidden = !wp.hidden;
+        });
 
     }
+
+
 }
 
 class Waypoint {
@@ -121,6 +138,7 @@ class Waypoint {
     }
 
     public void render(WorldRenderContext context) {
+        if (this.hidden) return;
         RenderUtil.renderWaypoint(
                 context,
                 this.formattedText,

@@ -14,6 +14,7 @@ import com.me.coresmodule.utils.chat.Chat;
 import com.me.coresmodule.utils.chat.ClickActionManager;
 import com.me.coresmodule.utils.chat.SimulateChat;
 import com.me.coresmodule.utils.events.Register;
+import com.me.coresmodule.utils.render.WaypointManager;
 import com.teamresourceful.resourcefulconfig.api.client.ResourcefulConfigScreen;
 import com.teamresourceful.resourcefulconfig.api.loader.Configurator;
 import net.fabricmc.api.ModInitializer;
@@ -31,6 +32,7 @@ public class CoresModule implements ModInitializer {
 	public static String player = MinecraftClient.getInstance().getSession().getUsername();
 	public static MinecraftClient mc = MinecraftClient.getInstance();
 	public static final String MOD_ID = "coresmodule";
+	public static CoresModule instance;
 
 	// This logger is used to write text to the console and the log file.
 	// It is considered best practice to use your mod id as the logger's name.
@@ -47,6 +49,8 @@ public class CoresModule implements ModInitializer {
 		// However, some things (like resources) may still be uninitialized.
 		// Proceed with mild caution.
 
+		instance = this;
+
 		LOGGER.info("Hello Fabric world!");
 		MfCalc.register();
 		SimulateChat.register();
@@ -56,6 +60,7 @@ public class CoresModule implements ModInitializer {
 		Bot.register();
 		SoundHandler.register();
 		MainPrivate.register();
+		WaypointManager.register();
 
 
 		configurator.register(Settings.class);
@@ -142,4 +147,8 @@ public class CoresModule implements ModInitializer {
 			Helper.printErr("[CoresModule] CoresModule.java:147 " + e);
         }
     }
+
+	public static CoresModule getInstance() {
+		return instance;
+	}
 }

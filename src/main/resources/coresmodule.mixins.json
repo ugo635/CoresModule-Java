@@ -3,7 +3,8 @@
   "package": "com.me.coresmodule.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "ExampleMixin"
+    "ExampleMixin",
+    "GameRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1
