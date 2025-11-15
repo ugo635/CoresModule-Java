@@ -1,5 +1,7 @@
 package com.me.coresmodule.utils;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -77,5 +79,17 @@ public class Helper {
 
         thread.setDaemon(true);
         thread.start();
+    }
+
+    public static double roundToDecimals(double value, int decimals) {
+        BigDecimal bd = new BigDecimal(Double.toString(value));
+        bd = bd.setScale(decimals, RoundingMode.HALF_UP);
+        return bd.doubleValue();
+    }
+
+    public static float roundToDecimals(float value, int decimals) {
+        BigDecimal bd = new BigDecimal(Float.toString(value));
+        bd = bd.setScale(decimals, RoundingMode.HALF_UP);
+        return bd.floatValue();
     }
 }

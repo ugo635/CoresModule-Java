@@ -28,11 +28,13 @@ public class RenderUtil {
             boolean throughWalls,
             boolean drawLine,
             boolean renderBeam,
-            float lineWidth
+            float lineWidth,
+            float yPlus
     ) {
         drawFilledBox(context, pos, 1.0f, 1.0f, 1.0f, colorComponents, alpha, throughWalls);
 
         if (drawLine) {
+            pos.y += yPlus;
             drawLineFromCursor(context, pos, colorComponents, lineWidth, throughWalls, alpha);
         }
 

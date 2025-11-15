@@ -1,19 +1,20 @@
 package com.me.coresmodule.features.priv;
 
+import com.me.coresmodule.settings.categories.Tracker;
 import com.me.coresmodule.utils.Helper;
 import com.me.coresmodule.utils.TextHelper;
 import com.me.coresmodule.utils.chat.Chat;
 import com.me.coresmodule.utils.events.Register;
-import com.mojang.brigadier.CommandDispatcher;
+import com.me.coresmodule.utils.render.Waypoint;
+import com.me.coresmodule.utils.render.WaypointManager;
 import com.mojang.brigadier.arguments.StringArgumentType;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
-import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.entity.Entity;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import static com.me.coresmodule.CoresModule.mc;
 
@@ -57,62 +58,61 @@ public class playerTracker {
 
         Register.command("stopTracking", args -> {
             stop = true;
-            Helper.exactSleep(1250, () -> {
+
+            Helper.sleep(100, () -> {
+                // Remove waypoint from the list
+                WaypointManager.waypoints.removeIf(wp -> "playerTracker".equals(wp.type));
+
+
                 stop = false;
+                Chat.chat("§cStopped tracking all players and removed their waypoints");
             });
         });
-    }
-
-    /**
-     * This one is bugged, only the player has his username as option, and can't delay to wait for it to load, so not usable.
-     */
-    public static void trigger() {
-        ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
-            reg(dispatcher);
-        });
-    }
-
-    public static void reg(CommandDispatcher<FabricClientCommandSource> dispatcher) {
-        LiteralArgumentBuilder<FabricClientCommandSource> tracker =
-                ClientCommandManager.literal("trackPlayer")
-                        .executes(context -> 1);
-
-        for (Entity entity : getAllPlayers()) {
-            Helper.print("Got 1, size is " + getAllPlayers().size());
-            String playerName = TextHelper.unFormattedString(entity.getName());
-            tracker.then(ClientCommandManager.literal(playerName)
-                    .executes(context -> {
-                        commandExec(entity);
-                        return 1;
-                    })
-            );
-        }
-
-        // 🚨 REQUIRED!! Register the root literal
-        dispatcher.register(tracker);
-
 
     }
-
 
     public static void commandExec(Entity player) {
         String playerName = TextHelper.unFormattedString(player.getName());
         Chat.chat("§aStart tracking §b%s".formatted(playerName));
+
         Thread thread = new Thread(() -> {
             while (!stop) {
                 double x = player.getX(), y = player.getY(), z = player.getZ();
-                Chat.chat("§c[CoresModule] §a%s is at x: §b%.2f§a, y: §b%.2f§a, z: §b%.2f".formatted(playerName, x, y, z));
+
+                /*
+                Chat.chat("§c[CoresModule] §a%s is at x: §b%.2f§a, y: §b%.2f§a, z: §b%.2f"
+                        .formatted(playerName, x, y, z));
+                 */
+
+                HashMap<String, Object> typeInfo = new HashMap<>();
+                typeInfo.put("PlayerEntity", player);
+                typeInfo.put("x", x);
+                typeInfo.put("y", y);
+                typeInfo.put("z", z);
+
+                // Remove any existing waypoint for this player
+                WaypointManager.waypoints.removeIf(wp -> wp.typeInfo.get("PlayerEntity") == player);
+
+                // Add the new waypoint
+                WaypointManager.waypoints.add(new Waypoint(
+                        "Player: ", x, y, z, 1f, 1f, 1f, 0, "playerTracker", typeInfo,
+                        Tracker.doWaypoint.get(), Tracker.doBeam.get(), true, Tracker.lineWidth.get(), 0
+                ));
+
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(50);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
             }
 
+
         });
+
         thread.setDaemon(true);
         thread.start();
     }
+
 
     /**
      * @return An ArrayList with all the Entities in the world
