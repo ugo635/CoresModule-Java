@@ -2,6 +2,7 @@ package com.me.coresmodule;
 
 import com.me.coresmodule.features.Diana.InquisitorTracker;
 import com.me.coresmodule.features.Diana.MfCalc;
+import com.me.coresmodule.features.Diana.NewMfCalc;
 import com.me.coresmodule.features.Features;
 import com.me.coresmodule.features.Party;
 import com.me.coresmodule.features.bot.Bot;
@@ -58,6 +59,7 @@ public class CoresModule implements ModInitializer {
 		SoundHandler.register();
 		MainPrivate.register();
 		WaypointManager.register();
+		NewMfCalc.register();
 
 
 		configurator.register(Settings.class);
