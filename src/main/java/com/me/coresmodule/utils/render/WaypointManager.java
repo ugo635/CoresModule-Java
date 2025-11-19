@@ -9,7 +9,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class WaypointManager {
 
-    public static List<Waypoint> waypoints = new CopyOnWriteArrayList<>(List.of(
+    public static List<Waypoint> waypoints = new CopyOnWriteArrayList<>(/*List.of(
             new Waypoint(
                     "Hellooo",
                     0.0, 100.0, 0.0,
@@ -18,7 +18,7 @@ public class WaypointManager {
                     Tracker.doWaypoint.get(), Tracker.doBeam.get(), true,
                     Tracker.lineWidth.get(), 0
             )
-    ));
+    )*/);
 
     public static void register() {
         WorldRenderEvents.AFTER_TRANSLUCENT.register(context -> {

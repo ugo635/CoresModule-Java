@@ -55,7 +55,6 @@ public class CoresModule implements ModInitializer {
 		ClickActionManager.register();
 		Features.register();
 		Party.register();
-		Bot.register();
 		SoundHandler.register();
 		MainPrivate.register();
 		WaypointManager.register();
@@ -137,13 +136,15 @@ public class CoresModule implements ModInitializer {
 		try {
             FilesHandler.register();
         } catch (IOException e) {
-			Helper.printErr("[CoresModule] CoresModule.java:140 " + e);
+			Helper.printErr("[CoresModule] CoresModule.java:139 " + e);
         }
+
+        Bot.register();
 
         try {
             InquisitorTracker.register();
         } catch (IOException e) {
-			Helper.printErr("[CoresModule] CoresModule.java:147 " + e);
+			Helper.printErr("[CoresModule] CoresModule.java:151 " + e);
         }
     }
 }
