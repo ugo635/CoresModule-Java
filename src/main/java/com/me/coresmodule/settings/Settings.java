@@ -11,9 +11,9 @@ import com.me.coresmodule.settings.categories.*;
                 General.class,
                 Credits.class,
                 Diana.class,
-                Space.class,
-                CmPriv.class,
                 Space2.class,
+                CmPriv.class,
+                Space.class,
                 Tracker.class
 
         }

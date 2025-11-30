@@ -15,7 +15,7 @@ public class Overlay {
     String name;
     float x;
     float y;
-    private float scale;
+    float scale;
     List<String> allowedGuis;
     private List<OverlayTextLine> exampleView;
     private List<OverlayTextLine> lines = new ArrayList<>();
@@ -28,6 +28,10 @@ public class Overlay {
 
     public Overlay(String name, float x, float y, float scale) {
         this(name, x, y, scale, List.of("Chat screen"), List.of());
+    }
+
+    public Overlay(String name, float x, float y, float scale, List<String> allowedGuis) {
+        this(name, x, y, scale, allowedGuis, List.of());
     }
 
     public Overlay(String name, float x, float y, float scale, List<String> allowedGuis, List<OverlayTextLine> exampleView) {

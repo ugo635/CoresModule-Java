@@ -32,6 +32,10 @@ public class OverlayTextLine {
         this.text = text;
     }
 
+    public void setText(String newText) {
+        this.text = newText;
+    }
+
     public OverlayTextLine(String text, boolean shadow, boolean linebreak) {
         this.text = text;
         this.shadow = shadow;

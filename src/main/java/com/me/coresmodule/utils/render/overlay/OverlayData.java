@@ -51,4 +51,13 @@ public class OverlayData {
             }
         });
     }
+
+    public static void save() {
+        try {
+            JSONObject json = new JSONObject(overlays);
+            FilesHandler.writeToFile("overlays.json", json.toString(4));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

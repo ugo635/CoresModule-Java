@@ -18,7 +18,7 @@ public final class OverlayManager {
     private OverlayManager() {
     }
 
-    public static void init() {
+    public static void register() {
         registerRenderer();
         registerMouseLeftClick();
 
@@ -71,6 +71,7 @@ public final class OverlayManager {
                 : "";
         render(context, title);
     }
+
 
     public static void registerMouseLeftClick() {
         ScreenEvents.AFTER_INIT.register((client, screen, scaledWidth, scaledHeight) -> {

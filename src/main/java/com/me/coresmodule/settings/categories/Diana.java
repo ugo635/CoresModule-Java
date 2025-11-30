@@ -1,7 +1,6 @@
 package com.me.coresmodule.settings.categories;
 
 import com.teamresourceful.resourcefulconfig.api.annotations.Category;
-import com.teamresourceful.resourcefulconfig.api.annotations.Config;
 import com.teamresourceful.resourcefulconfig.api.annotations.ConfigEntry;
 import com.teamresourceful.resourcefulconfig.api.types.entries.Observable;
 
@@ -18,4 +17,7 @@ public class Diana {
 
     @ConfigEntry(id = "RareMobSs", translation = "Take a screenshot when getting a rare drop (e.g: Chimera, Wool, Core, etc...)")
     public static Observable<Boolean> RareMobSs = Observable.of(true);
+
+    @ConfigEntry(id = "MfOverlay", translation = "Shows an overlay of your magic find")
+    public static Observable<Boolean> MfOverlay = Observable.of(true);
 }

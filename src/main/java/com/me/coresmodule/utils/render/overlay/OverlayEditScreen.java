@@ -77,7 +77,7 @@ public class OverlayEditScreen extends Screen {
             if (newScale < 0.5f) newScale = 0.5f;
             if (newScale > 5.0f) newScale = 5.0f;
             selectedOverlay.scale = newScale;
-            overlayData.overlays.get(selectedOverlay.name).scale = newScale;
+            OverlayData.overlays.get(selectedOverlay.name).scale = newScale;
             return true;
         }
         return super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
@@ -89,16 +89,16 @@ public class OverlayEditScreen extends Screen {
             float step = 1f;
             if (keyCode == GLFW.GLFW_KEY_UP) {
                 selectedOverlay.y -= step;
-                overlayData.overlays.get(selectedOverlay.name).y = selectedOverlay.y;
+                OverlayData.overlays.get(selectedOverlay.name).y = selectedOverlay.y;
             } else if (keyCode == GLFW.GLFW_KEY_DOWN) {
                 selectedOverlay.y += step;
-                overlayData.overlays.get(selectedOverlay.name).y = selectedOverlay.y;
+                OverlayData.overlays.get(selectedOverlay.name).y = selectedOverlay.y;
             } else if (keyCode == GLFW.GLFW_KEY_LEFT) {
                 selectedOverlay.x -= step;
-                overlayData.overlays.get(selectedOverlay.name).x = selectedOverlay.x;
+                OverlayData.overlays.get(selectedOverlay.name).x = selectedOverlay.x;
             } else if (keyCode == GLFW.GLFW_KEY_RIGHT) {
                 selectedOverlay.x += step;
-                overlayData.overlays.get(selectedOverlay.name).x = selectedOverlay.x;
+                OverlayData.overlays.get(selectedOverlay.name).x = selectedOverlay.x;
             } else {
                 return super.keyPressed(keyCode, scanCode, modifiers);
             }
@@ -113,6 +113,6 @@ public class OverlayEditScreen extends Screen {
         for (Overlay o : OverlayManager.overlays) {
             o.selected = false;
         }
-        SboDataObject.save("OverlayData");
+        OverlayData.save();
     }
 }

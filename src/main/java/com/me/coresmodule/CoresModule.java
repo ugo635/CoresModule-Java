@@ -17,6 +17,8 @@ import com.me.coresmodule.utils.chat.ClickActionManager;
 import com.me.coresmodule.utils.chat.SimulateChat;
 import com.me.coresmodule.utils.events.Register;
 import com.me.coresmodule.utils.render.WaypointManager;
+import com.me.coresmodule.utils.render.overlay.OverlayData;
+import com.me.coresmodule.utils.render.overlay.OverlayManager;
 import com.teamresourceful.resourcefulconfig.api.client.ResourcefulConfigScreen;
 import com.teamresourceful.resourcefulconfig.api.loader.Configurator;
 import net.fabricmc.api.ModInitializer;
@@ -61,6 +63,8 @@ public class CoresModule implements ModInitializer {
 		WaypointManager.register();
 		NewMfCalc.register();
 		MfCalcHelper.register();
+		OverlayData.register();
+		OverlayManager.register();
 
 
 		configurator.register(Settings.class);

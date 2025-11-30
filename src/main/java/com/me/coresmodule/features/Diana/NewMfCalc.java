@@ -3,11 +3,15 @@ package com.me.coresmodule.features.Diana;
 import com.me.coresmodule.utils.FilesHandler;
 import com.me.coresmodule.utils.chat.Chat;
 import com.me.coresmodule.utils.events.Register;
+import com.me.coresmodule.utils.render.overlay.Overlay;
+import com.me.coresmodule.utils.render.overlay.OverlayTextLine;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import static com.me.coresmodule.CoresModule.mc;
+import static com.me.coresmodule.settings.categories.Diana.MfOverlay;
 
 
 public class NewMfCalc {
@@ -19,6 +23,15 @@ public class NewMfCalc {
     public static double kcBuff = 0;
     public static String profileId = "";
     public static void register() {
+
+        // Create overlay
+        Overlay overlay = new Overlay("MfOverlay", 10.0f, 10.0f, 1.0f, List.of("Chat screen", "Crafting"));
+        OverlayTextLine overlayText = new OverlayTextLine("");
+        overlay.register();
+        overlay.setCondition(() -> MfOverlay.get());
+        overlay.addLine(overlayText);
+
+
         try {
             FilesHandler.createFile("apiToken.txt");
             FilesHandler.createFile("profileId.txt");
@@ -26,11 +39,15 @@ public class NewMfCalc {
             throw new RuntimeException(e);
         }
 
-        Register.onTick(1,args -> {
+        Register.onTick(10,args -> {
             if (mc.player == null || mc.world == null) return;
             armorMf = MfCalcHelper.mfFromArmor();
             heldItemMf = MfCalcHelper.mfFromHand();
             legion = MfCalcHelper.playersInLegion();
+
+            double totalMf = additionalMf + armorMf + heldItemMf;
+
+            overlayText.text = "§bAdditional Magic Find: §d" + totalMf;
 
             // additionalMf = TODO: Do The Math; TODO: Be Mf; TODO: Overlay
             // For Be, do List.forEach and do Pattern.compile("minos_hunter_\d+") Matcher.getMessage() to grab keys and do the sum of all values
