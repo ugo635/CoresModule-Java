@@ -32,7 +32,7 @@ public class playerTracker {
                                 for (AbstractClientPlayerEntity p : getAllPlayers()) {
                                     String name = TextHelper.unFormattedString(p.getName());
 
-                                    if (name.toLowerCase().startsWith(typed)) {
+                                    if (name.toLowerCase().startsWith(typed) && p.isAlive()) {
                                         builder.suggest(name);
                                     }
                                 }

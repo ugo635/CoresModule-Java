@@ -21,7 +21,7 @@ public class ItemHelper {
 
     public static List<ItemStack> getArmorItems() {
         PlayerInventory inventory;
-        if (mc.player.getInventory() != null) {
+        if (mc.player != null && mc.player.getInventory() != null) {
             inventory = mc.player.getInventory();
             List<ItemStack> armor = new ArrayList<ItemStack>();
             for (int i = 36; i < 40; i++) {

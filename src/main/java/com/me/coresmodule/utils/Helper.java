@@ -92,4 +92,9 @@ public class Helper {
         bd = bd.setScale(decimals, RoundingMode.HALF_UP);
         return bd.floatValue();
     }
+
+    public static String getGuiName() {
+        if (mc.currentScreen != null) return mc.currentScreen.getTitle().toString();
+        return null;
+    }
 }
