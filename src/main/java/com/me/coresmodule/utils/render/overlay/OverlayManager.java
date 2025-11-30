@@ -1,5 +1,6 @@
 package com.me.coresmodule.utils.render.overlay;
 
+import com.me.coresmodule.utils.events.EventBus.EventBus;
 import com.me.coresmodule.utils.events.Register;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents;
@@ -24,6 +25,16 @@ public final class OverlayManager {
 
         Register.command("cmguis", args -> {
             mc.send(() -> mc.setScreen(new OverlayEditScreen()));
+        });
+
+        EventBus.on("afterHudRender", obj -> {
+            DrawContext context = (DrawContext) obj;
+
+            String title = mc.currentScreen != null
+                    ? mc.currentScreen.getTitle().getString()
+                    : "";
+
+            render(context, title);
         });
     }
 
@@ -64,14 +75,6 @@ public final class OverlayManager {
             });
         });
     }
-
-    public static void onRender(DrawContext context) {
-        String title = mc.currentScreen != null
-                ? mc.currentScreen.getTitle().getString()
-                : "";
-        render(context, title);
-    }
-
 
     public static void registerMouseLeftClick() {
         ScreenEvents.AFTER_INIT.register((client, screen, scaledWidth, scaledHeight) -> {

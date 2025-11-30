@@ -94,7 +94,6 @@ public class Helper {
     }
 
     public static String getGuiName() {
-        if (mc.currentScreen != null) return mc.currentScreen.getTitle().toString();
-        return null;
+        return mc.currentScreen == null ? "" : mc.currentScreen.getTitle().getString();
     }
 }

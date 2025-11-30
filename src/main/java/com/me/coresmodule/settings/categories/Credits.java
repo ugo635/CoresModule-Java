@@ -10,8 +10,7 @@ public class Credits {
     @ConfigOption.Separator(
             value = "Special Thanks to",
             description = """
-                    • Resourceful Config by Team Resourceful: Made this config API
-                    • D4rkSwift for helping me getting started with modding and fabric
+                    • D4rkSwift (sbo) for helping me getting started with modding and fabric
                     """
     )
 

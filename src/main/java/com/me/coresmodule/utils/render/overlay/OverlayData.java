@@ -13,6 +13,31 @@ public class OverlayData {
     public static Map<String, OverlayValues> overlays = new HashMap<>();
 
     public static void register() {
+        load();
+
+        ClientLifecycleEvents.CLIENT_STOPPING.register(client -> {
+            save();
+        });
+
+        ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
+            save();
+        });
+    }
+
+    public static void save() {
+        try {
+            Map<String, Object> toSave = new HashMap<>();
+            for (String key : overlays.keySet()) {
+                toSave.put(key, overlays.get(key).toMap());
+            }
+            JSONObject json = new JSONObject(toSave);
+            FilesHandler.writeToFile("overlays.json", json.toString(4));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void load() {
         try {
             FilesHandler.createFile("overlays.json");
             String content = FilesHandler.getContent("overlays.json").trim();
@@ -29,33 +54,6 @@ public class OverlayData {
             } else {
                 FilesHandler.writeToFile("overlays.json", "{}");
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        ClientLifecycleEvents.CLIENT_STOPPING.register(client -> {
-            try {
-                JSONObject json = new JSONObject(overlays);
-                FilesHandler.writeToFile("overlays.json", json.toString(4));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
-
-        ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
-            try {
-                JSONObject json = new JSONObject(overlays);
-                FilesHandler.writeToFile("overlays.json", json.toString(4));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
-    }
-
-    public static void save() {
-        try {
-            JSONObject json = new JSONObject(overlays);
-            FilesHandler.writeToFile("overlays.json", json.toString(4));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
