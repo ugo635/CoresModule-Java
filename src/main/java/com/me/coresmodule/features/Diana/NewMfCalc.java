@@ -20,7 +20,9 @@ public class NewMfCalc {
     public static double armorMf = 0;
     public static double heldItemMf = 0;
     public static double legion = 0;
+    public static double renownedMf = 0;
     public static double kcBuff = 0;
+    public static double defaultMf = 0;
     public static String profileId = "";
     public static void register() {
 
@@ -44,8 +46,12 @@ public class NewMfCalc {
             armorMf = MfCalcHelper.mfFromArmor();
             heldItemMf = MfCalcHelper.mfFromHand();
             legion = MfCalcHelper.playersInLegion();
+            renownedMf = MfCalcHelper.renownedAmt();
 
-            double totalMf = additionalMf + armorMf + heldItemMf;
+            double totalMf = (additionalMf + armorMf + heldItemMf)
+                    * (1 + 0.35 * legion)
+                    * (1 + (0.01 * renownedMf))
+                    * (1 + (0.01 * kcBuff));
 
             overlayText.text = "§bAdditional Magic Find: §d" + totalMf;
 
@@ -58,7 +64,8 @@ public class NewMfCalc {
             Chat.chat("§eHeld Item MF: §6" + heldItemMf);
             Chat.chat("§eLegion MF: §6" + legion);
             Chat.chat("§eKill Combo MF: §6" + kcBuff);
-            double totalMf = additionalMf + armorMf + heldItemMf + legion;
+            Chat.chat("§eRenowned Mf: §6" + renownedMf);
+            double totalMf = additionalMf + armorMf + heldItemMf + legion + renownedMf;
             Chat.chat("§aTotal MF: §6" + totalMf + "§a vs " + additionalMf);
         });
 

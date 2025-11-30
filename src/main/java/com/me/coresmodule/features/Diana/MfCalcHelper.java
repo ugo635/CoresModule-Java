@@ -40,6 +40,18 @@ public class MfCalcHelper {
         return count;
     }
 
+    public static int renownedAmt() {
+        int count = 0;
+        List<ItemStack> armor = ItemHelper.getArmorItems();
+        for (ItemStack item : armor) {
+            String name = ItemHelper.getItemName(item);
+            if (name.contains("Renowned")) {
+                count++;
+            }
+        }
+        return count;
+    }
+
     public static double mfFromMythos() {
         double count = 0.0;
         List<ItemStack> armor = ItemHelper.getArmorItems();
