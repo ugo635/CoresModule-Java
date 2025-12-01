@@ -15,8 +15,8 @@ public class Diana {
     @ConfigEntry(id = "wrongPet", translation = "Message on screen if wrong pet eqquipped")
     public static Observable<Boolean> wrongPet = Observable.of(true);
 
-    @ConfigEntry(id = "RareMobSs", translation = "Take a screenshot when getting a rare drop (e.g: Chimera, Wool, Core, etc...)")
-    public static Observable<Boolean> RareMobSs = Observable.of(true);
+    @ConfigEntry(id = "RareDropSs", translation = "Take a screenshot when getting a rare drop (e.g: Chimera, Wool, Core, etc...)")
+    public static Observable<Boolean> RareDropSs = Observable.of(true);
 
     @ConfigEntry(id = "MfOverlay", translation = "Shows an overlay of your magic find")
     public static Observable<Boolean> MfOverlay = Observable.of(true);

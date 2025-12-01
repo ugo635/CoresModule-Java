@@ -7,7 +7,6 @@ import com.me.coresmodule.utils.render.overlay.Overlay;
 import com.me.coresmodule.utils.render.overlay.OverlayTextLine;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -50,7 +49,7 @@ public class NewMfCalc {
             renownedMf = MfCalcHelper.renownedAmt();
 
             double totalMf = (additionalMf + armorMf + heldItemMf)
-                    * (1 + 0.35 * legion)
+                    * (1 + 0.0035 * legion)
                     * (1 + (0.01 * renownedMf))
                     + 0 // TODO Bestiary
                     * (1 + 0.05 * (shuriken ? 1 : 0))

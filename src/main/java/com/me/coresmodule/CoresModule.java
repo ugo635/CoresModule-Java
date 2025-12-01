@@ -1,6 +1,6 @@
 package com.me.coresmodule;
 
-import com.me.coresmodule.features.Diana.InquisitorTracker;
+import com.me.coresmodule.features.Diana.RareDropTracker;
 import com.me.coresmodule.features.Diana.MfCalc;
 import com.me.coresmodule.features.Diana.MfCalcHelper;
 import com.me.coresmodule.features.Diana.NewMfCalc;
@@ -148,7 +148,7 @@ public class CoresModule implements ModInitializer {
         Bot.register();
 
         try {
-            InquisitorTracker.register();
+            RareDropTracker.register();
         } catch (IOException e) {
 			Helper.printErr("[CoresModule] CoresModule.java:151 " + e);
         }
