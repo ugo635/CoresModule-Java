@@ -7,6 +7,7 @@ import com.me.coresmodule.utils.render.overlay.Overlay;
 import com.me.coresmodule.utils.render.overlay.OverlayTextLine;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -73,7 +74,13 @@ public class NewMfCalc {
 
         Register.onChatMessage(Pattern.compile("§8Profile ID: ([0-9a-fA-F]+(-[0-9a-fA-F]+)+)"), false, (msg, matcher) -> {
             profileId = matcher.group(1);
-            Chat.chat("§a[Cm] §eProfile ID set to: §6" + profileId);
+            try {
+                if (FilesHandler.getContent("profileId.txt").trim().equals(profileId)) return;
+                Chat.chat("§a[Cm] §eProfile ID set to: §6" + profileId);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
             try {
                 FilesHandler.writeToFile("profileId.txt", profileId);
             } catch (IOException e) {

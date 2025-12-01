@@ -13,6 +13,9 @@ import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.item.ItemStack;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 import static com.me.coresmodule.CoresModule.mc;
@@ -22,22 +25,35 @@ public class MfCalcHelper {
     private static final Map<Integer, ArmorStandEntity> trackedEntities = new HashMap<>();
     private static final Set<Integer> defeated = new HashSet<>();
     private static final EventBus EVENT_BUS = new EventBus();
-    /*
-    Might count armor stands in it :/
-    */
+
     public static int playersInLegion() {
-        List<AbstractClientPlayerEntity> players = mc.world.getPlayers();
-        int count = 0;
-        for (AbstractClientPlayerEntity player : players) {
-            Entity entity = mc.world.getEntityById(player.getId());
-            if (!(entity != null && entity.isAlive()) || entity == mc.player || entity.getWorld() != mc.world) continue;
-            CmVectors entityCoords = new CmVectors(entity.getX(), entity.getY(), entity.getZ());
-            double distance = entityCoords.distanceTo(new CmVectors(mc.player.getX(), mc.player.getY(), mc.player.getZ()));
-            if (distance <= 30) {
-                count++;
-            }
-        }
-        return count;
+        AbstractClientPlayerEntity player = mc.player;
+        return mc.world == null ? 0 :
+                mc.world.getPlayers()
+                        .stream()
+                        .filter(otherPlayer ->
+                                otherPlayer != player &&
+                                        (otherPlayer.getUuid().version() == 4 || otherPlayer.getUuid().version() == 1) &&
+                                        getPlayerPing(mc, otherPlayer.getUuid()) > 0 &&
+                                        otherPlayer.distanceTo(player) <= 30
+                        )
+                        .filter(distinctByKey(p -> p.getUuid()))
+                        .toList()
+                        .size();
+    }
+
+    public static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
+        Set<Object> seen = ConcurrentHashMap.newKeySet();
+        return t -> seen.add(keyExtractor.apply(t));
+    }
+
+    private static int getPlayerPing(MinecraftClient mc, UUID uuid) {
+        if (
+                mc.getNetworkHandler() == null ||
+                mc.getNetworkHandler().getPlayerListEntry(uuid) == null
+        ) return 0;
+
+        return Objects.requireNonNull(mc.getNetworkHandler().getPlayerListEntry(uuid)).getLatency();
     }
 
     public static int renownedAmt() {
