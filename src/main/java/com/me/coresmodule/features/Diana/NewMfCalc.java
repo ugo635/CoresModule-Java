@@ -51,6 +51,8 @@ public class NewMfCalc {
             double totalMf = (additionalMf + armorMf + heldItemMf)
                     * (1 + 0.35 * legion)
                     * (1 + (0.01 * renownedMf))
+                    + 0 // TODO Bestiary
+                    * (1 + 0.05 * (shuriken ? 1 : 0))
                     * (1 + (0.01 * kcBuff));
 
             overlayText.text = "§bAdditional Magic Find: §d" + totalMf;
