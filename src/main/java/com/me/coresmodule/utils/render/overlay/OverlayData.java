@@ -15,13 +15,9 @@ public class OverlayData {
     public static void register() {
         load();
 
-        ClientLifecycleEvents.CLIENT_STOPPING.register(client -> {
-            save();
-        });
+        ClientLifecycleEvents.CLIENT_STOPPING.register(client -> save());
 
-        ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
-            save();
-        });
+        ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> save());
     }
 
     public static void save() {
@@ -45,7 +41,7 @@ public class OverlayData {
                 JSONObject json = new JSONObject(content);
                 Map<String, Object> temp = json.toMap();
                 for (String key : temp.keySet()) {
-                    Map<String, Object> values = (Map<String, Object>) temp.get(key);
+                    @SuppressWarnings("unchecked") Map<String, Object> values = (Map<String, Object>) temp.get(key);
                     float x = ((Number) values.get("x")).floatValue();
                     float y = ((Number) values.get("y")).floatValue();
                     float scale = ((Number) values.get("scale")).floatValue();

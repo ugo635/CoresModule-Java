@@ -7,13 +7,15 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.function.Consumer;
+import java.net.URI;
 
 public class RequestHelper {
     public static JsonObject request(String link) {
         try {
-            URL url = new URL(link);
+            URL url = new URI(link).toURL();
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("GET");
 
@@ -26,7 +28,7 @@ public class RequestHelper {
             in.close();
 
             return JsonParser.parseString(content.toString()).getAsJsonObject();
-        } catch (IOException e) {
+        } catch (IOException | URISyntaxException e) {
             throw new RuntimeException(e);
         }
     }

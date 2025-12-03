@@ -10,6 +10,7 @@ import com.me.coresmodule.settings.categories.Diana;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
+import org.w3c.dom.Text;
 
 import java.util.regex.Pattern;
 
@@ -115,6 +116,12 @@ public class Features {
         Register.onChatMessage(Pattern.compile("^(?<channel>.*> )?(?<playerName>.+?)[§&]f: (?:[§&]r)?x: (?<x>[^ ,]+),? y: (?<y>[^ ,]+),? z: (?<z>[^ ,]+)(?<trailing>.*)$"),false, (msg, result) -> {
             Chat.chat("§c[CoresModule] Coords Delected");
             SoundHandler.playSound("emergencymeeting");
+        });
+
+        // ?<name> is to give name to groups to be used as Matcher.group("name")
+        Register.onChatMessage(msg -> {
+            if (!TextHelper.getFormattedString(msg).contains("§ehas left the party.")) return;
+            Chat.chat("§c[CoresModule] Someone left");
         });
     }
 }

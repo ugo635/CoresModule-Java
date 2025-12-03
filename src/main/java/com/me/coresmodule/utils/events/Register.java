@@ -90,6 +90,10 @@ public class Register {
         });
     }
 
+    public static void onChatMessage(Pattern regex, BiConsumer<Text, MatchResult> action) {
+        onChatMessage(regex, false, action);
+    }
+
     /**
      * Registers a cancelable chat listener.
      * The provided Function receives the incoming message and returns:
