@@ -18,6 +18,7 @@ import static com.me.coresmodule.CoresModule.MOD_ID;
 import static com.me.coresmodule.CoresModule.mc;
 
 public class Features {
+    static String toInv = null;
     public static void register() {
         Register.command("color", ignored -> {
             Chat.chat("§0Black: §0§lBold Black : 0");
@@ -121,7 +122,12 @@ public class Features {
         // ?<name> is to give name to groups to be used as Matcher.group("name")
         Register.onChatMessage(msg -> {
             if (!TextHelper.getFormattedString(msg).contains("§ehas left the party.")) return;
-            Chat.chat("§c[CoresModule] Someone left");
+            if (toInv != null) Chat.command("p " + toInv);
         });
+
+        Register.command("inviteOnLeave", args -> {
+            toInv = args[0];
+            Chat.chat("§6[Cm] Will invite when someone leaves party: §e" + toInv);
+        }, "partyIfLeave", "inviteIfLeave");
     }
 }
