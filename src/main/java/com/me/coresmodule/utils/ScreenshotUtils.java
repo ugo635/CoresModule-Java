@@ -43,7 +43,7 @@ public class ScreenshotUtils {
 
             } catch (Exception e) {
                 e.printStackTrace();
-                Chat.chat("§6[CM]] Failed to take screenshot.");
+                Chat.chat("§6[CM] Failed to take screenshot.");
             } finally {
                 nativeImage.close();
             }

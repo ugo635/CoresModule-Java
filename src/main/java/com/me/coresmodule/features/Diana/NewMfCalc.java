@@ -55,7 +55,7 @@ public class NewMfCalc {
                     * (1 + 0.05 * (shuriken ? 1 : 0))
                     * (1 + (0.01 * kcBuff));
 
-            overlayText.text = "§bAdditional Magic Find: §d" + totalMf;
+            overlayText.text = "§bAdditional Magic Find: §d%.2f".formatted((float) totalMf);
 
             // additionalMf = TODO: Do The Math; TODO: Be Mf; TODO: Overlay
             // For Be, do List.forEach and do Pattern.compile("minos_hunter_\d+") Matcher.getMessage() to grab keys and do the sum of all values

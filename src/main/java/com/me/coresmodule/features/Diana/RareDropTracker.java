@@ -15,11 +15,11 @@ import static com.me.coresmodule.CoresModule.mc;
 public class RareDropTracker {
     public static void register() throws IOException {
         FilesHandler.createFile("chimeras.txt");
-        Register.onChatMessage(Pattern.compile("^§6§lRARE DROP! (.*?)$", Pattern.DOTALL), true, (message, matchResult) -> {
+        Register.onChatMessage(Pattern.compile("^§6§lRARE DROP! (.*?)$", Pattern.DOTALL), false, (message, matchResult) -> {
             String text = TextHelper.formattedString(message);
             String drop = matchResult.group(1);
             if (Diana.RareDropSs.get() && (
-                drop.contains("Chimera") ||
+                drop.contains("Enchanted Book") ||
                 drop.contains("Brain Food") ||
                 drop.contains("Manti-core") ||
                 drop.contains("Minos Relic") ||
@@ -33,7 +33,7 @@ public class RareDropTracker {
                 try {
                     FilesHandler.appendToFile("chimeras.txt", Helper.getCurrentTime() + " " + TextHelper.removeFormatting(text));
                 } catch (IOException e) {
-                    Helper.printErr("[CoresModule] RareDropTracker.java:39" + e);
+                    Helper.printErr("[CoresModule] RareDropTracker.java:36" + e);
                 }
             }
         });
