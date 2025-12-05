@@ -12,13 +12,15 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
 import org.w3c.dom.Text;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import static com.me.coresmodule.CoresModule.MOD_ID;
 import static com.me.coresmodule.CoresModule.mc;
 
 public class Features {
-    static String toInv = null;
+    static List<String> toInv = new ArrayList<String>();
     public static void register() {
         Register.command("color", ignored -> {
             Chat.chat("§0Black: §0§lBold Black : 0");
@@ -122,12 +124,15 @@ public class Features {
         // ?<name> is to give name to groups to be used as Matcher.group("name")
         Register.onChatMessage(msg -> {
             if (!TextHelper.getFormattedString(msg).contains("§ehas left the party.")) return;
-            if (toInv != null) Chat.command("p " + toInv);
+            if (!toInv.isEmpty()) {
+                Chat.command("p " + toInv.getFirst());
+                toInv.removeFirst();
+            }
         });
 
         Register.command("inviteOnLeave", args -> {
-            toInv = args[0];
-            Chat.chat("§6[Cm] Will invite when someone leaves party: §e" + toInv);
+            toInv.add(args[0]);
+            Chat.chat("§6[Cm] Will invite when someone leaves party: §e" + args[0]);
         }, "partyIfLeave", "inviteIfLeave");
     }
 }
