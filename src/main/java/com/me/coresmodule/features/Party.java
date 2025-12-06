@@ -1,20 +1,19 @@
 // Package and imports
 package com.me.coresmodule.features;
 
-import com.me.coresmodule.utils.chat.Chat;
 import com.me.coresmodule.utils.Helper;
+import com.me.coresmodule.utils.chat.Chat;
+import com.me.coresmodule.utils.events.Register;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.text.Text;
-import net.minecraft.text.TextColor;
-import net.minecraft.text.MutableText;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import com.me.coresmodule.utils.events.Register;
 
 import static com.me.coresmodule.CoresModule.player;
 
@@ -84,7 +83,7 @@ public class Party {
             Helper.sleep(100, () -> Chat.command("pl"));
 
             Helper.sleep(500, () -> {
-                if (partyMembers.size() == 0 || partyMembers.size() > 7) return;
+                if (partyMembers.isEmpty() || partyMembers.size() > 7) return;
 
                 for (int i = 0; i < partyMembers.size(); i++) {
                     String pMember = partyMembers.get(i);
