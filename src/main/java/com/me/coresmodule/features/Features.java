@@ -7,6 +7,11 @@ import com.me.coresmodule.utils.TextHelper;
 import com.me.coresmodule.utils.chat.Chat;
 import com.me.coresmodule.utils.events.Register;
 import com.me.coresmodule.settings.categories.Diana;
+import net.minecraft.client.gui.screen.ChatScreen;
+import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
+import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents;
+import net.minecraft.client.gui.screen.ChatScreen;
+
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
@@ -134,5 +139,14 @@ public class Features {
             toInv.add(args[0]);
             Chat.chat("§6[Cm] Will invite when someone leaves party: §e" + args[0]);
         }, "partyIfLeave", "inviteIfLeave");
+
+        ScreenEvents.AFTER_INIT.register((client, screen, scaledWidth, scaledHeight) -> {
+            if (screen instanceof ChatScreen) {
+                ScreenMouseEvents.beforeMouseClick(screen).register((s, mouseX, mouseY, button) -> {
+                    System.out.println("Mouse clicked while chat is open! Button: " + button);
+                });
+            }
+        });
+
     }
 }
