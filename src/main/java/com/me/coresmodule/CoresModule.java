@@ -1,9 +1,6 @@
 package com.me.coresmodule;
 
-import com.me.coresmodule.features.Diana.RareDropTracker;
-import com.me.coresmodule.features.Diana.MfCalc;
-import com.me.coresmodule.features.Diana.MfCalcHelper;
-import com.me.coresmodule.features.Diana.NewMfCalc;
+import com.me.coresmodule.features.Diana.*;
 import com.me.coresmodule.features.Features;
 import com.me.coresmodule.features.Party;
 import com.me.coresmodule.features.bot.Bot;
@@ -65,6 +62,7 @@ public class CoresModule implements ModInitializer {
 		MfCalcHelper.register();
 		OverlayData.register();
 		OverlayManager.register();
+		AlwaysRightSphinxQuestion.register();
 
 
 		configurator.register(Settings.class);

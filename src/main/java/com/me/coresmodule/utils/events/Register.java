@@ -150,6 +150,10 @@ public class Register {
         });
     }
 
+    public static void  onChatMessageCancelable(Pattern regex, BiFunction<Text, MatchResult, Boolean> action) {
+        onChatMessageCancelable(regex, false, action);
+    }
+
     public static void onGuiClose(Consumer<Screen> action) {
         ScreenEvents.AFTER_INIT.register((ignored, screen, ignored1, ignored2) ->
                 ScreenEvents.remove(screen).register(ignored3 -> action.accept(screen)));

@@ -41,16 +41,31 @@ public class TextHelper {
     }
 
 
+    /**
+     * Get full ClickEvent from Text
+     * @param t
+     * @return ClickEvent
+     */
     public static ClickEvent getFullClickEvent(Text t) {
         if (getClickEvent(t) == null) return null;
         else return stringToClickEvent(getClickEvent(t).get("action"), getClickEvent(t).get("value"));
     }
 
+    /**
+     * Get full HoverEvent from Text
+     * @param t
+     * @return HoverEvent
+     */
     public static HoverEvent getFullHoverEvent(Text t) {
         if (getHoverEvent(t) == null) return null;
         else return stringToHoverEvent(getHoverEvent(t).get("value"));
     }
 
+    /**
+     * Get ClickEvent details from Text
+     * @param message
+     * @return Map<String, String>
+     */
     public static Map<String, String> getClickEvent(Text message) {
         ClickEvent click = message.getStyle().getClickEvent();
         if (click == null) return null;
@@ -83,6 +98,11 @@ public class TextHelper {
         return result;
     }
 
+    /**
+     * Get HoverEvent details from Text
+     * @param message
+     * @return Map<String, String>
+     */
     public static Map<String, String> getHoverEvent(Text message) {
         HoverEvent hover = message.getStyle().getHoverEvent();
         if (hover == null) return null;
@@ -111,6 +131,12 @@ public class TextHelper {
         return result;
     }
 
+    /**
+     * Convert string to ClickEvent
+     * @param type
+     * @param command
+     * @return ClickEvent
+     */
     public static ClickEvent stringToClickEvent(String type, String command) {
         return switch (type) {
             case "run_command" -> new ClickEvent.RunCommand(command);
@@ -129,26 +155,56 @@ public class TextHelper {
         };
     }
 
+    /**
+     * Convert string to ClickEvent with default type "run_command"
+     * @param command
+     * @return ClickEvent
+     */
     public static ClickEvent stringToClickEvent(String command) {
         return stringToClickEvent("", command);
     }
 
+    /**
+     * Convert string to HoverEvent
+     * @param hover
+     * @return HoverEvent
+     */
     public static HoverEvent stringToHoverEvent(String hover) {
         return new HoverEvent.ShowText(Text.of(hover));
     }
 
+    /**
+     * Check if Text has no ClickEvent and no HoverEvent
+     * @param t
+     * @return boolean
+     */
     public static boolean noActions(Text t) {
         return (getClickEvent(t) == null && getHoverEvent(t) == null);
     }
 
+    /**
+     * Check if Text has no ClickEvent, no HoverEvent, and doesn't start with formatting code
+     * @param t
+     * @return boolean
+     */
     public static boolean noActionsAndDontStartWithStyle(Text t) {
         return (getClickEvent(t) == null && getHoverEvent(t) == null && getFormattedString(t).startsWith("§"));
     }
 
+    /**
+     * Remove formatting codes from string
+     * @param input
+     * @return String
+     */
     public static String removeFormatting(String input) {
         return input.replaceAll("§.", "");
     }
 
+    /**
+     * Get formatted string from Text
+     * @param text
+     * @return String
+     */
     public static String getFormattedString(Text text) {
         StringBuilder sb = new StringBuilder();
         text.visit((style, string) -> {
