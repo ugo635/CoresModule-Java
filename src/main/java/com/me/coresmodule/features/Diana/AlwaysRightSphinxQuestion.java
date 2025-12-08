@@ -4,6 +4,9 @@ import com.me.coresmodule.utils.Helper;
 import com.me.coresmodule.utils.TextHelper;
 import com.me.coresmodule.utils.chat.Chat;
 import com.me.coresmodule.utils.events.Register;
+import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
+import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents;
+import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.text.Text;
 
 import java.util.List;
@@ -39,7 +42,7 @@ public class AlwaysRightSphinxQuestion {
                 timer();
                 String possibleAnswer = matcher.group(2).trim();
                 msg = TextHelper.stringToText(
-                        TextHelper.getFormattedString(msg).replaceAll("§f", "§a"),
+                        TextHelper.getFormattedString(msg).replaceAll("§f", correctAnswers.contains(possibleAnswer) ? "§a" : "§c"),
                         TextHelper.stringToClickEvent(""),
                         TextHelper.getFullHoverEvent(msg)
                 );
@@ -61,12 +64,22 @@ public class AlwaysRightSphinxQuestion {
                 return true;
             }
         );
+
+        ScreenEvents.AFTER_INIT.register((client, screen, scaledWidth, scaledHeight) -> {
+            if (screen instanceof ChatScreen) {
+                ScreenMouseEvents.beforeMouseClick(screen).register((s, mouseX, mouseY, button) -> {
+                    if (button == 0 && r != -1) {
+                        Chat.command("/sphinxanswer " + r);
+                        r = -1;
+                    }
+                });
+            }
+        });
     }
 
     public static void timer() {
         if (timerOn) return;
         timerOn = true;
-
         Helper.sleep(100, () -> {
             for (Text msg : new Text[] {aText, bText, cText}) {
                 Chat.chat(
