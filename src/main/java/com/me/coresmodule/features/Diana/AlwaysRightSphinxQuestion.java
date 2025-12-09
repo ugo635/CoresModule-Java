@@ -1,5 +1,6 @@
 package com.me.coresmodule.features.Diana;
 
+import com.me.coresmodule.settings.categories.Diana;
 import com.me.coresmodule.utils.Helper;
 import com.me.coresmodule.utils.TextHelper;
 import com.me.coresmodule.utils.chat.Chat;
@@ -39,6 +40,7 @@ public class AlwaysRightSphinxQuestion {
         Register.onChatMessageCancelable(
             Pattern.compile("^§7 {3}([ABC])\\) §f(.*?)$"),
             (msg, matcher) -> {
+                if (!Diana.SphinxQuestion.get()) return false;
                 timer();
                 String possibleAnswer = matcher.group(2).trim();
                 msg = TextHelper.stringToText(
@@ -66,7 +68,7 @@ public class AlwaysRightSphinxQuestion {
         );
 
         ScreenEvents.AFTER_INIT.register((client, screen, scaledWidth, scaledHeight) -> {
-            if (screen instanceof ChatScreen) {
+            if (screen instanceof ChatScreen && Diana.SphinxQuestion.get()) {
                 ScreenMouseEvents.beforeMouseClick(screen).register((s, mouseX, mouseY, button) -> {
                     if (button == 0 && r != -1) {
                         Chat.command("/sphinxanswer " + r);

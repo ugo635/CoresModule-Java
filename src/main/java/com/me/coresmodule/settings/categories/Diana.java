@@ -20,4 +20,7 @@ public class Diana {
 
     @ConfigEntry(id = "MfOverlay", translation = "Shows an overlay of your magic find")
     public static Observable<Boolean> MfOverlay = Observable.of(true);
+
+    @ConfigEntry(id = "SphinxQuestion", translation = "Always Right Answer")
+    public static Observable<Boolean> SphinxQuestion = Observable.of(true);
 }
