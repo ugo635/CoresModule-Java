@@ -64,6 +64,7 @@ public class CoresModule implements ModInitializer {
 		OverlayData.register();
 		OverlayManager.register();
 		AlwaysRightSphinxQuestion.register();
+		DianaFeatures.register();
 
 
 		configurator.register(Settings.class);

@@ -23,4 +23,7 @@ public class Diana {
 
     @ConfigEntry(id = "SphinxQuestion", translation = "Always Right Answer")
     public static Observable<Boolean> SphinxQuestion = Observable.of(true);
+
+    @ConfigEntry(id = "ffTimer", translation = "Overlay for ff timer")
+    public static Observable<Boolean> ffTimer = Observable.of(true);
 }

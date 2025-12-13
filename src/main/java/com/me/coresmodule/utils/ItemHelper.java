@@ -19,6 +19,10 @@ public class ItemHelper {
         return mc.player.getMainHandStack() != null ? mc.player.getMainHandStack() : ItemStack.EMPTY;
     }
 
+    public static String getFormattedItemName(ItemStack item) {
+        return item != ItemStack.EMPTY ? TextHelper.getFormattedString(item.getName()) : "";
+    }
+
     public static List<ItemStack> getArmorItems() {
         PlayerInventory inventory;
         if (mc.player != null && mc.player.getInventory() != null) {
