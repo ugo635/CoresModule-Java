@@ -102,7 +102,7 @@ public class Features {
         });
 
         Register.onChatMessage(msg -> {
-            if (TextHelper.formattedString(msg).contains("§6§lRARE DROP! §eYou dug out a §9Mythos Fragment§e!") && Diana.announceMythosFrag.get()) {
+            if (TextHelper.formattedString(msg).contains("§6§lRARE DROP! §eYou dug out a §5Braided Griffin Feather§e!") && Diana.announceBraided.get()) {
                 Chat.command("pc RARE DROP! You dug out a Mythos Fragment!");
             };
         });

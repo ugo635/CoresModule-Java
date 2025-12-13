@@ -28,6 +28,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class CoresModule implements ModInitializer {
 	public static String player = MinecraftClient.getInstance().getSession().getUsername();
@@ -108,7 +109,7 @@ public class CoresModule implements ModInitializer {
 						Chat.getChatBreak("-", "§b");
 						for (Map<String, String> cmd : commands) {
                             try {
-								if (cmd.get("ph") == "") {
+								if (Objects.equals(cmd.get("ph"), "")) {
 									Chat.clickableChat(
 											"§7> §a/" + cmd.get("cmd") + " §7- §e" + cmd.get("description"),
 											"§eClick to run /" + cmd.get("cmd"),

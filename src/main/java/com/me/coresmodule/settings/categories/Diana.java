@@ -9,8 +9,8 @@ public class Diana {
     @ConfigEntry(id = "minotaurOnScreen", translation = "Message on screen when Minotaur spawns")
     public static Observable<Boolean> minotaurOnScreen = Observable.of(true);
 
-    @ConfigEntry(id = "announceMythosFrag", translation = "Announce Mythos Fragments in chat")
-    public static Observable<Boolean> announceMythosFrag = Observable.of(true);
+    @ConfigEntry(id = "announceBraided", translation = "Announce Mythos Fragments in chat")
+    public static Observable<Boolean> announceBraided = Observable.of(true);
 
     @ConfigEntry(id = "wrongPet", translation = "Message on screen if wrong pet eqquipped")
     public static Observable<Boolean> wrongPet = Observable.of(true);

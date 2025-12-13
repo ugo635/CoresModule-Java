@@ -19,6 +19,7 @@ public class RareDropTracker {
             String text = TextHelper.formattedString(message);
             String drop = matchResult.group(1);
             if (Diana.RareDropSs.get() && (
+                drop.contains("Braided Griffin Feather") ||
                 drop.contains("Enchanted Book") ||
                 drop.contains("Brain Food") ||
                 drop.contains("Manti-core") ||
