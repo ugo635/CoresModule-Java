@@ -3,7 +3,6 @@ package com.me.coresmodule.features.Diana;
 import com.me.coresmodule.settings.categories.Diana;
 import com.me.coresmodule.utils.Helper;
 import com.me.coresmodule.utils.ItemHelper;
-import com.me.coresmodule.utils.TextHelper;
 import com.me.coresmodule.utils.chat.Chat;
 import com.me.coresmodule.utils.events.Register;
 import com.me.coresmodule.utils.render.overlay.Overlay;
@@ -11,18 +10,16 @@ import com.me.coresmodule.utils.render.overlay.OverlayTextLine;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
 
 import java.util.List;
 
-import static com.me.coresmodule.settings.categories.Diana.MfOverlay;
-import static com.me.coresmodule.settings.categories.Diana.ffTimer;
-
 public class DianaFeatures {
     static boolean ffTimerOn = false;
+    static double startTime = 0;
+    static double endTime = 0;
     public static void register() {
-        Overlay overlay = new Overlay("Ff Timer", 10.0f, 10.0f, 1.0f, List.of("Chat screen", "Crafting"));
-        OverlayTextLine overlayText = new OverlayTextLine("...");
+        Overlay overlay = new Overlay("§dFire Freeze Timer", 10.0f, 10.0f, 2.0f, List.of("Chat screen", "Crafting"));
+        OverlayTextLine overlayText = new OverlayTextLine("");
         overlay.register();
         overlay.setCondition(() -> Diana.ffTimer.get() && ffTimerOn);
         overlay.addLine(overlayText);
@@ -44,9 +41,21 @@ public class DianaFeatures {
             String itemName = ItemHelper.getItemName(item);
             if (itemName.contains("Fire Freeze Staff")) {
                 ffTimerOn = true;
-                Helper.exactSleep(10000, () -> ffTimerOn = false);
+                startTime = System.currentTimeMillis();
+                endTime = startTime + 10000;
+                Helper.exactSleep(10000, () -> {
+                    ffTimerOn = false;
+                    startTime = -1;
+                    endTime = -1;
+                });
             }
             return ActionResult.PASS;
+        });
+
+        Register.onTick(2, args -> {
+            if (endTime - startTime < 0) return;
+            startTime = System.currentTimeMillis();
+            overlayText.text = "§a%.2fs".formatted(endTime - startTime);
         });
     }
 }
