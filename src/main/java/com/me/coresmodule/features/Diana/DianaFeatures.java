@@ -19,7 +19,7 @@ public class DianaFeatures {
     static long endTime = -1;
 
     public static void register() {
-        Overlay overlay = new Overlay("§dFire Freeze Timer", 10.0f, 10.0f, 2.0f, List.of("Chat screen"));
+        Overlay overlay = new Overlay("Fire Freeze Timer", 10.0f, 10.0f, 2.0f, List.of("Chat screen"));
         OverlayTextLine overlayText = new OverlayTextLine("");
         overlay.register();
         overlay.setCondition(() -> ffTimerOn);
