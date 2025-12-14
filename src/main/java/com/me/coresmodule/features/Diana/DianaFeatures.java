@@ -38,7 +38,7 @@ public class DianaFeatures {
         });
 
         UseItemCallback.EVENT.register((player, world, hand) -> {
-			if (!ffTimerOn) return;
+			if (!ffTimerOn) return ActionResult.PASS;
             ItemStack item = player.getMainHandStack();
             if (ItemHelper.getItemName(item).contains("Fire Freeze Staff")) {
                 ffTimerOn = true;
@@ -50,7 +50,7 @@ public class DianaFeatures {
         });
 
         UseBlockCallback.EVENT.register((player, world, hand, blockHitResult) -> {
-			if (!ffTimerOn) return;
+			if (!ffTimerOn) return ActionResult.PASS;
             ItemStack item = player.getMainHandStack();
             if (ItemHelper.getItemName(item).contains("Fire Freeze Staff")) {
                 ffTimerOn = true;
