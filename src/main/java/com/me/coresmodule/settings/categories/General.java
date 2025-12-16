@@ -1,13 +1,9 @@
 package com.me.coresmodule.settings.categories;
 
 
-import com.me.coresmodule.settings.Settings;
 import com.teamresourceful.resourcefulconfig.api.annotations.Category;
 import com.teamresourceful.resourcefulconfig.api.annotations.ConfigEntry;
-import com.teamresourceful.resourcefulconfig.api.annotations.ConfigOption;
 import com.teamresourceful.resourcefulconfig.api.types.entries.Observable;
-
-import static com.me.coresmodule.CoresModule.configurator;
 
 
 @Category("General")
@@ -23,4 +19,7 @@ public class General {
 
     @ConfigEntry(id = "pickaceAbility", translation = "Shows a message on screen when your pickaxe ability is ready")
     public static Observable<Boolean> pickaceAbility = Observable.of(true);
+
+    @ConfigEntry(id = "coordSound", translation = "Sound when coords are sent")
+    public static Observable<Boolean> coordSound = Observable.of(true);
 }

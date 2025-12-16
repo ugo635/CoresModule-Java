@@ -112,6 +112,7 @@ public class Features {
         });
 
         Register.onChatMessage(Pattern.compile("^(?<channel>.*> )?(?<playerName>.+?)[§&]f: (?:[§&]r)?x: (?<x>[^ ,]+),? y: (?<y>[^ ,]+),? z: (?<z>[^ ,]+)(?<trailing>.*)$"),false, (msg, result) -> {
+            if (!General.coordSound.get()) return;
             Chat.chat("§c[CoresModule] Coords Delected");
             SoundHandler.playSound("emergencymeeting");
         });
