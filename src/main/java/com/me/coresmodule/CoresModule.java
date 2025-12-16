@@ -50,6 +50,20 @@ public class CoresModule implements ModInitializer {
 		// However, some things (like resources) may still be uninitialized.
 		// Proceed with mild caution.
 
+		try {
+			FilesHandler.register();
+		} catch (IOException e) {
+			Helper.printErr("[CoresModule] CoresModule.java:139 " + e);
+		}
+
+		Bot.register();
+
+		try {
+			RareDropTracker.register();
+		} catch (IOException e) {
+			Helper.printErr("[CoresModule] CoresModule.java:151 " + e);
+		}
+
 		LOGGER.info("Hello Fabric world!");
 		MfCalc.register();
 		SimulateChat.register();
@@ -138,19 +152,5 @@ public class CoresModule implements ModInitializer {
 				}
 			}
 		});
-
-		try {
-            FilesHandler.register();
-        } catch (IOException e) {
-			Helper.printErr("[CoresModule] CoresModule.java:139 " + e);
-        }
-
-        Bot.register();
-
-        try {
-            RareDropTracker.register();
-        } catch (IOException e) {
-			Helper.printErr("[CoresModule] CoresModule.java:151 " + e);
-        }
     }
 }

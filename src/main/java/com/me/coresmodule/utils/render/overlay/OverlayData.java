@@ -13,6 +13,12 @@ public class OverlayData {
     public static Map<String, OverlayValues> overlays = new HashMap<>();
 
     public static void register() {
+        try {
+            FilesHandler.createFile("overlays.json");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
         load();
 
         ClientLifecycleEvents.CLIENT_STOPPING.register(client -> save());
@@ -35,7 +41,6 @@ public class OverlayData {
 
     public static void load() {
         try {
-            FilesHandler.createFile("overlays.json");
             String content = FilesHandler.getContent("overlays.json").trim();
             if (!content.isEmpty() && !content.equals("{}")) {
                 JSONObject json = new JSONObject(content);
