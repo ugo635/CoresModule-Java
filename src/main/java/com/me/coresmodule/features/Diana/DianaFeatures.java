@@ -17,6 +17,7 @@ public class DianaFeatures {
     static boolean ffTimerOn = false;
     static long startTime = -1;
     static long endTime = -1;
+    static double remaining = -1;
 
     public static void register() {
         Overlay overlay = new Overlay("Fire Freeze Timer", 10.0f, 10.0f, 2.0f, List.of("Chat screen"));
@@ -38,7 +39,7 @@ public class DianaFeatures {
         });
 
         UseItemCallback.EVENT.register((player, world, hand) -> {
-			if (ffTimerOn) return ActionResult.PASS;
+			if (ffTimerOn || remaining >= 0) return ActionResult.PASS;
             ItemStack item = player.getMainHandStack();
             if (ItemHelper.getItemName(item).contains("Fire Freeze Staff")) {
                 ffTimerOn = true;
@@ -50,7 +51,7 @@ public class DianaFeatures {
         });
 
         UseBlockCallback.EVENT.register((player, world, hand, blockHitResult) -> {
-			if (ffTimerOn) return ActionResult.PASS;
+			if (ffTimerOn || remaining >= 0) return ActionResult.PASS;
             ItemStack item = player.getMainHandStack();
             if (ItemHelper.getItemName(item).contains("Fire Freeze Staff")) {
                 ffTimerOn = true;
@@ -65,17 +66,17 @@ public class DianaFeatures {
             if (!ffTimerOn) return;
 
             long now = System.currentTimeMillis();
-            double remaining = (endTime - now) / 1000.0;
+            remaining = (endTime - now) / 1000.0;
 
-            if (remaining <= 0) {
-                overlayText.text = "§c0.0s";
+            if (remaining <= -5) { // Stops below -5s, between 5s and -5s is the time during which the mob is freezed
                 ffTimerOn = false;
+                remaining = -1;
                 startTime = -1;
                 endTime = -1;
                 return;
             }
 
-            overlayText.text = "§a%.2fs".formatted(remaining);
+            overlayText.text = "%s%.2fs".formatted(remaining <= 0 ? "§c" : "§a", remaining);
         });
     }
 }

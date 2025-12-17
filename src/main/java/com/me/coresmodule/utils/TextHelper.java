@@ -72,27 +72,35 @@ public class TextHelper {
 
         Map<String, String> result = new HashMap<>();
 
-        if (click instanceof ClickEvent.RunCommand runCommand) {
-            result.put("action", "run_command");
-            result.put("value", runCommand.command());
-        } else if (click instanceof ClickEvent.OpenUrl openUrl) {
-            result.put("action", "open_url");
-            result.put("value", String.valueOf(openUrl.uri()));
-        } else if (click instanceof ClickEvent.SuggestCommand suggestCommand) {
-            result.put("action", "suggest_command");
-            result.put("value", suggestCommand.command());
-        } else if (click instanceof ClickEvent.ChangePage changePage) {
-            result.put("action", "change_page");
-            result.put("value", String.valueOf(changePage.page()));
-        } else if (click instanceof  ClickEvent.OpenFile openFile) {
-            result.put("action", "open_file");
-            result.put("value", openFile.path());
-        } else if (click instanceof ClickEvent.CopyToClipboard copyToClipboard) {
-            result.put("action", "copy_to_clipboard");
-            result.put("value", copyToClipboard.value());
-        } else {
-            result.put("action", "unknown");
-            result.put("value", click.getClass().getSimpleName());
+        switch (click) {
+            case ClickEvent.RunCommand runCommand -> {
+                result.put("action", "run_command");
+                result.put("value", runCommand.command());
+            }
+            case ClickEvent.OpenUrl openUrl -> {
+                result.put("action", "open_url");
+                result.put("value", String.valueOf(openUrl.uri()));
+            }
+            case ClickEvent.SuggestCommand suggestCommand -> {
+                result.put("action", "suggest_command");
+                result.put("value", suggestCommand.command());
+            }
+            case ClickEvent.ChangePage changePage -> {
+                result.put("action", "change_page");
+                result.put("value", String.valueOf(changePage.page()));
+            }
+            case ClickEvent.OpenFile openFile -> {
+                result.put("action", "open_file");
+                result.put("value", openFile.path());
+            }
+            case ClickEvent.CopyToClipboard copyToClipboard -> {
+                result.put("action", "copy_to_clipboard");
+                result.put("value", copyToClipboard.value());
+            }
+            default -> {
+                result.put("action", "unknown");
+                result.put("value", click.getClass().getSimpleName());
+            }
         }
 
         return result;
@@ -109,23 +117,28 @@ public class TextHelper {
 
         Map<String, String> result = new HashMap<>();
 
-        if (hover instanceof HoverEvent.ShowText showText) {
-            Text text = showText.value();
-            result.put("action", "show_text");
-            result.put("value", getFormattedString(text));
-        } else if (hover instanceof HoverEvent.ShowItem showItem) {
-            ItemStack itemStack = showItem.item();
-            result.put("action", "show_item");
-            result.put("value", itemStack.getName().getString());
-        } else if (hover instanceof HoverEvent.ShowEntity showEntity) {
-            HoverEvent.EntityContent entity = showEntity.entity();
-            String name = String.valueOf(entity.name);
-            String entityName = name != null ? name : "Unnamed entity";
-            result.put("action", "show_entity");
-            result.put("value", entityName);
-        } else {
-            result.put("action", "unknown");
-            result.put("value", hover.getClass().getSimpleName());
+        switch (hover) {
+            case HoverEvent.ShowText showText -> {
+                Text text = showText.value();
+                result.put("action", "show_text");
+                result.put("value", getFormattedString(text));
+            }
+            case HoverEvent.ShowItem showItem -> {
+                ItemStack itemStack = showItem.item();
+                result.put("action", "show_item");
+                result.put("value", itemStack.getName().getString());
+            }
+            case HoverEvent.ShowEntity showEntity -> {
+                HoverEvent.EntityContent entity = showEntity.entity();
+                String name = String.valueOf(entity.name);
+                String entityName = name != null ? name : "Unnamed entity";
+                result.put("action", "show_entity");
+                result.put("value", entityName);
+            }
+            default -> {
+                result.put("action", "unknown");
+                result.put("value", hover.getClass().getSimpleName());
+            }
         }
 
         return result;
@@ -243,6 +256,18 @@ public class TextHelper {
         return getFormattedString(text);
     }
 
+    public static Text mapToText (List<Map.Entry<String, Integer>> list) {
+        MutableText base = Text.empty();
+        for (Map.Entry<String, Integer> entry : list) {
+            base.append(
+                    Text.literal(entry.getKey()).withColor(entry.getValue())
+            );
+        }
+
+        return base;
+
+    }
+
     private static char getColorCodeFromName(String name) {
         return switch (name) {
             case "#000000" -> '0';
@@ -279,4 +304,5 @@ public class TextHelper {
             default -> 'f';
         };
     }
+
 }

@@ -3,13 +3,16 @@ package com.me.coresmodule.features;
 import com.me.coresmodule.settings.categories.Diana;
 import com.me.coresmodule.settings.categories.General;
 import com.me.coresmodule.utils.Helper;
+import com.me.coresmodule.utils.ItemHelper;
 import com.me.coresmodule.utils.SoundHandler;
 import com.me.coresmodule.utils.TextHelper;
 import com.me.coresmodule.utils.chat.Chat;
 import com.me.coresmodule.utils.events.Register;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import static com.me.coresmodule.CoresModule.mc;
@@ -130,5 +133,29 @@ public class Features {
             toInv.add(args[0]);
             Chat.chat("§6[Cm] Will invite when someone leaves party: §e" + args[0]);
         }, "partyIfLeave", "inviteIfLeave");
+
+        Register.onChatMessageCancelable(Pattern.compile("^.*This ability is on cooldown for [0-4]s\\.$"), (msg, match) -> {
+            return ItemHelper.getHeldItemName().contains("Atomsplit Katana");
+        });
+
+        Register.command("testColorMap", args -> {
+            List<Map.Entry<String, Integer>> gradient = List.of(
+                    new AbstractMap.SimpleEntry<>("C", 0xFF3B82F6),
+                    new AbstractMap.SimpleEntry<>("o", 0xFF4F8FF7),
+                    new AbstractMap.SimpleEntry<>("r", 0xFF63A0F8),
+                    new AbstractMap.SimpleEntry<>("e", 0xFF77B1F9),
+                    new AbstractMap.SimpleEntry<>("s", 0xFF8BC2FA),
+                    new AbstractMap.SimpleEntry<>("M", 0xFF6EE7F5),
+                    new AbstractMap.SimpleEntry<>("o", 0xFF5DDDF0),
+                    new AbstractMap.SimpleEntry<>("d", 0xFF4CC3E8),
+                    new AbstractMap.SimpleEntry<>("u", 0xFF3AA8DE),
+                    new AbstractMap.SimpleEntry<>("l", 0xFF2563EB),
+                    new AbstractMap.SimpleEntry<>("e", 0xFF1E40AF)
+            );
+
+
+
+            Chat.chat(TextHelper.mapToText(gradient));
+        });
     }
 }
