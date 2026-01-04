@@ -9,10 +9,8 @@ import com.me.coresmodule.utils.TextHelper;
 import com.me.coresmodule.utils.chat.Chat;
 import com.me.coresmodule.utils.events.Register;
 
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Pattern;
 
 import static com.me.coresmodule.CoresModule.mc;
@@ -138,24 +136,22 @@ public class Features {
             return ItemHelper.getHeldItemName().contains("Atomsplit Katana");
         });
 
-        Register.command("testColorMap", args -> {
-            List<Map.Entry<String, Integer>> gradient = List.of(
-                    new AbstractMap.SimpleEntry<>("C", 0xFF3B82F6),
-                    new AbstractMap.SimpleEntry<>("o", 0xFF4F8FF7),
-                    new AbstractMap.SimpleEntry<>("r", 0xFF63A0F8),
-                    new AbstractMap.SimpleEntry<>("e", 0xFF77B1F9),
-                    new AbstractMap.SimpleEntry<>("s", 0xFF8BC2FA),
-                    new AbstractMap.SimpleEntry<>("M", 0xFF6EE7F5),
-                    new AbstractMap.SimpleEntry<>("o", 0xFF5DDDF0),
-                    new AbstractMap.SimpleEntry<>("d", 0xFF4CC3E8),
-                    new AbstractMap.SimpleEntry<>("u", 0xFF3AA8DE),
-                    new AbstractMap.SimpleEntry<>("l", 0xFF2563EB),
-                    new AbstractMap.SimpleEntry<>("e", 0xFF1E40AF)
+        Register.command("testColorList", args -> {
+            List<List<Object>> gradient = List.of(
+                    List.of("C", 0xFF3B82F6),
+                    List.of("o", 0xFF4F8FF7),
+                    List.of("r", 0xFF63A0F8),
+                    List.of("e", 0xFF77B1F9),
+                    List.of("s", 0xFF8BC2FA),
+                    List.of("M", 0xFF6EE7F5),
+                    List.of("o", 0xFF5DDDF0),
+                    List.of("d", 0xFF4CC3E8),
+                    List.of("u", 0xFF3AA8DE),
+                    List.of("l", 0xFF2563EB),
+                    List.of("e", 0xFF1E40AF)
             );
 
-
-
-            Chat.chat(TextHelper.mapToText(gradient));
+            Chat.chat(TextHelper.listToText(gradient));
         });
     }
 }

@@ -67,6 +67,8 @@ public class ItemHelper {
                 list.add(Text.literal(line));
             }
         });
+
+
     }
 
     public static String getValueFromLine(Pattern regex, List<Text> lore) {

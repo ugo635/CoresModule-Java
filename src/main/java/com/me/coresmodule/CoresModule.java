@@ -19,7 +19,12 @@ import com.me.coresmodule.utils.render.overlay.OverlayManager;
 import com.teamresourceful.resourcefulconfig.api.client.ResourcefulConfigScreen;
 import com.teamresourceful.resourcefulconfig.api.loader.Configurator;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.text.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -119,6 +124,7 @@ public class CoresModule implements ModInitializer {
 				});
 				return;
 			} else {
+				// For stuff that isn't opening the config screen
 				switch (arg) {
 					case "help" -> {
 						Chat.getChatBreak("-", "§b");

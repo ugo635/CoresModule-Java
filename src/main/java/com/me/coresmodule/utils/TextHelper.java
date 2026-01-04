@@ -256,11 +256,13 @@ public class TextHelper {
         return getFormattedString(text);
     }
 
-    public static Text mapToText (List<Map.Entry<String, Integer>> list) {
+    public static Text listToText (List<List<Object>> list) {
         MutableText base = Text.empty();
-        for (Map.Entry<String, Integer> entry : list) {
+        for (List l : list) {
+            String character = (String) l.getFirst();
+            int color = (int) l.get(1);
             base.append(
-                    Text.literal(entry.getKey()).withColor(entry.getValue())
+                    Text.literal(character).withColor(color)
             );
         }
 
