@@ -1,5 +1,8 @@
 package com.me.coresmodule.utils.events.EventBus;
 
+import com.me.coresmodule.utils.events.impl.AfterHudRenderer;
+import com.me.coresmodule.utils.events.impl.Event;
+
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -11,25 +14,25 @@ import java.util.function.Consumer;
  */
 public class EventBus {
 
-    private static final Map<String, List<Consumer<Object>>> listeners = new ConcurrentHashMap<>();
+    private static final Map<String, List<Consumer<Event>>> listeners = new ConcurrentHashMap<>();
 
-    public static void on(String eventName, Consumer<Object> callback) {
+    public static void on(String eventName, Consumer<Event> callback) {
         listeners
-                .computeIfAbsent(eventName, key -> new CopyOnWriteArrayList<>())
+                .computeIfAbsent(eventName.toLowerCase(), key -> new CopyOnWriteArrayList<>())
                 .add(callback);
     }
 
-    public static void emit(String eventName, Object data) {
-        List<Consumer<Object>> callbacks = listeners.get(eventName);
+    public static void emit(Event data) {
+        List<Consumer<Event>> callbacks = listeners.get(data.getName());
         if (callbacks != null) {
-            for (Consumer<Object> cb : callbacks) {
+            for (Consumer<Event> cb : callbacks) {
                 cb.accept(data);
             }
         }
     }
 
     public void clear(String eventName) {
-        listeners.remove(eventName);
+        listeners.remove(eventName.toLowerCase());
     }
 
     public void clearAll() {

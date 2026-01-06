@@ -1,7 +1,8 @@
 package com.me.coresmodule.utils.render.overlay;
 
-import com.me.coresmodule.utils.events.EventBus.EventBus;
 import com.me.coresmodule.utils.events.Register;
+import com.me.coresmodule.utils.events.annotations.CmEvent;
+import com.me.coresmodule.utils.events.impl.AfterHudRenderer;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents;
 import net.minecraft.client.gui.DrawContext;
@@ -25,16 +26,6 @@ public final class OverlayManager {
 
         Register.command("cmguis", args -> {
             mc.send(() -> mc.setScreen(new OverlayEditScreen()));
-        });
-
-        EventBus.on("afterHudRender", obj -> {
-            DrawContext context = (DrawContext) obj;
-
-            String title = mc.currentScreen != null
-                    ? mc.currentScreen.getTitle().getString()
-                    : "";
-
-            render(context, title);
         });
     }
 
@@ -86,5 +77,16 @@ public final class OverlayManager {
                 }
             });
         });
+    }
+
+    @CmEvent
+    public static void draw(AfterHudRenderer event) {
+        DrawContext context = event.drawContext;
+
+        String title = mc.currentScreen != null
+                ? mc.currentScreen.getTitle().getString()
+                : "";
+
+        render(context, title);
     }
 }

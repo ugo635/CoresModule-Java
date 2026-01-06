@@ -12,21 +12,15 @@ import com.me.coresmodule.utils.SoundHandler;
 import com.me.coresmodule.utils.chat.Chat;
 import com.me.coresmodule.utils.chat.ClickActionManager;
 import com.me.coresmodule.utils.chat.SimulateChat;
-import com.me.coresmodule.utils.events.EventBus.Tests;
 import com.me.coresmodule.utils.events.Register;
-import com.me.coresmodule.utils.events.processor.EventProcessorRuntime;
+import com.me.coresmodule.utils.events.processor.EventProcessor;
 import com.me.coresmodule.utils.render.WaypointManager;
 import com.me.coresmodule.utils.render.overlay.OverlayData;
 import com.me.coresmodule.utils.render.overlay.OverlayManager;
 import com.teamresourceful.resourcefulconfig.api.client.ResourcefulConfigScreen;
 import com.teamresourceful.resourcefulconfig.api.loader.Configurator;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.text.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,11 +57,9 @@ public class CoresModule implements ModInitializer {
 			Helper.printErr("[CoresModule] CoresModule.java:139 " + e);
 		}
 
-		Tests.register();
-		EventProcessorRuntime.registerAll();
 
 		Register.command("testevent", args -> {
-			Chat.chat("§aCount: " + EventProcessorRuntime.count);
+			Chat.chat("§aCount: " + EventProcessor.count);
 		});
 
 		Bot.register();
@@ -93,6 +85,7 @@ public class CoresModule implements ModInitializer {
 		OverlayManager.register();
 		AlwaysRightSphinxQuestion.register();
 		DianaFeatures.register();
+		EventProcessor.registerAll();
 
 		configurator.register(Settings.class);
 		configurator.saveConfig(Settings.class);

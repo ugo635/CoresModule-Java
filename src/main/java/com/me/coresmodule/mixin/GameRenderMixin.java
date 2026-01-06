@@ -3,6 +3,7 @@ package com.me.coresmodule.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import com.me.coresmodule.utils.events.EventBus.EventBus;
+import com.me.coresmodule.utils.events.impl.AfterHudRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.RenderTickCounter;
@@ -15,6 +16,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class GameRenderMixin {
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;render(Lnet/minecraft/client/gui/DrawContext;Lnet/minecraft/client/render/RenderTickCounter;)V", shift = At.Shift.AFTER))
     private void afterHudRender(RenderTickCounter tickCounter, boolean tick, CallbackInfo ci, @Local DrawContext context) {
-        EventBus.emit("afterHudRender", context);
+        EventBus.emit(new AfterHudRenderer(context));
     }
 }
