@@ -20,11 +20,8 @@ import java.lang.annotation.*;
  * Note: If you don't implement a compile-time processor, this is a harmless marker
  * useful for documentation and future automation.
  */
-@Retention(RetentionPolicy.SOURCE)
+@Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface CmEvent {
-    /**
-     * Optional descriptive value for the annotated listener.
-     */
     String value() default "";
 }

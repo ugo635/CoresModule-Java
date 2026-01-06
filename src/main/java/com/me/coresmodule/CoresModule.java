@@ -12,7 +12,9 @@ import com.me.coresmodule.utils.SoundHandler;
 import com.me.coresmodule.utils.chat.Chat;
 import com.me.coresmodule.utils.chat.ClickActionManager;
 import com.me.coresmodule.utils.chat.SimulateChat;
+import com.me.coresmodule.utils.events.EventBus.Tests;
 import com.me.coresmodule.utils.events.Register;
+import com.me.coresmodule.utils.events.processor.EventProcessorRuntime;
 import com.me.coresmodule.utils.render.WaypointManager;
 import com.me.coresmodule.utils.render.overlay.OverlayData;
 import com.me.coresmodule.utils.render.overlay.OverlayManager;
@@ -61,6 +63,13 @@ public class CoresModule implements ModInitializer {
 			Helper.printErr("[CoresModule] CoresModule.java:139 " + e);
 		}
 
+		Tests.register();
+		EventProcessorRuntime.registerAll();
+
+		Register.command("testevent", args -> {
+			Chat.chat("§aCount: " + EventProcessorRuntime.count);
+		});
+
 		Bot.register();
 
 		try {
@@ -84,7 +93,6 @@ public class CoresModule implements ModInitializer {
 		OverlayManager.register();
 		AlwaysRightSphinxQuestion.register();
 		DianaFeatures.register();
-
 
 		configurator.register(Settings.class);
 		configurator.saveConfig(Settings.class);

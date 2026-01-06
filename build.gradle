@@ -49,7 +49,7 @@ dependencies {
 
 	modImplementation(include("org.json:json:$json_version"))
 
-	implementation 'io.github.classgraph:classgraph:4.8.172'
+	implementation "io.github.classgraph:classgraph:4.8.154"
 
 }
 
