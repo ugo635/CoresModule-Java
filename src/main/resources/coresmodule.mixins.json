@@ -5,7 +5,8 @@
   "mixins": [
     "ExampleMixin",
     "BeaconBlockEntityRendererInvoker",
-    "GameRenderMixin"
+    "GameRenderMixin",
+    "ItemRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

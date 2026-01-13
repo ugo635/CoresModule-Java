@@ -20,7 +20,15 @@ import com.me.coresmodule.utils.render.overlay.OverlayManager;
 import com.teamresourceful.resourcefulconfig.api.client.ResourcefulConfigScreen;
 import com.teamresourceful.resourcefulconfig.api.loader.Configurator;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.command.argument.IdentifierArgumentType;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registries;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,10 +39,20 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
+import net.minecraft.command.argument.IdentifierArgumentType;
+import net.minecraft.item.Item;
+import net.minecraft.registry.Registries;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
+
 public class CoresModule implements ModInitializer {
 	public static String player = MinecraftClient.getInstance().getSession().getUsername();
 	public static MinecraftClient mc = MinecraftClient.getInstance();
 	public static final String MOD_ID = "coresmodule";
+	public static Item overrideItemFrom = null;
+	public static Item overrideItemTo = null;
 
 	// This logger is used to write text to the console and the log file.
 	// It is considered best practice to use your mod id as the logger's name.
@@ -56,11 +74,6 @@ public class CoresModule implements ModInitializer {
 		} catch (IOException e) {
 			Helper.printErr("[CoresModule] CoresModule.java:139 " + e);
 		}
-
-
-		Register.command("testevent", args -> {
-			Chat.chat("§aCount: " + EventProcessor.count);
-		});
 
 		Bot.register();
 
@@ -85,79 +98,19 @@ public class CoresModule implements ModInitializer {
 		OverlayManager.register();
 		AlwaysRightSphinxQuestion.register();
 		DianaFeatures.register();
-		EventProcessor.registerAll();
+		EventProcessor.register();
+		CmCommands.register();
 
 		configurator.register(Settings.class);
 		configurator.saveConfig(Settings.class);
 
+		Register.command("replaceItem", args -> {
+			Identifier id1 = Identifier.of(args[0]);
+			Identifier id2 = Identifier.of(args[1]);
+			overrideItemFrom = Registries.ITEM.get(id1);
+			overrideItemTo = Registries.ITEM.get(id2);
 
-		ArrayList<Map<String, String>> commands = new ArrayList<>();
-		commands.add(new HashMap<>() {{
-			put("cmd", "cm");
-			put("description", "Open the settings");
-			put("ph", "cm");
-		}});
-		commands.add(new HashMap<>() {{
-			put("cmd", "cm help");
-			put("description", "Show this message");
-			put("ph", "cm help");
-		}});
-		commands.add(new HashMap<>() {{
-			put("cmd", "mymf <Mf>");
-			put("description", "Gives your mf on inquisitors -> §cSee /mf_help for details on the input");
-			put("ph", "mymf 300");
-		}});
-		commands.add(new HashMap<>() {{
-			put("cmd", "mymf <Mf> <Mf From Kill Combo>");
-			put("description", "Gives your mf on inquisitors: §cSee /mfCombo_help for details on the input");
-			put("ph", "mymf 300 6");
-		}});
-
-		// Register the "/cm" command to open the config screen
-		Register.command("cm", args -> {
-			String arg;
-			if (args.length > 0) arg = args[0].toLowerCase();
-			else arg = "";
-
-			if (arg.equals("config") || arg.equals("settings") || arg.isEmpty()) {
-				MinecraftClient.getInstance().send(() -> {
-					MinecraftClient.getInstance().setScreen(ResourcefulConfigScreen.getFactory(MOD_ID).apply(null));
-				});
-				return;
-			} else {
-				// For stuff that isn't opening the config screen
-				switch (arg) {
-					case "help" -> {
-						Chat.getChatBreak("-", "§b");
-						for (Map<String, String> cmd : commands) {
-                            try {
-								if (Objects.equals(cmd.get("ph"), "")) {
-									Chat.clickableChat(
-											"§7> §a/" + cmd.get("cmd") + " §7- §e" + cmd.get("description"),
-											"§eClick to run /" + cmd.get("cmd"),
-											"/" + cmd.get("cmd"),
-											"RunCommand"
-									);
-								} else {
-									Chat.clickableChat(
-											"§7> §a/" + cmd.get("cmd") + " §7- §e" + cmd.get("description"),
-											"§eClick to run /" + cmd.get("cmd"),
-											"/" + cmd.get("ph"),
-											"SuggestCommand"
-									);
-								}
-
-                            } catch (URISyntaxException e) {
-                                throw new RuntimeException(e);
-                            }
-                            Chat.getChatBreak("-", "§b");
-						}
-					}
-					default -> {
-						Chat.chat("§c[Cm] Unknown command. Use /cm help for a list of commands");
-					}
-				}
-			}
+			Chat.chat("§aReplacing " + id1 + " with " + id2);
 		});
     }
 }

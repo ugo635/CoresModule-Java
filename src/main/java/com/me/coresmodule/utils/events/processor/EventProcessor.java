@@ -1,7 +1,9 @@
 package com.me.coresmodule.utils.events.processor;
 
 import com.me.coresmodule.utils.Helper;
+import com.me.coresmodule.utils.chat.Chat;
 import com.me.coresmodule.utils.events.EventBus.EventBus;
+import com.me.coresmodule.utils.events.Register;
 import com.me.coresmodule.utils.events.annotations.CmEvent;
 import com.me.coresmodule.utils.events.impl.AfterHudRenderer;
 import io.github.classgraph.*;
@@ -13,7 +15,11 @@ public final class EventProcessor {
 
     private EventProcessor() {}
 
-    public static void registerAll() {
+    public static void register() {
+        Register.command("testevent", args -> {
+            Chat.chat("§aCount: " + count);
+        });
+
         try (ScanResult scan = new ClassGraph()
                 .acceptPackages("com.me.coresmodule")
                 .enableAnnotationInfo()
