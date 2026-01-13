@@ -1,5 +1,6 @@
 package com.me.coresmodule.utils;
 
+import com.me.coresmodule.ForkedImageClipboard;
 import com.me.coresmodule.utils.chat.Chat;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
@@ -32,14 +33,24 @@ public class ScreenshotUtils {
                         bufferedImage.setRGB(x, y, nativeImage.getColorArgb(x, y));
                     }
                 }
-
-                    String savedPath = saveToFile(bufferedImage);
-                    Chat.clickableChat(
-                            "§6[CM] §aScreenshot saved here.",
-                            "§e"+savedPath,
-                            savedPath,
-                            "OpenFile"
-                    );
+                    try {
+                        copyImageToClipboard(bufferedImage);
+                        String savedPath = saveToFile(bufferedImage);
+                        Chat.clickableChat(
+                                "§6[CM] §aScreenshot copied to clipboard and saved here.",
+                                "§e"+savedPath,
+                                savedPath,
+                                "OpenFile"
+                        );
+                    } catch (Exception e) {
+                        String savedPath = saveToFile(bufferedImage);
+                        Chat.clickableChat(
+                                "§6[CM] §aScreenshot saved here.",
+                                "§e"+savedPath,
+                                savedPath,
+                                "OpenFile"
+                        );
+                    }
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -110,6 +121,34 @@ public class ScreenshotUtils {
         javax.imageio.ImageIO.write(image, "png", outputFile);
 
         return outputFile.getAbsolutePath();
+    }
+
+    /**
+     * Copies a BufferedImage to the system clipboard using forked process
+     * @param image The image to copy
+     * @return true if successful, false otherwise
+     */
+    public static boolean copyImageToClipboard(BufferedImage image) {
+        File tempFile = null;
+        try {
+            // Save to temporary file
+            tempFile = File.createTempFile("screenshot_", ".png");
+            javax.imageio.ImageIO.write(image, "png", tempFile);
+
+            // Use forked process to copy to clipboard
+            try (ForkedImageClipboard clipboard = new ForkedImageClipboard()) {
+                return clipboard.copy(tempFile);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            // Clean up temp file
+            if (tempFile != null) {
+                tempFile.delete();
+            }
+        }
     }
 
     private static class ImageSelection implements Transferable {

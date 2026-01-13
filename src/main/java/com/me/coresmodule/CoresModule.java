@@ -17,6 +17,7 @@ import com.me.coresmodule.utils.events.processor.EventProcessor;
 import com.me.coresmodule.utils.render.WaypointManager;
 import com.me.coresmodule.utils.render.overlay.OverlayData;
 import com.me.coresmodule.utils.render.overlay.OverlayManager;
+import com.me.coresmodule.utils.ScreenshotUtils;
 import com.teamresourceful.resourcefulconfig.api.client.ResourcefulConfigScreen;
 import com.teamresourceful.resourcefulconfig.api.loader.Configurator;
 import net.fabricmc.api.ModInitializer;
@@ -32,8 +33,13 @@ import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -46,6 +52,8 @@ import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+
+import javax.imageio.ImageIO;
 
 public class CoresModule implements ModInitializer {
 	public static String player = MinecraftClient.getInstance().getSession().getUsername();
@@ -112,5 +120,16 @@ public class CoresModule implements ModInitializer {
 
 			Chat.chat("§aReplacing " + id1 + " with " + id2);
 		});
+
+		/*
+		Register.command("copyToClip", args -> {
+			mc.keyboard.setClipboard("Hii");
+		});
+
+		Register.command("copyToClipImage", args -> {
+            BufferedImage image = new BufferedImage(100, 100, BufferedImage.TYPE_INT_ARGB);
+            ScreenshotUtils.copyImageToClipboard(image);
+		});
+		 */
     }
 }
