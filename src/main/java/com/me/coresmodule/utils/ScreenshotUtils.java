@@ -1,6 +1,5 @@
 package com.me.coresmodule.utils;
 
-import com.me.coresmodule.ForkedImageClipboard;
 import com.me.coresmodule.utils.chat.Chat;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;

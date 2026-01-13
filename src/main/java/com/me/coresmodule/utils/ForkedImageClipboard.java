@@ -1,4 +1,4 @@
-package com.me.coresmodule;
+package com.me.coresmodule.utils;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
