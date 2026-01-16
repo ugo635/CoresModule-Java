@@ -59,13 +59,14 @@ import net.minecraft.component.DataComponentTypes;
 
 import javax.imageio.ImageIO;
 
-import static com.me.coresmodule.utils.render.CustomItemRender.UuidComponent;
+import static com.me.coresmodule.utils.render.CustomItemRender.CmGlint;
+
 
 public class CoresModule implements ModInitializer {
 	public static String player = MinecraftClient.getInstance().getSession().getUsername();
 	public static MinecraftClient mc = MinecraftClient.getInstance();
 	public static final String MOD_ID = "coresmodule";
-	public static HashMap<String, Triple<ItemStack, ItemStack, Boolean>> overrides = new HashMap<>();
+	public static HashMap<String, Pair<ItemStack, ItemStack>> overrides = new HashMap<>();
 
 	// This logger is used to write text to the console and the log file.
 	// It is considered best practice to use your mod id as the logger's name.
@@ -120,7 +121,7 @@ public class CoresModule implements ModInitializer {
 
 		/*
 		 * Edit first & third person texture, inventory texture & hotbar texture of an item
-		 * FIXME: No glint when dropped
+		 * FIXME: No glint when dropped/third person
 		 * FIXME: Texture no longer switched after switching the item to offhand -> Problem is uuid = null
 		 */
 		Register.command("replaceItem", args -> {
@@ -130,15 +131,19 @@ public class CoresModule implements ModInitializer {
 			}
 
 			String Uuid = String.valueOf(UUID.randomUUID());
-			ItemStack overrideItemFrom = CustomItemRender.setUuidComponent(ItemHelper.getHeldItem(), Uuid);
-			ItemStack overrideItemTo =  CustomItemRender.setUuidComponent(new ItemStack(Registries.ITEM.get(Identifier.of(args[0]))), Uuid);
+			ItemStack overrideItemFrom = ItemHelper.getHeldItem();
+			ItemStack overrideItemTo = new ItemStack(Registries.ITEM.get(Identifier.of(args[0])));
+			overrideItemFrom.set(CustomItemRender.UuidComponent, Uuid);
+			overrideItemTo.set(CustomItemRender.UuidComponent, Uuid);
 			boolean overrideItemToGlintBool = false;
-			if (args.length == 2) overrideItemToGlintBool = Boolean.parseBoolean(args[1]);
+			if (args.length == 2) {
+				overrideItemTo.set(CmGlint, Boolean.parseBoolean(args[1]));
+				overrideItemToGlintBool = Boolean.parseBoolean(args[1]);
+			}
 
-			overrides.put(Uuid, new Triple<>(
+			overrides.put(Uuid, new Pair<>(
                     overrideItemFrom,
-                    overrideItemTo,
-                    overrideItemToGlintBool
+                    overrideItemTo
             ));
 
 			Chat.chat("§aReplacing " + TextHelper.getUnFormattedString(overrideItemFrom.getItemName()) + " with " + TextHelper.getUnFormattedString(overrideItemTo.getName()) + " and " + (overrideItemToGlintBool ? "with " : "§cwithout §a") + "glint.");
