@@ -2,6 +2,7 @@ package com.me.coresmodule.utils;
 
 import com.me.coresmodule.CoresModule;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
+import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.player.PlayerInventory;
@@ -95,31 +96,8 @@ public class ItemHelper {
         return "";
     }
 
-    public static ItemStack markNbt(ItemStack stack, String key, boolean value) {
-        NbtCompound tag = new NbtCompound();
-        tag.putBoolean(key, value);
-        stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(tag));
-        return stack;
-    }
-
-    public static ItemStack markNbt(ItemStack stack, String key, int value) {
-        NbtCompound tag = new NbtCompound();
-        tag.putInt(key, value);
-        stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(tag));
-        return stack;
-    }
-
-    public static ItemStack markNbt(ItemStack stack, String key, double value) {
-        NbtCompound tag = new NbtCompound();
-        tag.putDouble(key, value);
-        stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(tag));
-        return stack;
-    }
-
-    public static ItemStack markNbt(ItemStack stack, String key, String value) {
-        NbtCompound tag = new NbtCompound();
-        tag.putString(key, value);
-        stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(tag));
+    public static <T> ItemStack markNbt(ItemStack stack, ComponentType<T> key, T value) {
+        stack.set(key, value);
         return stack;
     }
 }

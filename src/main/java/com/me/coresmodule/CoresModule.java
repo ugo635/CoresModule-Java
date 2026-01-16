@@ -12,9 +12,11 @@ import com.me.coresmodule.utils.chat.ClickActionManager;
 import com.me.coresmodule.utils.chat.SimulateChat;
 import com.me.coresmodule.utils.events.Register;
 import com.me.coresmodule.utils.events.processor.EventProcessor;
+import com.me.coresmodule.utils.render.CustomItemRender;
 import com.me.coresmodule.utils.render.WaypointManager;
 import com.me.coresmodule.utils.render.overlay.OverlayData;
 import com.me.coresmodule.utils.render.overlay.OverlayManager;
+import com.mojang.serialization.Codec;
 import com.teamresourceful.resourcefulconfig.api.client.ResourcefulConfigScreen;
 import com.teamresourceful.resourcefulconfig.api.loader.Configurator;
 import net.fabricmc.api.ModInitializer;
@@ -22,11 +24,16 @@ import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.command.argument.IdentifierArgumentType;
+import net.minecraft.component.ComponentType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Uuids;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
@@ -47,16 +54,18 @@ import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.component.DataComponentTypes;
+
 
 import javax.imageio.ImageIO;
+
+import static com.me.coresmodule.utils.render.CustomItemRender.UuidComponent;
 
 public class CoresModule implements ModInitializer {
 	public static String player = MinecraftClient.getInstance().getSession().getUsername();
 	public static MinecraftClient mc = MinecraftClient.getInstance();
 	public static final String MOD_ID = "coresmodule";
-	public static ItemStack overrideItemFrom = null;
-	public static Item overrideItemTo = null;
-	public static boolean overrideItemToGlintBool = false;
+	public static HashMap<String, Triple<ItemStack, ItemStack, Boolean>> overrides = new HashMap<>();
 
 	// This logger is used to write text to the console and the log file.
 	// It is considered best practice to use your mod id as the logger's name.
@@ -104,12 +113,15 @@ public class CoresModule implements ModInitializer {
 		DianaFeatures.register();
 		EventProcessor.register();
 		CmCommands.register();
+		CustomItemRender.register();
 
 		configurator.register(Settings.class);
 		configurator.saveConfig(Settings.class);
 
 		/*
 		 * Edit first & third person texture, inventory texture & hotbar texture of an item
+		 * FIXME: No glint when dropped
+		 * FIXME: Texture no longer switched after switching the item to offhand -> Problem is uuid = null
 		 */
 		Register.command("replaceItem", args -> {
 			if (!List.of(1, 2).contains(args.length)) {
@@ -117,9 +129,19 @@ public class CoresModule implements ModInitializer {
 				return;
 			}
 
-			overrideItemFrom = ItemHelper.getHeldItem();
-			overrideItemTo = Registries.ITEM.get(Identifier.of(args[0]));
+			ItemStack overrideItemFrom = ItemHelper.getHeldItem();
+			ItemStack overrideItemTo = new ItemStack(Registries.ITEM.get(Identifier.of(args[0])));
+			boolean overrideItemToGlintBool = false;
 			if (args.length == 2) overrideItemToGlintBool = Boolean.parseBoolean(args[1]);
+			String Uuid = String.valueOf(UUID.randomUUID());
+			overrideItemFrom.set(UuidComponent, Uuid);
+			overrideItemTo.set(UuidComponent, Uuid);
+
+			overrides.put(Uuid, new Triple<>(
+                    overrideItemFrom,
+                    overrideItemTo,
+                    overrideItemToGlintBool
+            ));
 
 			Chat.chat("§aReplacing " + TextHelper.getUnFormattedString(overrideItemFrom.getItemName()) + " with " + TextHelper.getUnFormattedString(overrideItemTo.getName()) + " and " + (overrideItemToGlintBool ? "with " : "§cwithout §a") + "glint.");
 		});

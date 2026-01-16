@@ -20,7 +20,7 @@ public class GlintMixin {
     )
     private void redirectHasGlint(CallbackInfoReturnable<Boolean> cir) {
         if (shouldGlint((ItemStack) (Object) this)) {
-            cir.setReturnValue(CoresModule.overrideItemToGlintBool);
+            cir.setReturnValue(true);
         } else {
             cir.setReturnValue(cir.getReturnValue());
         }
