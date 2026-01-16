@@ -10,56 +10,25 @@ import com.me.coresmodule.utils.*;
 import com.me.coresmodule.utils.chat.Chat;
 import com.me.coresmodule.utils.chat.ClickActionManager;
 import com.me.coresmodule.utils.chat.SimulateChat;
+import com.me.coresmodule.utils.events.EventBus.CmEvents;
 import com.me.coresmodule.utils.events.Register;
 import com.me.coresmodule.utils.events.processor.EventProcessor;
-import com.me.coresmodule.utils.render.CustomItemRender;
+import com.me.coresmodule.utils.render.CustomItem.CustomItemRender;
+import com.me.coresmodule.utils.render.CustomItem.SaveAndLoad;
 import com.me.coresmodule.utils.render.WaypointManager;
 import com.me.coresmodule.utils.render.overlay.OverlayData;
 import com.me.coresmodule.utils.render.overlay.OverlayManager;
-import com.mojang.serialization.Codec;
-import com.teamresourceful.resourcefulconfig.api.client.ResourcefulConfigScreen;
 import com.teamresourceful.resourcefulconfig.api.loader.Configurator;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.command.argument.IdentifierArgumentType;
-import net.minecraft.component.ComponentType;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Uuids;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
 
-import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
-import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
-
-import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
-import net.minecraft.command.argument.IdentifierArgumentType;
-import net.minecraft.item.Item;
-import net.minecraft.registry.Registries;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.component.DataComponentTypes;
-
-
-import javax.imageio.ImageIO;
-
-import static com.me.coresmodule.utils.render.CustomItemRender.CmGlint;
 
 
 public class CoresModule implements ModInitializer {
@@ -83,21 +52,10 @@ public class CoresModule implements ModInitializer {
 		// However, some things (like resources) may still be uninitialized.
 		// Proceed with mild caution.
 
-		try {
-			FilesHandler.register();
-		} catch (IOException e) {
-			Helper.printErr("[CoresModule] CoresModule.java:139 " + e);
-		}
-
-		Bot.register();
-
-		try {
-			RareDropTracker.register();
-		} catch (IOException e) {
-			Helper.printErr("[CoresModule] CoresModule.java:151 " + e);
-		}
 
 		LOGGER.info("Hello Fabric world!");
+		TryCatch.register();
+		Bot.register();
 		MfCalc.register();
 		SimulateChat.register();
 		ClickActionManager.register();
@@ -115,6 +73,7 @@ public class CoresModule implements ModInitializer {
 		EventProcessor.register();
 		CmCommands.register();
 		CustomItemRender.register();
+		CmEvents.register();
 
 		configurator.register(Settings.class);
 		configurator.saveConfig(Settings.class);
@@ -131,14 +90,13 @@ public class CoresModule implements ModInitializer {
 			}
 
 			String Uuid = String.valueOf(UUID.randomUUID());
-			ItemStack overrideItemFrom = ItemHelper.getHeldItem();
-			ItemStack overrideItemTo = new ItemStack(Registries.ITEM.get(Identifier.of(args[0])));
-			overrideItemFrom.set(CustomItemRender.UuidComponent, Uuid);
-			overrideItemTo.set(CustomItemRender.UuidComponent, Uuid);
+			ItemStack overrideItemFrom = ItemHelper.markNbt(ItemHelper.getHeldItem(), "CmUuid", Uuid);
+			ItemStack overrideItemTo = ItemHelper.markNbt(new ItemStack(Registries.ITEM.get(Identifier.of(args[0]))), "CmUuid", Uuid);
 			boolean overrideItemToGlintBool = false;
 			if (args.length == 2) {
-				overrideItemTo.set(CmGlint, Boolean.parseBoolean(args[1]));
 				overrideItemToGlintBool = Boolean.parseBoolean(args[1]);
+				overrideItemTo = ItemHelper.addMarkNbt(overrideItemTo, "CmGlint", overrideItemToGlintBool);
+				overrideItemFrom = ItemHelper.addMarkNbt(overrideItemFrom, "CmGlint", overrideItemToGlintBool);
 			}
 
 			overrides.put(Uuid, new Pair<>(

@@ -1,7 +1,6 @@
 package com.me.coresmodule.mixin.ItemRendering;
 
-import com.me.coresmodule.CoresModule;
-import com.me.coresmodule.utils.render.CustomItemRender;
+import com.me.coresmodule.utils.render.CustomItem.CustomItemRender;
 import net.minecraft.client.item.ItemModelManager;
 import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
@@ -20,7 +19,23 @@ public class ItemThirdPersonRendererMixin {
             method = "update",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;get(Lnet/minecraft/component/ComponentType;)Ljava/lang/Object;")
     )
-    private Object replaceHandThirdPersonItemStack3(ItemStack stack, ComponentType componentType) {
+    private Object replaceHandThirdPersonItemStack(ItemStack stack, ComponentType componentType) {
         return CustomItemRender.replaceItemStack(stack).get(DataComponentTypes.ITEM_MODEL);
+    }
+
+    @ModifyArg(
+            method = "update",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/item/ItemModelManager;resolveProfileComponent(Lnet/minecraft/item/ItemStack;)V")
+    )
+    private ItemStack replaceHandThirdPersonItemStack1(ItemStack stack) {
+        return CustomItemRender.replaceItemStack(stack);
+    }
+
+    @ModifyArg(
+            method = "update",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/model/ItemModel;update(Lnet/minecraft/client/render/item/ItemRenderState;Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/item/ItemModelManager;Lnet/minecraft/item/ItemDisplayContext;Lnet/minecraft/client/world/ClientWorld;Lnet/minecraft/entity/LivingEntity;I)V")
+    )
+    private ItemStack replaceHandThirdPersonItemStack2(ItemStack stack) {
+        return CustomItemRender.replaceItemStack(stack);
     }
 }

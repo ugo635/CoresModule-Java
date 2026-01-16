@@ -1,7 +1,6 @@
 package com.me.coresmodule.mixin.ItemRendering;
 
-import com.me.coresmodule.CoresModule;
-import com.me.coresmodule.utils.render.CustomItemRender;
+import com.me.coresmodule.utils.render.CustomItem.CustomItemRender;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;

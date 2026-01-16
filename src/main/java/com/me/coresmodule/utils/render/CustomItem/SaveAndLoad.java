@@ -1,0 +1,74 @@
+package com.me.coresmodule.utils.render.CustomItem;
+
+import com.me.coresmodule.CoresModule;
+import com.me.coresmodule.utils.FilesHandler;
+import com.me.coresmodule.utils.ItemHelper;
+import com.me.coresmodule.utils.Pair;
+import com.me.coresmodule.utils.events.annotations.CmEvent;
+import com.me.coresmodule.utils.events.impl.OnDisconnect;
+import com.me.coresmodule.utils.render.overlay.OverlayValues;
+import net.minecraft.item.ItemStack;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+public class SaveAndLoad {
+    public static void register() throws IOException {
+        FilesHandler.createFile("CustomItemRenderer.json");
+        CoresModule.overrides = load();
+    }
+
+    @SuppressWarnings("unchecked")
+    public static HashMap<String, Pair<ItemStack, ItemStack>> load() {
+        System.out.println("[CoresModule] Loading...");
+        try {
+            HashMap<String, Pair<ItemStack, ItemStack>> items = new HashMap<>();
+            String content = FilesHandler.getContent("CustomItemRenderer.json").trim();
+            if (!content.isEmpty() && !content.equals("{}")) {
+                JSONObject json = new JSONObject(content);
+                Map<String, Object> temp = json.toMap();
+                for (String key : temp.keySet()) {
+                    HashMap<String, Object> values = (HashMap<String, Object>) temp.get(key);
+                    ItemStack first = ItemHelper.fromMap((HashMap<String, Object>) values.get("first"));
+                    ItemStack second = ItemHelper.fromMap((HashMap<String, Object>) values.get("second"));
+                    values.put("first", first);
+                    values.put("second", second);
+                    items.put(key, Pair.<ItemStack, ItemStack>fromMap(values));
+                }
+
+                return items;
+            } else {
+                FilesHandler.writeToFile("CustomItemRenderer.json", "{}");
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return new HashMap<>();
+    }
+
+    @CmEvent
+    public static void save(OnDisconnect event) {
+        System.out.println("[CoresModule] Saving...");
+        HashMap<String, Object> map = new HashMap<>();
+        for (String key : CoresModule.overrides.keySet()) {
+            Pair<ItemStack, ItemStack> pair = CoresModule.overrides.get(key);
+            map.put(key, pair.toMapItemStack());
+        }
+
+
+        try {
+            System.out.println(map);
+            JSONObject json = new JSONObject(map);
+            FilesHandler.writeToFile("CustomItemRenderer.json", json.toString(4));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}

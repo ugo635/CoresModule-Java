@@ -1,15 +1,12 @@
 package com.me.coresmodule.mixin.ItemRendering;
 
-import com.me.coresmodule.CoresModule;
-import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import static com.me.coresmodule.utils.render.CustomItemRender.shouldGlint;
+import static com.me.coresmodule.utils.render.CustomItem.CustomItemRender.shouldGlint;
 
 @Mixin(ItemStack.class)
 public class GlintMixin {

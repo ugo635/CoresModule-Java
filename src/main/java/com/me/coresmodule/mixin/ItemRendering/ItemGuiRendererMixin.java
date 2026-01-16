@@ -1,7 +1,6 @@
 package com.me.coresmodule.mixin.ItemRendering;
 
-import com.me.coresmodule.CoresModule;
-import com.me.coresmodule.utils.render.CustomItemRender;
+import com.me.coresmodule.utils.render.CustomItem.CustomItemRender;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.Slot;
@@ -33,12 +32,10 @@ public class ItemGuiRendererMixin {
             index = 1
     )
     private ItemStack replaceGuiItemStack2(ItemStack stack) {
-        if (stack != null && CoresModule.overrideItemFrom != null && stack.getItem() == CoresModule.overrideItemFrom) {
-            return new ItemStack(CoresModule.overrideItemTo);
-        }
-        return stack;
+        return CustomItemRender.replaceItemStack(stack);
     }
      */
+
 
     // For drawSlot(DrawContext context, Slot slot) replaces the stack from slot.getStack()
     // Replace the stack value in drawStackOverlay, makes the inventory show the modified texture

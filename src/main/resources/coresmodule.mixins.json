@@ -10,7 +10,8 @@
     "ItemRendering.ItemThirdPersonRendererMixin",
     "ItemRendering.ItemGuiRendererMixin",
     "ItemRendering.ItemHotbarRendererMixin",
-    "ItemRendering.GlintMixin"
+    "ItemRendering.GlintMixin",
+    "ItemRendering.DropItemMixin"
   ],
   "injectors": {
     "defaultRequire": 1
