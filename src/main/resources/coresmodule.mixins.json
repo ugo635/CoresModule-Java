@@ -3,18 +3,19 @@
   "package": "com.me.coresmodule.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "ExampleMixin",
     "BeaconBlockEntityRendererInvoker",
+    "ExampleMixin",
     "GameRenderMixin",
-    "ItemRendererMixin"
+    "ItemRendering.ItemFirstPersonRendererMixin",
+    "ItemRendering.ItemThirdPersonRendererMixin",
+    "ItemRendering.ItemGuiRendererMixin",
+    "ItemRendering.ItemHotbarRendererMixin",
+    "ItemRendering.GlintMixin"
   ],
   "injectors": {
     "defaultRequire": 1
   },
   "overwrites": {
     "requireAnnotations": true
-  },
-  "client": [
-
-  ]
+  }
 }

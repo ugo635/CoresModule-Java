@@ -6,9 +6,7 @@ import com.me.coresmodule.features.Party;
 import com.me.coresmodule.features.bot.Bot;
 import com.me.coresmodule.features.priv.MainPrivate;
 import com.me.coresmodule.settings.Settings;
-import com.me.coresmodule.utils.FilesHandler;
-import com.me.coresmodule.utils.Helper;
-import com.me.coresmodule.utils.SoundHandler;
+import com.me.coresmodule.utils.*;
 import com.me.coresmodule.utils.chat.Chat;
 import com.me.coresmodule.utils.chat.ClickActionManager;
 import com.me.coresmodule.utils.chat.SimulateChat;
@@ -17,7 +15,6 @@ import com.me.coresmodule.utils.events.processor.EventProcessor;
 import com.me.coresmodule.utils.render.WaypointManager;
 import com.me.coresmodule.utils.render.overlay.OverlayData;
 import com.me.coresmodule.utils.render.overlay.OverlayManager;
-import com.me.coresmodule.utils.ScreenshotUtils;
 import com.teamresourceful.resourcefulconfig.api.client.ResourcefulConfigScreen;
 import com.teamresourceful.resourcefulconfig.api.loader.Configurator;
 import net.fabricmc.api.ModInitializer;
@@ -32,6 +29,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import net.minecraft.client.gui.screen.ingame.HandledScreen;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -40,10 +38,7 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
@@ -59,8 +54,9 @@ public class CoresModule implements ModInitializer {
 	public static String player = MinecraftClient.getInstance().getSession().getUsername();
 	public static MinecraftClient mc = MinecraftClient.getInstance();
 	public static final String MOD_ID = "coresmodule";
-	public static Item overrideItemFrom = null;
+	public static ItemStack overrideItemFrom = null;
 	public static Item overrideItemTo = null;
+	public static boolean overrideItemToGlintBool = false;
 
 	// This logger is used to write text to the console and the log file.
 	// It is considered best practice to use your mod id as the logger's name.
@@ -112,13 +108,20 @@ public class CoresModule implements ModInitializer {
 		configurator.register(Settings.class);
 		configurator.saveConfig(Settings.class);
 
+		/*
+		 * Edit first & third person texture, inventory texture & hotbar texture of an item
+		 */
 		Register.command("replaceItem", args -> {
-			Identifier id1 = Identifier.of(args[0]);
-			Identifier id2 = Identifier.of(args[1]);
-			overrideItemFrom = Registries.ITEM.get(id1);
-			overrideItemTo = Registries.ITEM.get(id2);
+			if (!List.of(1, 2).contains(args.length)) {
+				Chat.chat("§cUsage: /replaceItem <item_to> <true/false (glint) (optional)>");
+				return;
+			}
 
-			Chat.chat("§aReplacing " + id1 + " with " + id2);
+			overrideItemFrom = ItemHelper.getHeldItem();
+			overrideItemTo = Registries.ITEM.get(Identifier.of(args[0]));
+			if (args.length == 2) overrideItemToGlintBool = Boolean.parseBoolean(args[1]);
+
+			Chat.chat("§aReplacing " + TextHelper.getUnFormattedString(overrideItemFrom.getItemName()) + " with " + TextHelper.getUnFormattedString(overrideItemTo.getName()) + " and " + (overrideItemToGlintBool ? "with " : "§cwithout §a") + "glint.");
 		});
 
 		/*

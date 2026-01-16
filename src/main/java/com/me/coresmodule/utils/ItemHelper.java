@@ -1,10 +1,14 @@
 package com.me.coresmodule.utils;
 
+import com.me.coresmodule.CoresModule;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item.TooltipContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
 
 import java.util.ArrayList;
@@ -67,8 +71,6 @@ public class ItemHelper {
                 list.add(Text.literal(line));
             }
         });
-
-
     }
 
     public static String getValueFromLine(Pattern regex, List<Text> lore) {
@@ -91,5 +93,33 @@ public class ItemHelper {
             }
         }
         return "";
+    }
+
+    public static ItemStack markNbt(ItemStack stack, String key, boolean value) {
+        NbtCompound tag = new NbtCompound();
+        tag.putBoolean(key, value);
+        stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(tag));
+        return stack;
+    }
+
+    public static ItemStack markNbt(ItemStack stack, String key, int value) {
+        NbtCompound tag = new NbtCompound();
+        tag.putInt(key, value);
+        stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(tag));
+        return stack;
+    }
+
+    public static ItemStack markNbt(ItemStack stack, String key, double value) {
+        NbtCompound tag = new NbtCompound();
+        tag.putDouble(key, value);
+        stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(tag));
+        return stack;
+    }
+
+    public static ItemStack markNbt(ItemStack stack, String key, String value) {
+        NbtCompound tag = new NbtCompound();
+        tag.putString(key, value);
+        stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(tag));
+        return stack;
     }
 }
