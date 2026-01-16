@@ -32,14 +32,35 @@ public class CustomItemRender {
                     .packetCodec(PacketCodecs.BOOLEAN)
                     .build());
 
+    public static ItemStack setUuidComponent(ItemStack stack, String uuid) {
+        stack.set(UuidComponent, uuid);
+
+        // ALSO save to NBT tag for persistence
+        NbtCompound tag = new NbtCompound();
+        tag.putString("CmUuid", uuid);
+        stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(tag));
+
+        return stack;
+    }
+
     public static ItemStack replaceItemStack(ItemStack stack) {
         String uuid = stack.getOrDefault(UuidComponent, null);
-        System.out.println("Uuid null? " + (uuid == null));
+
+        // If component lost, restore from NBT
+        if (uuid == null && stack.get(DataComponentTypes.CUSTOM_DATA) != null) {
+            NbtComponent nbt = stack.get(DataComponentTypes.CUSTOM_DATA);
+            if (nbt != null) {
+                uuid = nbt.copyNbt().getString("CmUuid").toString();
+                if (overrides.containsKey(uuid)) {
+                    stack.set(UuidComponent, uuid);  // Restore component
+                }
+            }
+        }
+
         if (uuid == null) {
             return stack;
         }
 
-        System.out.println("Override.constainsKey() == true? " + overrides.containsKey(uuid));
         if (overrides.containsKey(uuid)) {
             return ItemHelper.markNbt(overrides.get(uuid).second, CmGlint, overrides.get(uuid).third);
         }

@@ -129,13 +129,11 @@ public class CoresModule implements ModInitializer {
 				return;
 			}
 
-			ItemStack overrideItemFrom = ItemHelper.getHeldItem();
-			ItemStack overrideItemTo = new ItemStack(Registries.ITEM.get(Identifier.of(args[0])));
+			String Uuid = String.valueOf(UUID.randomUUID());
+			ItemStack overrideItemFrom = CustomItemRender.setUuidComponent(ItemHelper.getHeldItem(), Uuid);
+			ItemStack overrideItemTo =  CustomItemRender.setUuidComponent(new ItemStack(Registries.ITEM.get(Identifier.of(args[0]))), Uuid);
 			boolean overrideItemToGlintBool = false;
 			if (args.length == 2) overrideItemToGlintBool = Boolean.parseBoolean(args[1]);
-			String Uuid = String.valueOf(UUID.randomUUID());
-			overrideItemFrom.set(UuidComponent, Uuid);
-			overrideItemTo.set(UuidComponent, Uuid);
 
 			overrides.put(Uuid, new Triple<>(
                     overrideItemFrom,
