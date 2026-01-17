@@ -26,6 +26,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -111,7 +112,7 @@ public class CoresModule implements ModInitializer {
 
 		Register.command("copyNbt", args -> {
 			NbtElement nbt = ItemHelper.encodeItemStack(ItemHelper.getHeldItem());
-			mc.keyboard.setClipboard(ItemHelper.prettyPrintNBT(nbt, ItemHelper.getHeldItem()));
+			mc.keyboard.setClipboard(new JSONObject(ItemHelper.prettyPrintNBT(nbt, ItemHelper.getHeldItem())).toString(4));
 			Chat.chat("§aCopied NBT HashCode to clipboard");
 		});
 

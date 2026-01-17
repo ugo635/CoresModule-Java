@@ -275,91 +275,73 @@ public class ItemHelper {
         }
     }
 
-    public static String prettyPrintNBT(NbtElement nbt, ItemStack stack) {
-        final String INDENT = "    ";
+    public static HashMap<String, Object> prettyPrintNBT(NbtElement nbt, ItemStack stack) {
+        HashMap<String, Object> map = new HashMap<>();
         int tagID = nbt.getType();
-        StringBuilder stringBuilder = new StringBuilder();
 
         if (tagID == NbtElement.END_TYPE) {
-            stringBuilder.append('}');
-        } else if (tagID == NbtElement.BYTE_ARRAY_TYPE || tagID == NbtElement.INT_ARRAY_TYPE) {
-            stringBuilder.append('[');
-            if (tagID == NbtElement.BYTE_ARRAY_TYPE) {
-                NbtByteArray arr = (NbtByteArray) nbt;
-                byte[] bytes = arr.getByteArray();
-                for (int i = 0; i < bytes.length; i++) {
-                    stringBuilder.append(bytes[i]);
-                    if (i < bytes.length - 1) stringBuilder.append(", ");
-                }
-            } else {
-                NbtIntArray arr = (NbtIntArray) nbt;
-                int[] ints = arr.getIntArray();
-                for (int i = 0; i < ints.length; i++) {
-                    stringBuilder.append(ints[i]);
-                    if (i < ints.length - 1) stringBuilder.append(", ");
-                }
-            }
-            stringBuilder.append(']');
+            return map;
+        } else if (tagID == NbtElement.BYTE_ARRAY_TYPE) {
+            NbtByteArray arr = (NbtByteArray) nbt;
+            List<Byte> list = new ArrayList<>();
+            for (byte b : arr.getByteArray()) list.add(b);
+            map.put("value", list);
+        } else if (tagID == NbtElement.INT_ARRAY_TYPE) {
+            NbtIntArray arr = (NbtIntArray) nbt;
+            List<Integer> list = new ArrayList<>();
+            for (int i : arr.getIntArray()) list.add(i);
+            map.put("value", list);
         } else if (tagID == NbtElement.LIST_TYPE) {
             NbtList list = (NbtList) nbt;
-            stringBuilder.append('[');
+            List<Object> result = new ArrayList<>();
             for (int i = 0; i < list.size(); i++) {
-                stringBuilder.append(prettyPrintNBT(list.get(i), stack));
-                if (i < list.size() - 1) stringBuilder.append(", ");
+                result.add(prettyPrintNBT(list.get(i), stack));
             }
-            stringBuilder.append(']');
+            map.put("value", result);
         } else if (tagID == NbtElement.COMPOUND_TYPE) {
             NbtCompound compound = (NbtCompound) nbt;
-            stringBuilder.append('{');
-            if (!compound.isEmpty()) {
-                Iterator<String> keys = compound.getKeys().iterator();
-                stringBuilder.append(System.lineSeparator());
+            for (String key : compound.getKeys()) {
+                NbtElement elem = compound.get(key);
 
-                while (keys.hasNext()) {
-                    String key = keys.next();
-                    NbtElement elem = compound.get(key);
-
-                    // Handle full lore array with § codes
-                    if (key.equals("minecraft:lore") && elem instanceof NbtList) {
-                        List<Text> lore = ItemHelper.getItemTooltip(stack);
-                        stringBuilder.append(key).append(": ").append("[").append(System.lineSeparator());
-                        for (int i = 0; i < lore.size(); i++) {
-                            String loreLine = TextHelper.getFormattedString(lore.get(i));
-                            stringBuilder.append(INDENT).append(INDENT).append("\"").append(loreLine).append("\"");
-                            if (i < lore.size() - 1) stringBuilder.append(",").append(System.lineSeparator());
-                        }
-                        stringBuilder.append(System.lineSeparator()).append(INDENT).append("]");
-                        continue;
-                    } else {
-                        stringBuilder.append(key).append(": ").append(prettyPrintNBT(elem, stack));
+                if (key.equals("minecraft:lore") && elem instanceof NbtList) {
+                    List<String> loreList = new ArrayList<>();
+                    List<Text> lore = ItemHelper.getItemTooltip(stack);
+                    for (Text line : lore) {
+                        loreList.add(TextHelper.getFormattedString(line));
                     }
-
-
-                    // Handle backpack_data decompression
-                    if (key.contains("backpack_data") && elem instanceof NbtByteArray) {
-                        try {
-                            NbtCompound backpackData = NbtIo.readCompressed(
-                                    new ByteArrayInputStream(((NbtByteArray) elem).getByteArray()),
-                                    new NbtSizeTracker(Long.MAX_VALUE, 512)
-                            );
-                            stringBuilder.append(",").append(System.lineSeparator());
-                            stringBuilder.append(key).append("(decoded): ").append(prettyPrintNBT(backpackData, stack));
-                        } catch (IOException e) {
-                            System.out.println("Couldn't decompress backpack data into NBT, skipping!" + e);
-                        }
+                    map.put(key, loreList);
+                } else if (key.contains("backpack_data") && elem instanceof NbtByteArray) {
+                    try {
+                        NbtCompound backpackData = NbtIo.readCompressed(
+                                new ByteArrayInputStream(((NbtByteArray) elem).getByteArray()),
+                                new NbtSizeTracker(Long.MAX_VALUE, 512)
+                        );
+                        map.put(key + "(decoded)", prettyPrintNBT(backpackData, stack));
+                    } catch (IOException e) {
+                        System.out.println("Couldn't decompress backpack data, skipping! " + e);
                     }
-
-                    if (keys.hasNext()) stringBuilder.append(",").append(System.lineSeparator());
+                } else {
+                    map.put(key, prettyPrintNBT(elem, stack));
                 }
-
-                String indented = stringBuilder.toString().replaceAll(System.lineSeparator(), System.lineSeparator() + INDENT);
-                stringBuilder = new StringBuilder(indented);
             }
-            stringBuilder.append(System.lineSeparator()).append('}');
+        } else if (tagID == NbtElement.STRING_TYPE) {
+            map.put("value", ((NbtString) nbt).asString());
+        } else if (tagID == NbtElement.BYTE_TYPE) {
+            map.put("value", ((NbtByte) nbt).byteValue());
+        } else if (tagID == NbtElement.SHORT_TYPE) {
+            map.put("value", ((NbtShort) nbt).shortValue());
+        } else if (tagID == NbtElement.INT_TYPE) {
+            map.put("value", ((NbtInt) nbt).intValue());
+        } else if (tagID == NbtElement.LONG_TYPE) {
+            map.put("value", ((NbtLong) nbt).longValue());
+        } else if (tagID == NbtElement.FLOAT_TYPE) {
+            map.put("value", ((NbtFloat) nbt).floatValue());
+        } else if (tagID == NbtElement.DOUBLE_TYPE) {
+            map.put("value", ((NbtDouble) nbt).doubleValue());
         } else {
-            stringBuilder.append(nbt);
+            map.put("value", nbt.toString());
         }
 
-        return stringBuilder.toString();
+        return map;
     }
 }
