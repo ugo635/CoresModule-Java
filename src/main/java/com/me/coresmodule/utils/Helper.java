@@ -1,5 +1,8 @@
 package com.me.coresmodule.utils;
 
+import com.me.coresmodule.utils.chat.Chat;
+
+import java.awt.image.BufferedImage;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
@@ -95,5 +98,13 @@ public class Helper {
 
     public static String getGuiName() {
         return mc.currentScreen == null ? "" : mc.currentScreen.getTitle().getString();
+    }
+
+    public static void copyToClipboard(String s) {
+        mc.keyboard.setClipboard(s);
+    }
+
+    public static void copyToClipboard(BufferedImage image) {
+        ScreenshotUtils.copyImageToClipboard(image);
     }
 }

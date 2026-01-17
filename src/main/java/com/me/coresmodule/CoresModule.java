@@ -1,5 +1,6 @@
 package com.me.coresmodule;
 
+import com.google.common.hash.HashCode;
 import com.me.coresmodule.features.Diana.*;
 import com.me.coresmodule.features.Features;
 import com.me.coresmodule.features.Party;
@@ -22,6 +23,7 @@ import com.teamresourceful.resourcefulconfig.api.loader.Configurator;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
@@ -106,6 +108,14 @@ public class CoresModule implements ModInitializer {
 
 			Chat.chat("§aReplacing " + TextHelper.getUnFormattedString(overrideItemFrom.getItemName()) + " with " + TextHelper.getUnFormattedString(overrideItemTo.getName()) + " and " + (overrideItemToGlintBool ? "with " : "§cwithout §a") + "glint.");
 		});
+
+		Register.command("copyNbt", args -> {
+			NbtElement nbt = ItemHelper.encodeItemStack(ItemHelper.getHeldItem());
+			mc.keyboard.setClipboard(ItemHelper.prettyPrintNBT(nbt, ItemHelper.getHeldItem()));
+			Chat.chat("§aCopied NBT HashCode to clipboard");
+		});
+
+
 
 		/*
 		Register.command("copyToClip", args -> {

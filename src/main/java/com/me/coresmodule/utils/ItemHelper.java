@@ -1,7 +1,11 @@
 package com.me.coresmodule.utils;
 
+import com.google.common.hash.HashCode;
 import com.me.coresmodule.CoresModule;
+import com.me.coresmodule.utils.chat.Chat;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
@@ -9,14 +13,19 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item.TooltipContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.*;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -239,4 +248,118 @@ public class ItemHelper {
         return stack;
     }
 
+    /*
+    public static void copyNBTTagToClipboard(Tag nbtTag, String message) {
+        if (nbtTag == null) {
+            Chat.chat("§cThis item has no NBT data!");
+            return;
+        }
+        mc.keyboard.setClipboard(prettyPrintNBT(nbtTag), message); // Make in helper
+    }
+    */
+
+    public static NbtElement encodeItemStack(ItemStack itemStack) {
+        RegistryWrapper.WrapperLookup registryAccess = registryAccess();
+
+        return ItemStack.CODEC.encodeStart(
+                registryAccess.getOps(NbtOps.INSTANCE), itemStack
+        ).getOrThrow();
+    }
+
+    private static RegistryWrapper.WrapperLookup registryAccess() {
+        ClientWorld world = MinecraftClient.getInstance().world;
+        if (world == null) {
+            throw new IllegalStateException("World not available");
+        } else {
+            return world.getRegistryManager();
+        }
+    }
+
+    public static String prettyPrintNBT(NbtElement nbt, ItemStack stack) {
+        final String INDENT = "    ";
+        int tagID = nbt.getType();
+        StringBuilder stringBuilder = new StringBuilder();
+
+        if (tagID == NbtElement.END_TYPE) {
+            stringBuilder.append('}');
+        } else if (tagID == NbtElement.BYTE_ARRAY_TYPE || tagID == NbtElement.INT_ARRAY_TYPE) {
+            stringBuilder.append('[');
+            if (tagID == NbtElement.BYTE_ARRAY_TYPE) {
+                NbtByteArray arr = (NbtByteArray) nbt;
+                byte[] bytes = arr.getByteArray();
+                for (int i = 0; i < bytes.length; i++) {
+                    stringBuilder.append(bytes[i]);
+                    if (i < bytes.length - 1) stringBuilder.append(", ");
+                }
+            } else {
+                NbtIntArray arr = (NbtIntArray) nbt;
+                int[] ints = arr.getIntArray();
+                for (int i = 0; i < ints.length; i++) {
+                    stringBuilder.append(ints[i]);
+                    if (i < ints.length - 1) stringBuilder.append(", ");
+                }
+            }
+            stringBuilder.append(']');
+        } else if (tagID == NbtElement.LIST_TYPE) {
+            NbtList list = (NbtList) nbt;
+            stringBuilder.append('[');
+            for (int i = 0; i < list.size(); i++) {
+                stringBuilder.append(prettyPrintNBT(list.get(i), stack));
+                if (i < list.size() - 1) stringBuilder.append(", ");
+            }
+            stringBuilder.append(']');
+        } else if (tagID == NbtElement.COMPOUND_TYPE) {
+            NbtCompound compound = (NbtCompound) nbt;
+            stringBuilder.append('{');
+            if (!compound.isEmpty()) {
+                Iterator<String> keys = compound.getKeys().iterator();
+                stringBuilder.append(System.lineSeparator());
+
+                while (keys.hasNext()) {
+                    String key = keys.next();
+                    NbtElement elem = compound.get(key);
+
+                    // Handle full lore array with § codes
+                    if (key.equals("minecraft:lore") && elem instanceof NbtList) {
+                        List<Text> lore = ItemHelper.getItemTooltip(stack);
+                        stringBuilder.append(key).append(": ").append("[").append(System.lineSeparator());
+                        for (int i = 0; i < lore.size(); i++) {
+                            String loreLine = TextHelper.getFormattedString(lore.get(i));
+                            stringBuilder.append(INDENT).append(INDENT).append("\"").append(loreLine).append("\"");
+                            if (i < lore.size() - 1) stringBuilder.append(",").append(System.lineSeparator());
+                        }
+                        stringBuilder.append(System.lineSeparator()).append(INDENT).append("]");
+                        continue;
+                    } else {
+                        stringBuilder.append(key).append(": ").append(prettyPrintNBT(elem, stack));
+                    }
+
+
+                    // Handle backpack_data decompression
+                    if (key.contains("backpack_data") && elem instanceof NbtByteArray) {
+                        try {
+                            NbtCompound backpackData = NbtIo.readCompressed(
+                                    new ByteArrayInputStream(((NbtByteArray) elem).getByteArray()),
+                                    new NbtSizeTracker(Long.MAX_VALUE, 512)
+                            );
+                            stringBuilder.append(",").append(System.lineSeparator());
+                            stringBuilder.append(key).append("(decoded): ").append(prettyPrintNBT(backpackData, stack));
+                        } catch (IOException e) {
+                            System.out.println("Couldn't decompress backpack data into NBT, skipping!" + e);
+                        }
+                    }
+
+                    if (keys.hasNext()) stringBuilder.append(",").append(System.lineSeparator());
+                }
+
+                String indented = stringBuilder.toString().replaceAll(System.lineSeparator(), System.lineSeparator() + INDENT);
+                stringBuilder = new StringBuilder(indented);
+            }
+            stringBuilder.append(System.lineSeparator()).append('}');
+        } else {
+            stringBuilder.append(nbt);
+        }
+
+        return stringBuilder.toString();
+    }
 }
