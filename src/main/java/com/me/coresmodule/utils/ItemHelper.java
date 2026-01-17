@@ -325,7 +325,7 @@ public class ItemHelper {
                 }
             }
         } else if (tagID == NbtElement.STRING_TYPE) {
-            map.put("value", ((NbtString) nbt).asString());
+            map.put("value", ((NbtString) nbt).asString().orElse("null"));
         } else if (tagID == NbtElement.BYTE_TYPE) {
             map.put("value", ((NbtByte) nbt).byteValue());
         } else if (tagID == NbtElement.SHORT_TYPE) {
