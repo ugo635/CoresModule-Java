@@ -1,12 +1,8 @@
 package com.me.coresmodule.utils;
 
-import com.google.common.hash.HashCode;
-import com.me.coresmodule.CoresModule;
-import com.me.coresmodule.utils.chat.Chat;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.player.PlayerInventory;
@@ -18,15 +14,10 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -275,7 +266,7 @@ public class ItemHelper {
         }
     }
 
-    public static HashMap<String, Object> prettyPrintNBT(NbtElement nbt, ItemStack stack) {
+    public static HashMap<String, Object> getNbtMap(NbtElement nbt, ItemStack stack) {
         HashMap<String, Object> map = new HashMap<>();
         int tagID = nbt.getType();
 
@@ -295,7 +286,7 @@ public class ItemHelper {
             NbtList list = (NbtList) nbt;
             List<Object> result = new ArrayList<>();
             for (int i = 0; i < list.size(); i++) {
-                result.add(prettyPrintNBT(list.get(i), stack));
+                result.add(getNbtMap(list.get(i), stack));
             }
             map.put("value", result);
         } else if (tagID == NbtElement.COMPOUND_TYPE) {
@@ -303,25 +294,31 @@ public class ItemHelper {
             for (String key : compound.getKeys()) {
                 NbtElement elem = compound.get(key);
 
-                if (key.equals("minecraft:lore") && elem instanceof NbtList) {
-                    List<String> loreList = new ArrayList<>();
-                    List<Text> lore = ItemHelper.getItemTooltip(stack);
-                    for (Text line : lore) {
-                        loreList.add(TextHelper.getFormattedString(line));
+                switch (elem) {
+                    case NbtList nbtElements when key.equals("minecraft:lore") -> {
+                        List<String> loreList = new ArrayList<>();
+                        List<Text> lore = ItemHelper.getItemTooltip(stack);
+                        for (Text line : lore) {
+                            loreList.add(TextHelper.getFormattedString(line));
+                        }
+                        map.put(key, loreList);
                     }
-                    map.put(key, loreList);
-                } else if (key.contains("backpack_data") && elem instanceof NbtByteArray) {
-                    try {
-                        NbtCompound backpackData = NbtIo.readCompressed(
-                                new ByteArrayInputStream(((NbtByteArray) elem).getByteArray()),
-                                new NbtSizeTracker(Long.MAX_VALUE, 512)
-                        );
-                        map.put(key + "(decoded)", prettyPrintNBT(backpackData, stack));
-                    } catch (IOException e) {
-                        System.out.println("Couldn't decompress backpack data, skipping! " + e);
+
+                    case NbtCompound nbtCompound when key.equals("minecraft:custom_name") ->
+                            map.put(key, TextHelper.getFormattedString(stack.getName()));
+
+                    case NbtByteArray nbtElements when key.contains("backpack_data") -> {
+                        try {
+                            NbtCompound backpackData = NbtIo.readCompressed(
+                                    new ByteArrayInputStream(nbtElements.getByteArray()),
+                                    new NbtSizeTracker(Long.MAX_VALUE, 512)
+                            );
+                            map.put(key + "(decoded)", getNbtMap(backpackData, stack));
+                        } catch (IOException e) {
+                            System.out.println("Couldn't decompress backpack data, skipping! " + e);
+                        }
                     }
-                } else {
-                    map.put(key, prettyPrintNBT(elem, stack));
+                    case null, default -> map.put(key, getNbtMap(elem, stack));
                 }
             }
         } else if (tagID == NbtElement.STRING_TYPE) {
@@ -344,4 +341,20 @@ public class ItemHelper {
 
         return map;
     }
+
+    public static String getUUID(ItemStack stack) {
+        NbtElement root = ItemHelper.encodeItemStack(stack);
+        if (!(root instanceof NbtCompound compound)) return null;
+
+        if (!compound.contains("components")) return null;
+        NbtCompound components = compound.getCompound("components").orElseThrow();
+
+        if (!components.contains("minecraft:custom_data")) return null;
+        NbtCompound customData = components.getCompound("minecraft:custom_data").orElseThrow();
+
+        if (!customData.contains("uuid")) return null;
+
+        return customData.getString("uuid").orElse("null");
+    }
+
 }

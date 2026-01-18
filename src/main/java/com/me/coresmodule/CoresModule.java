@@ -1,6 +1,5 @@
 package com.me.coresmodule;
 
-import com.google.common.hash.HashCode;
 import com.me.coresmodule.features.Diana.*;
 import com.me.coresmodule.features.Features;
 import com.me.coresmodule.features.Party;
@@ -15,7 +14,6 @@ import com.me.coresmodule.utils.events.EventBus.CmEvents;
 import com.me.coresmodule.utils.events.Register;
 import com.me.coresmodule.utils.events.processor.EventProcessor;
 import com.me.coresmodule.utils.render.CustomItem.CustomItemRender;
-import com.me.coresmodule.utils.render.CustomItem.SaveAndLoad;
 import com.me.coresmodule.utils.render.WaypointManager;
 import com.me.coresmodule.utils.render.overlay.OverlayData;
 import com.me.coresmodule.utils.render.overlay.OverlayManager;
@@ -30,7 +28,6 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.*;
 
 
@@ -112,8 +109,10 @@ public class CoresModule implements ModInitializer {
 
 		Register.command("copyNbt", args -> {
 			NbtElement nbt = ItemHelper.encodeItemStack(ItemHelper.getHeldItem());
-			mc.keyboard.setClipboard(new JSONObject(ItemHelper.prettyPrintNBT(nbt, ItemHelper.getHeldItem())).toString(4));
+			mc.keyboard.setClipboard(new JSONObject(ItemHelper.getNbtMap(nbt, ItemHelper.getHeldItem())).toString(4));
 			Chat.chat("§aCopied NBT HashCode to clipboard");
+
+			Chat.chat("§aUUID: §c" + ItemHelper.getUUID(ItemHelper.getHeldItem()));
 		});
 
 
