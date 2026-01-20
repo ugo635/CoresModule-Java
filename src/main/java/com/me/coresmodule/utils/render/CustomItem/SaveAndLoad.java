@@ -4,6 +4,7 @@ import com.me.coresmodule.CoresModule;
 import com.me.coresmodule.utils.FilesHandler;
 import com.me.coresmodule.utils.ItemHelper;
 import com.me.coresmodule.utils.Pair;
+import com.me.coresmodule.utils.Triple;
 import com.me.coresmodule.utils.events.annotations.CmEvent;
 import com.me.coresmodule.utils.events.impl.OnDisconnect;
 import com.me.coresmodule.utils.render.overlay.OverlayValues;
@@ -21,10 +22,10 @@ public class SaveAndLoad {
     }
 
     @SuppressWarnings("unchecked")
-    public static HashMap<String, Pair<ItemStack, ItemStack>> load() {
+    public static HashMap<String, Triple<ItemStack, ItemStack, Boolean>> load() {
         System.out.println("[CoresModule] Loading...");
         try {
-            HashMap<String, Pair<ItemStack, ItemStack>> items = new HashMap<>();
+            HashMap<String, Triple<ItemStack, ItemStack, Boolean>> items = new HashMap<>();
             String content = FilesHandler.getContent("CustomItemRenderer.json").trim();
             if (!content.isEmpty() && !content.equals("{}")) {
                 JSONObject json = new JSONObject(content);
@@ -33,9 +34,11 @@ public class SaveAndLoad {
                     HashMap<String, Object> values = (HashMap<String, Object>) temp.get(key);
                     ItemStack first = ItemHelper.fromMap((HashMap<String, Object>) values.get("first"));
                     ItemStack second = ItemHelper.fromMap((HashMap<String, Object>) values.get("second"));
+                    ItemStack third = ItemHelper.fromMap((HashMap<String, Object>) values.get("third"));
                     values.put("first", first);
                     values.put("second", second);
-                    items.put(key, Pair.<ItemStack, ItemStack>fromMap(values));
+                    values.put("third", third);
+                    items.put(key, Triple.<ItemStack, ItemStack, Boolean>fromMap(values));
                 }
 
                 return items;
@@ -56,8 +59,8 @@ public class SaveAndLoad {
         System.out.println("[CoresModule] Saving...");
         HashMap<String, Object> map = new HashMap<>();
         for (String key : CoresModule.overrides.keySet()) {
-            Pair<ItemStack, ItemStack> pair = CoresModule.overrides.get(key);
-            map.put(key, pair.toMapItemStack());
+            Triple<ItemStack, ItemStack, Boolean> triple = CoresModule.overrides.get(key);
+            map.put(key, triple.toMapItemStack());
         }
 
 

@@ -35,7 +35,7 @@ public class CoresModule implements ModInitializer {
 	public static String player = MinecraftClient.getInstance().getSession().getUsername();
 	public static MinecraftClient mc = MinecraftClient.getInstance();
 	public static final String MOD_ID = "coresmodule";
-	public static HashMap<String, Pair<ItemStack, ItemStack>> overrides = new HashMap<>();
+	public static HashMap<String, Triple<ItemStack, ItemStack, Boolean>> overrides = new HashMap<>();
 
 	// This logger is used to write text to the console and the log file.
 	// It is considered best practice to use your mod id as the logger's name.
@@ -89,19 +89,18 @@ public class CoresModule implements ModInitializer {
 				return;
 			}
 
-			String Uuid = String.valueOf(UUID.randomUUID());
-			ItemStack overrideItemFrom = ItemHelper.markNbt(ItemHelper.getHeldItem(), "CmUuid", Uuid);
-			ItemStack overrideItemTo = ItemHelper.markNbt(new ItemStack(Registries.ITEM.get(Identifier.of(args[0]))), "CmUuid", Uuid);
+			String Uuid = ItemHelper.getUUID(ItemHelper.getHeldItem());
+			ItemStack overrideItemFrom = ItemHelper.getHeldItem();
+			ItemStack overrideItemTo = new ItemStack(Registries.ITEM.get(Identifier.of(args[0])));
 			boolean overrideItemToGlintBool = false;
 			if (args.length == 2) {
 				overrideItemToGlintBool = Boolean.parseBoolean(args[1]);
-				overrideItemTo = ItemHelper.addMarkNbt(overrideItemTo, "CmGlint", overrideItemToGlintBool);
-				overrideItemFrom = ItemHelper.addMarkNbt(overrideItemFrom, "CmGlint", overrideItemToGlintBool);
 			}
 
-			overrides.put(Uuid, new Pair<>(
+			overrides.put(Uuid, new Triple<>(
                     overrideItemFrom,
-                    overrideItemTo
+                    overrideItemTo,
+					overrideItemToGlintBool
             ));
 
 			Chat.chat("§aReplacing " + TextHelper.getUnFormattedString(overrideItemFrom.getItemName()) + " with " + TextHelper.getUnFormattedString(overrideItemTo.getName()) + " and " + (overrideItemToGlintBool ? "with " : "§cwithout §a") + "glint.");

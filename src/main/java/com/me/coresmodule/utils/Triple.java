@@ -1,5 +1,7 @@
 package com.me.coresmodule.utils;
 
+import net.minecraft.item.ItemStack;
+
 import java.util.HashMap;
 
 public class Triple<T, S, U> {
@@ -28,4 +30,13 @@ public class Triple<T, S, U> {
         U third = (U) map.get("third");
         return new Triple<>(first, second, third);
     }
+
+    public HashMap<String, Object> toMapItemStack() {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("first", ItemHelper.toMap((ItemStack) first));
+        map.put("second", ItemHelper.toMap((ItemStack) second));
+        map.put("third", ItemHelper.toMap((ItemStack) third));
+        return map;
+    }
+
 }

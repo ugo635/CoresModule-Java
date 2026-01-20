@@ -8,6 +8,7 @@ import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item.TooltipContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.nbt.*;
 import net.minecraft.registry.Registries;
@@ -252,6 +253,7 @@ public class ItemHelper {
     public static NbtElement encodeItemStack(ItemStack itemStack) {
         RegistryWrapper.WrapperLookup registryAccess = registryAccess();
 
+        if (itemStack.getItem() == Items.AIR) return null;
         return ItemStack.CODEC.encodeStart(
                 registryAccess.getOps(NbtOps.INSTANCE), itemStack
         ).getOrThrow();
