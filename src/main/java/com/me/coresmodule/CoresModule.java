@@ -17,6 +17,7 @@ import com.me.coresmodule.utils.events.processor.EventProcessor;
 import com.me.coresmodule.utils.render.CustomItem.CustomItemRender;
 import com.me.coresmodule.utils.render.CustomItem.SaveAndLoad;
 import com.me.coresmodule.utils.render.WaypointManager;
+import com.me.coresmodule.utils.render.gui.GUIs;
 import com.me.coresmodule.utils.render.overlay.OverlayData;
 import com.me.coresmodule.utils.render.overlay.OverlayManager;
 import com.teamresourceful.resourcefulconfig.api.loader.Configurator;
@@ -77,6 +78,7 @@ public class CoresModule implements ModInitializer {
 		CmCommands.register();
 		CustomItemRender.register();
 		CmEvents.register();
+		GUIs.register();
 
 		configurator.register(Settings.class);
 		configurator.saveConfig(Settings.class);

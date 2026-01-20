@@ -28,7 +28,6 @@ repositories {
 	}
 
 	maven {
-			name = "Elementa"
 			url = "https://repo.essential.gg/repository/maven-public"
 	}
 }
@@ -48,11 +47,13 @@ dependencies {
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
+	// Config menu
 	modImplementation "com.teamresourceful.resourcefulconfig:resourcefulconfig-common-$minecraft_version:$rconfig_version"
 	modImplementation "com.teamresourceful.resourcefulconfig:resourcefulconfig-fabric-$minecraft_version:$rconfig_version"
 
+	// UIs
 	implementation("gg.essential:elementa:$elementaVersion")
-	implementation "club.sk1er:Elementa:1.7.1-$mc_version"
+	modImplementation "gg.essential:universalcraft-1.21.5-fabric:$uc_version"
 
 	modImplementation(include("org.json:json:$json_version"))
 
