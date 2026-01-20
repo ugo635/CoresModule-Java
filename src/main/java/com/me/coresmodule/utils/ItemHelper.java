@@ -366,4 +366,28 @@ public class ItemHelper {
         return markNbt(stack, "uuid", uuid);
     }
 
+    public static HashMap<String, Object> getMainInfos(ItemStack stack) {
+        NbtElement nbt = ItemHelper.encodeItemStack(stack);
+        HashMap<String, Object> map = new HashMap<>();
+
+        if (!(nbt instanceof NbtCompound compound)) return map;
+
+        if (compound.contains("components")) {
+            NbtCompound components = compound.getCompound("components").orElseThrow();
+
+            if (components.contains("minecraft:custom_name")) {
+                map.put("custom_name", TextHelper.getFormattedString(stack.getName()));
+            }
+
+            if (components.contains("minecraft:custom_data")) {
+                NbtCompound customData = components.getCompound("minecraft:custom_data").orElseThrow();
+                if (customData.contains("uuid")) {
+                    map.put("uuid", customData.getString("uuid").orElse("null"));
+                }
+            }
+        }
+
+        return map;
+    }
+
 }
