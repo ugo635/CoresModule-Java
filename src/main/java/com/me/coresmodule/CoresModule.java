@@ -12,14 +12,17 @@ import com.me.coresmodule.utils.chat.ClickActionManager;
 import com.me.coresmodule.utils.chat.SimulateChat;
 import com.me.coresmodule.utils.events.EventBus.CmEvents;
 import com.me.coresmodule.utils.events.Register;
+import com.me.coresmodule.utils.events.impl.OnDisconnect;
 import com.me.coresmodule.utils.events.processor.EventProcessor;
 import com.me.coresmodule.utils.render.CustomItem.CustomItemRender;
+import com.me.coresmodule.utils.render.CustomItem.SaveAndLoad;
 import com.me.coresmodule.utils.render.WaypointManager;
 import com.me.coresmodule.utils.render.overlay.OverlayData;
 import com.me.coresmodule.utils.render.overlay.OverlayManager;
 import com.teamresourceful.resourcefulconfig.api.loader.Configurator;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.registry.Registries;
@@ -91,7 +94,7 @@ public class CoresModule implements ModInitializer {
 
 			String Uuid = ItemHelper.getUUID(ItemHelper.getHeldItem());
 			ItemStack overrideItemFrom = ItemHelper.getHeldItem();
-			ItemStack overrideItemTo = new ItemStack(Registries.ITEM.get(Identifier.of(args[0])));
+			ItemStack overrideItemTo = ItemHelper.createSecond(new ItemStack(Registries.ITEM.get(Identifier.of(args[0]))), Uuid);
 			boolean overrideItemToGlintBool = false;
 			if (args.length == 2) {
 				overrideItemToGlintBool = Boolean.parseBoolean(args[1]);
@@ -104,6 +107,7 @@ public class CoresModule implements ModInitializer {
             ));
 
 			Chat.chat("§aReplacing " + TextHelper.getUnFormattedString(overrideItemFrom.getItemName()) + " with " + TextHelper.getUnFormattedString(overrideItemTo.getName()) + " and " + (overrideItemToGlintBool ? "with " : "§cwithout §a") + "glint.");
+			SaveAndLoad.save(null);
 		});
 
 		Register.command("copyNbt", args -> {

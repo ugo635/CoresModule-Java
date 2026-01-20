@@ -23,6 +23,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.me.coresmodule.CoresModule.mc;
+import static com.me.coresmodule.CoresModule.overrides;
 
 public class ItemHelper {
     public static ItemStack getHeldItem() {
@@ -205,6 +206,7 @@ public class ItemHelper {
         if (comp != null) {
             NbtCompound tag = comp.copyNbt();
             for (String key : tag.getKeys()) {
+                if (key.contains("timestamp")) continue;
                 String type = getType(tag.get(key));
                 switch (type) {
                     case "byte" -> map.put(key, tag.getBoolean(key).orElse(null));
@@ -216,6 +218,7 @@ public class ItemHelper {
 
             }
         }
+        map.put("glint", overrides.containsKey(getUUID(stack)));
         return map;
     }
 
@@ -357,6 +360,10 @@ public class ItemHelper {
         if (!customData.contains("uuid")) return null;
 
         return customData.getString("uuid").orElse("null");
+    }
+
+    public static ItemStack createSecond(ItemStack stack, String uuid) {
+        return markNbt(stack, "uuid", uuid);
     }
 
 }

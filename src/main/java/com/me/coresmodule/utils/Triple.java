@@ -35,7 +35,7 @@ public class Triple<T, S, U> {
         HashMap<String, Object> map = new HashMap<>();
         map.put("first", ItemHelper.toMap((ItemStack) first));
         map.put("second", ItemHelper.toMap((ItemStack) second));
-        map.put("third", ItemHelper.toMap((ItemStack) third));
+        map.put("third", third);
         return map;
     }
 

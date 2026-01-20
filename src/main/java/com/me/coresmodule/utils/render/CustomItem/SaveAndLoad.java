@@ -34,7 +34,7 @@ public class SaveAndLoad {
                     HashMap<String, Object> values = (HashMap<String, Object>) temp.get(key);
                     ItemStack first = ItemHelper.fromMap((HashMap<String, Object>) values.get("first"));
                     ItemStack second = ItemHelper.fromMap((HashMap<String, Object>) values.get("second"));
-                    ItemStack third = ItemHelper.fromMap((HashMap<String, Object>) values.get("third"));
+                    Boolean third = (Boolean) values.get("third");
                     values.put("first", first);
                     values.put("second", second);
                     values.put("third", third);
@@ -56,6 +56,7 @@ public class SaveAndLoad {
 
     @CmEvent
     public static void save(OnDisconnect event) {
+
         System.out.println("[CoresModule] Saving...");
         HashMap<String, Object> map = new HashMap<>();
         for (String key : CoresModule.overrides.keySet()) {
