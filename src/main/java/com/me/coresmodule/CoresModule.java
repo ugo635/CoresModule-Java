@@ -108,8 +108,7 @@ public class CoresModule implements ModInitializer {
 		});
 
 		Register.command("copyNbt", args -> {
-			NbtElement nbt = ItemHelper.encodeItemStack(ItemHelper.getHeldItem());
-			mc.keyboard.setClipboard(new JSONObject(ItemHelper.getNbtMap(nbt, ItemHelper.getHeldItem())).toString(4));
+			mc.keyboard.setClipboard(new JSONObject(ItemHelper.getMainInfos(ItemHelper.getHeldItem())).toString(4));
 			Chat.chat("§aCopied NBT HashCode to clipboard");
 
 			Chat.chat("§aUUID: §c" + ItemHelper.getUUID(ItemHelper.getHeldItem()));
