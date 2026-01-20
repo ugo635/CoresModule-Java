@@ -2,22 +2,26 @@ package com.me.coresmodule.utils.render.gui.guis;
 
 import gg.essential.elementa.ElementaVersion;
 import gg.essential.elementa.UIComponent;
+import gg.essential.elementa.UIConstraints;
 import gg.essential.elementa.components.UIBlock;
 import gg.essential.elementa.WindowScreen;
 import gg.essential.elementa.components.UIRoundedRectangle;
 import gg.essential.elementa.components.UIText;
 import gg.essential.elementa.components.input.UITextInput;
-import gg.essential.elementa.constraints.CenterConstraint;
-import gg.essential.elementa.constraints.PixelConstraint;
-import gg.essential.elementa.constraints.RelativeConstraint;
+import gg.essential.elementa.constraints.*;
+import net.minecraft.command.CommandSource;
+
+import com.me.coresmodule.utils.render.gui.GUIs;
 
 import java.awt.*;
+import java.lang.reflect.Field;
 
 public class ItemCustomization extends WindowScreen {
 
     public ItemCustomization() {
         super(ElementaVersion.V10, true, false);
 
+        // Main container
         UIComponent main = new UIRoundedRectangle(7.5f)
                 .setX(new CenterConstraint())
                 .setY(new CenterConstraint())
@@ -26,6 +30,7 @@ public class ItemCustomization extends WindowScreen {
                 .setColor(new Color(50, 50, 50, 255))
                 .setChildOf(getWindow());
 
+        // Titles
         UIComponent titleBox = new UIRoundedRectangle(7.5f)
                 .setX(new CenterConstraint())
                 .setY(new PixelConstraint(12.5f))
@@ -40,13 +45,9 @@ public class ItemCustomization extends WindowScreen {
                 .setTextScale(new PixelConstraint(1.5f))
                 .setColor(new Color(145, 5, 145, 255));
 
-        UIComponent border = new UIRoundedRectangle(5f)
-                .setX(new CenterConstraint())
-                .setY(new PixelConstraint(50f))
-                .setWidth(new PixelConstraint(205f))
-                .setHeight(new PixelConstraint(30f))
-                .setColor(Color.WHITE);
 
+
+        // Inputs
         UIComponent inputBox = new UIRoundedRectangle(5f)
                 .setX(new CenterConstraint())
                 .setY(new PixelConstraint(50f))
@@ -81,30 +82,16 @@ public class ItemCustomization extends WindowScreen {
         // <h1> Item Customization </h1>
         main.addChild(titleBox);
         titleBox.addChild(titleText);
+        GUIs.addShadow(titleBox);
 
         // <div>
         // <input type="text" placeholder="Enter item name"/>
-        main.addChild(border);
         main.addChild(inputBox);
         inputBox.addChild(input);
-        //addBorder(inputBox, 2.5f, Color.WHITE);
+        GUIs.addBorder(inputBox, 1.5f, Color.WHITE);
         // </div>
 
         // </div>
-    }
-
-    public static void addBorder(UIComponent ui, float thickness, Color color) {
-        ui.getRight()
-        UIComponent border = new UIBlock()
-                .setWidth(new PixelConstraint(ui.getWidth() + thickness))
-                .setHeight(new PixelConstraint(ui.getHeight() + thickness))
-                .setColor(color);
-
-        var parent = ui.getParent();
-        parent.removeChild(ui);
-        parent.addChild(border);
-        border.addChild(ui);
-
     }
 
 }
