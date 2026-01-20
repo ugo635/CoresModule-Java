@@ -26,6 +26,11 @@ repositories {
 		name = "Terraformers"
 		url = "https://maven.terraformersmc.com/"
 	}
+
+	maven {
+			name = "Elementa"
+			url = "https://repo.essential.gg/repository/maven-public"
+	}
 }
 
 fabricApi {
@@ -46,6 +51,8 @@ dependencies {
 	modImplementation "com.teamresourceful.resourcefulconfig:resourcefulconfig-common-$minecraft_version:$rconfig_version"
 	modImplementation "com.teamresourceful.resourcefulconfig:resourcefulconfig-fabric-$minecraft_version:$rconfig_version"
 
+	implementation("gg.essential:elementa:$elementaVersion")
+	implementation "club.sk1er:Elementa:1.7.1-$mc_version"
 
 	modImplementation(include("org.json:json:$json_version"))
 
