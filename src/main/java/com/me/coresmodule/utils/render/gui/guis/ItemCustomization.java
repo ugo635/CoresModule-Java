@@ -9,6 +9,8 @@ import gg.essential.elementa.components.UIRoundedRectangle;
 import gg.essential.elementa.components.UIText;
 import gg.essential.elementa.components.input.UITextInput;
 import gg.essential.elementa.constraints.*;
+import gg.essential.elementa.effects.OutlineEffect;
+import gg.essential.elementa.effects.ScissorEffect;
 import net.minecraft.command.CommandSource;
 
 import com.me.coresmodule.utils.render.gui.GUIs;
@@ -83,7 +85,7 @@ public class ItemCustomization extends WindowScreen {
         main.addChild(titleBox);
         titleBox.addChild(titleText);
         //GUIs.addShadow(titleBox);
-        GUIs.addBorder(titleBox, 1.5f, Color.WHITE, Color.BLACK);
+        GUIs.addBorder(titleBox, 1.5f, Color.RED);
 
         // <div>
         // <input type="text" placeholder="Enter item name">

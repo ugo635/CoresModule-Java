@@ -12,6 +12,7 @@ import gg.essential.elementa.constraints.PixelConstraint;
 import gg.essential.elementa.constraints.RelativeConstraint;
 import gg.essential.elementa.constraints.XConstraint;
 import gg.essential.elementa.constraints.YConstraint;
+import gg.essential.elementa.effects.Effect;
 import gg.essential.elementa.effects.OutlineEffect;
 import gg.essential.elementa.effects.ScissorEffect;
 import gg.essential.universal.UScreen;
@@ -20,6 +21,8 @@ import net.minecraft.client.gui.screen.Screen;
 import java.awt.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Set;
 
 import static com.me.coresmodule.CoresModule.mc;
 
@@ -36,9 +39,6 @@ public class GUIs {
         });
     }
 
-
-
-    // TODO: Myb try using effects like ui.enableEffects(new OutlineEffect(ui.getColor(), 2f, true, false));
     public static void addBorder(UIComponent ui, float thickness, Color color) {
         float width = ui.getWidth() + thickness * 2;
         float height = ui.getHeight() + thickness * 2;
@@ -59,14 +59,13 @@ public class GUIs {
             return;
         }
 
-
         UIComponent border = new UIRoundedRectangle(rad)
                 .setX(x)
                 .setY(y)
                 .setWidth(new PixelConstraint(width))
-                .setHeight(new PixelConstraint(height))
-                .setColor(color);
+                .setHeight(new PixelConstraint(height));
 
+        border.enableEffects(new ScissorEffect(), new OutlineEffect(color, 2f, true, false));
 
         ui
                 .setX(new PixelConstraint(thickness))
@@ -77,9 +76,10 @@ public class GUIs {
 
     }
 
-    public static void addBorder(UIComponent ui, float thickness, Color from, Color to, GradientComponent.GradientDirection angle) {
-        float width = ui.getWidth() + thickness * 2;
-        float height = ui.getHeight() + thickness * 2;
+    // TODO: Try making it without effect to see if there's still white outline
+    public static void addShadow(UIComponent ui, float shadowSize) {
+        float width = ui.getWidth() + shadowSize * 2;
+        float height = ui.getHeight() + shadowSize * 2;
         float rad =  ui.getRadius();
         XConstraint x;
         YConstraint y;
@@ -97,79 +97,17 @@ public class GUIs {
             return;
         }
 
-
-        UIComponent gradient = new GradientComponent(from, to, angle)
-                .setX(new PixelConstraint(0))
-                .setY(new PixelConstraint(0))
-                .setWidth(new RelativeConstraint(1f))
-                .setHeight(new RelativeConstraint(1f));
-
         UIComponent border = new UIRoundedRectangle(rad)
                 .setX(x)
                 .setY(y)
                 .setWidth(new PixelConstraint(width))
-                .setHeight(new PixelConstraint(height))
-                .enableEffects(new ScissorEffect(), new OutlineEffect(gradient.getColor(), 2f, true, false));
-
-        ui
-                .setX(new PixelConstraint(thickness))
-                .setY(new PixelConstraint(thickness));
-
-        replaceChild(ui, border);
-        border.addChild(ui);
-
-    }
-
-    public static void addBorder(UIComponent ui, float thickness, Color from, Color to) {
-        addBorder(ui, thickness, from, to, GradientComponent.GradientDirection.LEFT_TO_RIGHT);
-    }
+                .setHeight(new PixelConstraint(height));
 
 
-
-    public static void replaceChild(UIComponent oldChild, UIComponent newChild) {
-        UIComponent parent = oldChild.getParent();
-        parent.removeChild(oldChild);
-        parent.addChild(newChild);
-        newChild.setParent(parent);
-    }
-
-
-
-
-    // TODO: Use outline effects to make make the shadow be on Side.RIGHT/LEFT/TOP/BOTTOM?
-    public static void addShadow(UIComponent ui, float shadowSize, float offsetX, float offsetY) {
-        float width = ui.getWidth();
-        float height = ui.getHeight();
-        float rad = ui.getRadius();
-
-        // SAVE ORIGINAL PARENT FIRST - before any modifications!
-        UIComponent originalParent = ui.getParent();
-
-        XConstraint x;
-        YConstraint y;
-
-        try {
-            Field xField = UIConstraints.class.getDeclaredField("x");
-            Field yField = UIConstraints.class.getDeclaredField("y");
-            xField.setAccessible(true);
-            yField.setAccessible(true);
-            x = (XConstraint) xField.get(ui. getConstraints());
-            y = (YConstraint) yField.get(ui.getConstraints());
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            e.printStackTrace();
-            return;
-        }
-
-        // Get adaptive shadow color based on element and background
-        Color shadowColor = getShadowColor(ui);
-
-        // Right shadow
-        UIComponent outline = new UIRoundedRectangle(rad)
-                .setX(x)
-                .setY(y)
-                .setWidth(new PixelConstraint(width + shadowSize))
-                .setHeight(new PixelConstraint(height + shadowSize))
-                .setColor(shadowColor);
+        Color shadowColor = new Color(80 , 80, 80, 255); //getShadowColor(ui);
+        ArrayList<Effect> effectList = new ArrayList<>();
+        effectList.add(new ScissorEffect());
+        effectList.add(new OutlineEffect(shadowColor, shadowSize, true, false, Set.of(OutlineEffect.Side.Top, OutlineEffect.Side.Left)));
 
         shadowColor = new Color(
                 Math.round(shadowColor.getRed() * 0.25f),
@@ -178,35 +116,22 @@ public class GUIs {
                 Math.round(shadowColor.getAlpha() * 0.6f)
         );
 
-        // Bottom shadow
-        UIComponent bottomRightShadow = new UIRoundedRectangle(rad)
-                .setX(new PixelConstraint(x.getCachedValue() + offsetX))
-                .setY(new PixelConstraint(y.getCachedValue() + offsetY))
-                .setWidth(new PixelConstraint(width + shadowSize))
-                .setHeight(new PixelConstraint(height + shadowSize))
-                .setColor(shadowColor);
+        effectList.add(new OutlineEffect(shadowColor, shadowSize, true, false, Set.of(OutlineEffect.Side.Bottom, OutlineEffect.Side.Right)));
 
-        // Remove UI from original parent FIRST
-        originalParent.removeChild(ui);
+        border.enableEffects(effectList.getFirst(), effectList.get(1),effectList.getLast());
 
-        // Reset UI position to be relative to container
         ui
             .setX(new PixelConstraint(shadowSize))
             .setY(new PixelConstraint(shadowSize));
 
-        // Add everything to container
-        outline.addChild(ui);
-        outline.addChild(bottomRightShadow);
-        ui.setParent(outline);
-
-        // Add container to original parent
-        originalParent.addChild(outline);
+        replaceChild(ui, border);
+        border.addChild(ui);
     }
 
 
 
     public static void addShadow(UIComponent ui) {
-        addShadow(ui, 2f, 2f, 2f);
+        addShadow(ui, 2f);
     }
 
 
@@ -236,5 +161,11 @@ public class GUIs {
 
     }
 
+    public static void replaceChild(UIComponent oldChild, UIComponent newChild) {
+        UIComponent parent = oldChild.getParent();
+        parent.removeChild(oldChild);
+        parent.addChild(newChild);
+        newChild.setParent(parent);
+    }
 
 }
