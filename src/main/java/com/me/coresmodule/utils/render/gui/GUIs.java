@@ -66,7 +66,7 @@ public class GUIs {
                 .setY(y)
                 .setWidth(new PixelConstraint(width))
                 .setHeight(new PixelConstraint(height))
-                .setColor(new Color(0, 0, 0, 0)); // Transparent background
+                .setColor(color); // Transparent background
 
         // Create the rounded outline effect with proper parameters
         RoundedOutlineEffect outlineEffect = new RoundedOutlineEffect(
