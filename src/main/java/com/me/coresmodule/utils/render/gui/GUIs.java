@@ -40,7 +40,7 @@ public class GUIs {
         });
     }
 
-    public static void addRoundedBorder(UIComponent ui, float thickness, Color color) {
+    public static void addRoundedBorder(UIComponent ui, float thickness, Color color, EnumSet<RoundedOutlineEffect.Side> sides) {
         float width = ui. getWidth();
         float height = ui.getHeight();
         float rad = ui.getRadius();
@@ -60,35 +60,25 @@ public class GUIs {
             return;
         }
 
-        // Create border container
-        UIBlock border = (UIBlock) new UIRoundedRectangle(rad)
+        // Decoy to create the outline effect
+        UIBlock decoy = (UIBlock) new UIBlock()
                 .setX(x)
                 .setY(y)
                 .setWidth(new PixelConstraint(width))
                 .setHeight(new PixelConstraint(height))
-                .setColor(color);
+                .setColor(new Color(0, 0, 0, 0));
+
+        // Main gui
+        UIRoundedRectangle border = (UIRoundedRectangle) new UIRoundedRectangle(rad)
+                .setX(x)
+                .setY(y)
+                .setWidth(new PixelConstraint(width))
+                .setHeight(new PixelConstraint(height))
+                .setColor(new Color(0, 0, 0, 0));
 
         // Create the rounded outline effect with proper parameters
-        RoundedOutlineEffect outlineEffect = new RoundedOutlineEffect(
-                border,           // UIBlock
-                color,            // outline color
-                thickness,        // outline width
-                rad,              // radius to match the component's radius
-                true,             // drawAfterChildren - draw on top
-                true,             // drawInsideChildren - draw inside bounds
-                EnumSet.of(       // all sides and corners
-                        RoundedOutlineEffect.Side. Left,
-                        RoundedOutlineEffect.Side.Top,
-                        RoundedOutlineEffect.Side.Right,
-                        RoundedOutlineEffect.Side.Bottom,
-                        RoundedOutlineEffect.Side.TopLeft,
-                        RoundedOutlineEffect.Side. TopRight,
-                        RoundedOutlineEffect.Side. BottomLeft,
-                        RoundedOutlineEffect.Side. BottomRight
-                )
-        );
+        RoundedOutlineEffect outlineEffect = new RoundedOutlineEffect(decoy, color, thickness, rad * 0.75f, true, true, sides);
 
-        // Enable effects on the border
         border.enableEffects(new ScissorEffect(), outlineEffect);
 
         // Reset original component position to be relative to border
@@ -98,6 +88,10 @@ public class GUIs {
         // Replace the component with border wrapper
         replaceChild(ui, border);
         border.addChild(ui);
+    }
+
+    public static void addRoundedBorder(UIComponent ui, float thickness, Color color) {
+        addRoundedBorder(ui, thickness, color, EnumSet.allOf(RoundedOutlineEffect.Side.class));
     }
 
     public static void addBorder(UIComponent ui, float thickness, Color color) {
@@ -131,8 +125,8 @@ public class GUIs {
         border.enableEffects(new ScissorEffect(), ef);
 
         ui
-                .setX(new PixelConstraint(0))
-                .setY(new PixelConstraint(0));
+            .setX(new PixelConstraint(0))
+            .setY(new PixelConstraint(0));
 
         replaceChild(ui, border);
         border.addChild(ui);
@@ -140,54 +134,7 @@ public class GUIs {
 
     // TODO: Try making it without effect to see if there's still white outline or without scissor effect
     public static void addShadow(UIComponent ui, float shadowSize) {
-        float width = ui.getWidth() + shadowSize * 2;
-        float height = ui.getHeight() + shadowSize * 2;
-        float rad =  ui.getRadius();
-        XConstraint x;
-        YConstraint y;
 
-        try {
-            Field xField = UIConstraints.class.getDeclaredField("x");
-            Field yField = UIConstraints.class.getDeclaredField("y");
-            xField.setAccessible(true);
-            yField.setAccessible(true);
-            x = (XConstraint) xField.get(ui.getConstraints());
-            y = (YConstraint) yField.get(ui.getConstraints());
-
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            e.printStackTrace();
-            return;
-        }
-
-        UIComponent border = new UIRoundedRectangle(rad)
-                .setX(x)
-                .setY(y)
-                .setWidth(new PixelConstraint(width))
-                .setHeight(new PixelConstraint(height));
-
-
-        Color shadowColor = new Color(80 , 80, 80, 255); //getShadowColor(ui);
-        ArrayList<Effect> effectList = new ArrayList<>();
-        effectList.add(new ScissorEffect());
-        effectList.add(new OutlineEffect(shadowColor, shadowSize, true, false, Set.of(OutlineEffect.Side.Top, OutlineEffect.Side.Left)));
-
-        shadowColor = new Color(
-                Math.round(shadowColor.getRed() * 0.25f),
-                Math.round(shadowColor.getGreen() * 0.25f),
-                Math.round(shadowColor.getBlue() * 0.25f),
-                Math.round(shadowColor.getAlpha() * 0.6f)
-        );
-
-        effectList.add(new OutlineEffect(shadowColor, shadowSize, true, false, Set.of(OutlineEffect.Side.Bottom, OutlineEffect.Side.Right)));
-
-        border.enableEffects(effectList.getFirst(), effectList.get(1),effectList.getLast());
-
-        ui
-            .setX(new PixelConstraint(shadowSize))
-            .setY(new PixelConstraint(shadowSize));
-
-        replaceChild(ui, border);
-        border.addChild(ui);
     }
 
 
@@ -201,7 +148,6 @@ public class GUIs {
     private static Color getShadowColor(UIComponent element) {
         Color elementColor = element.getColor();
         Color background = element.getParent().getColor();
-
 
         float[] bgHsb = Color.RGBtoHSB(background.getRed(), background.getGreen(), background.getBlue(), null);
         float[] elHsb = Color.RGBtoHSB(elementColor.getRed(), elementColor.getGreen(), elementColor.getBlue(), null);
@@ -219,7 +165,6 @@ public class GUIs {
 
         Color shadow = Color.getHSBColor(shadowHsb[0], shadowHsb[1], shadowHsb[2]);
         return new Color(shadow.getRed(), shadow.getGreen(), shadow.getBlue(), Math.round(shadowAlpha * 255));
-
 
     }
 

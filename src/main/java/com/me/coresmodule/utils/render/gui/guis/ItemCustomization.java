@@ -1,5 +1,6 @@
 package com.me.coresmodule.utils.render.gui.guis;
 
+import com.me.coresmodule.utils.render.gui.RoundedOutlineEffect;
 import gg.essential.elementa.ElementaVersion;
 import gg.essential.elementa.UIComponent;
 import gg.essential.elementa.UIConstraints;
@@ -17,6 +18,7 @@ import com.me.coresmodule.utils.render.gui.GUIs;
 
 import java.awt.*;
 import java.lang.reflect.Field;
+import java.util.EnumSet;
 
 public class ItemCustomization extends WindowScreen {
 
