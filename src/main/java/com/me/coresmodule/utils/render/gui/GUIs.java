@@ -76,7 +76,7 @@ public class GUIs {
 
     }
 
-    // TODO: Try making it without effect to see if there's still white outline
+    // TODO: Try making it without effect to see if there's still white outline or without scissor effect
     public static void addShadow(UIComponent ui, float shadowSize) {
         float width = ui.getWidth() + shadowSize * 2;
         float height = ui.getHeight() + shadowSize * 2;
