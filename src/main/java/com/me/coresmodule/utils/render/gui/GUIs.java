@@ -39,6 +39,50 @@ public class GUIs {
         });
     }
 
+    public static void addRoundedBorder(UIComponent ui, float thickness, Color color) {
+        float width = ui.getWidth();
+        float height = ui.getHeight();
+        float rad =  ui.getRadius();
+        XConstraint x;
+        YConstraint y;
+
+        try {
+            Field xField = UIConstraints.class.getDeclaredField("x");
+            Field yField = UIConstraints.class.getDeclaredField("y");
+            xField.setAccessible(true);
+            yField.setAccessible(true);
+            x = (XConstraint) xField.get(ui.getConstraints());
+            y = (YConstraint) yField.get(ui.getConstraints());
+
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        Color shadowColor = new Color(80, 80, 80, 255); // getShadowColor(ui);
+        UIComponent border = new /*UIRoundedRectangle(rad)*/ UIBlock()
+                .setX(x)
+                .setY(y)
+                .setWidth(new PixelConstraint(width))
+                .setHeight(new PixelConstraint(height))
+                .setColor(shadowColor);
+
+        Effect ef;
+        //if (rad > 0) {
+            ef = new RoundedOutlineEffect((UIBlock) border, shadowColor, thickness, true, true);
+        //} else {
+        //    ef = new OutlineEffect(color, thickness, true, true);
+        //}
+        border.enableEffects(new ScissorEffect(), ef);
+
+        ui
+                .setX(new PixelConstraint(0))
+                .setY(new PixelConstraint(0));
+
+        replaceChild(ui, border);
+        border.addChild(ui);
+    }
+
     public static void addBorder(UIComponent ui, float thickness, Color color) {
         float width = ui.getWidth();
         float height = ui.getHeight();
@@ -66,7 +110,7 @@ public class GUIs {
                 .setHeight(new PixelConstraint(height))
                 .setColor(getShadowColor(ui));
 
-        OutlineEffect ef = new OutlineEffect(color, thickness, true, true);
+        Effect ef = new OutlineEffect(color, thickness, true, true);
         border.enableEffects(new ScissorEffect(), ef);
 
         ui

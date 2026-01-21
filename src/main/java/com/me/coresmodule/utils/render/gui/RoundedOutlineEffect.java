@@ -1,21 +1,26 @@
-package com.me.coresmodule.utils. render.gui;
+package com.me.coresmodule.utils.render. gui;
 
-import gg.essential.elementa.state. BasicState;
-import gg. essential.elementa.state.MappedState;
-import gg.essential.elementa.state. State;
-import gg.essential.universal.UGraphics;
-import gg.essential.universal. UMatrixStack;
-import gg.essential.elementa.effects.Effect;
-import kotlin.jvm.functions.Function1;
+import gg.essential.elementa.components.UIBlock;
+import gg.essential. elementa.effects.Effect;
+import gg. essential.elementa.state.BasicState;
+import gg.essential.elementa.state. MappedState;
+import gg.essential.elementa.state.State;
+import gg. essential.universal.UMatrixStack;
+import kotlin.jvm. functions.Function1;
 
 import java.awt.Color;
+import java.lang.reflect.InvocationTargetException;
 import java.util.EnumSet;
 import java.util.Set;
 
 /**
- * Draws a rounded outline that follows the shape of UIRoundedRectangle components.
+ * Draws a basic, rectangular outline of the specified color and width around
+ * this component. The outline will be drawn before this component's children are drawn,
+ * so all children will render above the outline.
  */
 public class RoundedOutlineEffect extends Effect {
+    private final UIBlock UIBLOCK;
+
     private boolean hasLeft;
     private boolean hasTop;
     private boolean hasRight;
@@ -27,54 +32,64 @@ public class RoundedOutlineEffect extends Effect {
     public boolean drawAfterChildren;
     public boolean drawInsideChildren;
     private Set<Side> sides;
-    private int segments = 16; // Number of segments for rounded corners
 
     // Main constructor
     public RoundedOutlineEffect(
+            UIBlock uiBlock,
             State<Color> color,
             State<Float> width,
             boolean drawAfterChildren,
             boolean drawInsideChildren,
             Set<Side> sides
     ) {
+        this.UIBLOCK = uiBlock;
         this.drawAfterChildren = drawAfterChildren;
         this.drawInsideChildren = drawInsideChildren;
+        this.sides = sides;
 
         this.hasLeft = sides. contains(Side.Left);
         this.hasTop = sides.contains(Side.Top);
         this.hasRight = sides.contains(Side.Right);
         this.hasBottom = sides.contains(Side.Bottom);
 
-        this.colorState = color.map((Function1<? super Color, ? extends Color>) (Color c) -> c);
-        this.widthState = width.map((Function1<?  super Float, ? extends Float>) (Float w) -> w);
-        this.sides = sides;
+        this.colorState = color.map((Function1<? super Color, ?  extends Color>) (Color c) -> c);
+        this.widthState = width.map((Function1<? super Float, ? extends Float>) (Float w) -> w);
     }
 
     // Convenience constructor with Color and float
     public RoundedOutlineEffect(
+            UIBlock uiBlock,
             Color color,
             float width,
             boolean drawAfterChildren,
             boolean drawInsideChildren,
             Set<Side> sides
     ) {
-        this(new BasicState<>(color), new BasicState<>(width), drawAfterChildren, drawInsideChildren, sides);
+        this(uiBlock, new BasicState<>(color), new BasicState<>(width), drawAfterChildren, drawInsideChildren, sides);
     }
 
-    // Overloaded constructors
-    public RoundedOutlineEffect(State<Color> color, State<Float> width) {
-        this(color, width, false, false, EnumSet.of(Side. Left, Side.Top, Side. Right, Side.Bottom));
+    // Overloaded constructors with defaults
+    public RoundedOutlineEffect(UIBlock uiBlock, State<Color> color, State<Float> width) {
+        this(uiBlock, color, width, false, false, EnumSet.of(Side.Left, Side.Top, Side.Right, Side.Bottom));
     }
 
-    public RoundedOutlineEffect(Color color, float width) {
-        this(color, width, false, false, EnumSet.of(Side.Left, Side.Top, Side.Right, Side.Bottom));
+    public RoundedOutlineEffect(UIBlock uiBlock, Color color, float width) {
+        this(uiBlock, color, width, false, false, EnumSet.of(Side.Left, Side.Top, Side.Right, Side.Bottom));
     }
 
-    public RoundedOutlineEffect(Color color, float width, boolean drawAfterChildren, boolean drawInsideChildren) {
-        this(color, width, drawAfterChildren, drawInsideChildren, EnumSet.of(Side.Left, Side.Top, Side.Right, Side.Bottom));
+    public RoundedOutlineEffect(UIBlock uiBlock, Color color, float width, boolean drawAfterChildren, boolean drawInsideChildren) {
+        this(uiBlock, color, width, drawAfterChildren, drawInsideChildren, EnumSet.of(Side.Left, Side.Top, Side.Right, Side.Bottom));
+    }
+
+    public RoundedOutlineEffect(UIBlock uiBlock, State<Color> color, State<Float> width, boolean drawAfterChildren, boolean drawInsideChildren) {
+        this(uiBlock, color, width, drawAfterChildren, drawInsideChildren, EnumSet.of(Side. Left, Side.Top, Side. Right, Side.Bottom));
     }
 
     // Getters and setters
+    public UIBlock getUIBlock() {
+        return UIBLOCK;
+    }
+
     public Color getColor() {
         return colorState.get();
     }
@@ -97,7 +112,7 @@ public class RoundedOutlineEffect extends Effect {
     }
 
     public RoundedOutlineEffect bindWidth(State<Float> state) {
-        widthState.rebind(state);
+        widthState. rebind(state);
         return this;
     }
 
@@ -110,11 +125,11 @@ public class RoundedOutlineEffect extends Effect {
         this.hasLeft = sides.contains(Side.Left);
         this.hasTop = sides.contains(Side.Top);
         this.hasRight = sides.contains(Side.Right);
-        this.hasBottom = sides. contains(Side.Bottom);
+        this.hasBottom = sides.contains(Side. Bottom);
     }
 
     public RoundedOutlineEffect addSide(Side side) {
-        Set<Side> newSides = EnumSet. copyOf(sides);
+        Set<Side> newSides = EnumSet.copyOf(sides);
         newSides.add(side);
         setSides(newSides);
         return this;
@@ -125,10 +140,6 @@ public class RoundedOutlineEffect extends Effect {
         newSides.remove(side);
         setSides(newSides);
         return this;
-    }
-
-    public void setSegments(int segments) {
-        this.segments = Math.max(4, segments);
     }
 
     @Override
@@ -150,27 +161,11 @@ public class RoundedOutlineEffect extends Effect {
         float width = widthState.get();
 
         double left = boundComponent.getLeft();
-        double right = boundComponent.getRight();
+        double right = boundComponent. getRight();
         double top = boundComponent.getTop();
         double bottom = boundComponent.getBottom();
-        float radius = boundComponent.getRadius();
 
-        // Clamp radius to not exceed half of the smallest dimension
-        float maxRadius = (float) Math.min(right - left, bottom - top) / 2f;
-        radius = Math.min(radius, maxRadius);
-
-        if (radius <= 0) {
-            // No rounding, use square outline
-            drawSquareOutline(matrixStack, color, width, left, right, top, bottom);
-            return;
-        }
-
-        // Draw rounded outline
-        drawRoundedOutline(matrixStack, color, width, left, right, top, bottom, radius);
-    }
-
-    private void drawSquareOutline(UMatrixStack matrixStack, Color color, float width,
-                                   double left, double right, double top, double bottom) {
+        // Calculate bounds for each side
         double leftBoundsFirst, leftBoundsSecond;
         if (drawInsideChildren) {
             leftBoundsFirst = left;
@@ -207,134 +202,56 @@ public class RoundedOutlineEffect extends Effect {
             bottomBoundsSecond = bottom + width;
         }
 
+        // Left outline block
         if (hasLeft) {
             drawBlock(matrixStack, color, leftBoundsFirst, top, leftBoundsSecond, bottom);
         }
 
+        // Top outline block
         if (hasTop) {
             drawBlock(matrixStack, color, left, topBoundsFirst, right, topBoundsSecond);
         }
 
+        // Right outline block
         if (hasRight) {
             drawBlock(matrixStack, color, rightBoundsFirst, top, rightBoundsSecond, bottom);
         }
 
+        // Bottom outline block
         if (hasBottom) {
             drawBlock(matrixStack, color, left, bottomBoundsFirst, right, bottomBoundsSecond);
         }
 
-        if (!drawInsideChildren) {
+        if (! drawInsideChildren) {
+            // Top left square
             if (hasLeft && hasTop) {
                 drawBlock(matrixStack, color, leftBoundsFirst, topBoundsFirst, left, top);
             }
+
+            // Top right square
             if (hasRight && hasTop) {
                 drawBlock(matrixStack, color, right, topBoundsFirst, rightBoundsSecond, top);
             }
+
+            // Bottom right square
             if (hasRight && hasBottom) {
                 drawBlock(matrixStack, color, right, bottom, rightBoundsSecond, bottomBoundsSecond);
             }
+
+            // Bottom left square
             if (hasBottom && hasLeft) {
                 drawBlock(matrixStack, color, leftBoundsFirst, bottom, left, bottomBoundsSecond);
             }
         }
     }
 
-    private void drawRoundedOutline(UMatrixStack matrixStack, Color color, float width,
-                                    double left, double right, double top, double bottom, float radius) {
-        // Calculate inner and outer radii
-        float outerRadius, innerRadius;
-        if (drawInsideChildren) {
-            outerRadius = radius;
-            innerRadius = Math.max(0, radius - width);
-        } else {
-            outerRadius = radius + width;
-            innerRadius = radius;
-        }
-
-        // Calculate the straight edge positions
-        double leftEdge = drawInsideChildren ? left : left - width;
-        double rightEdge = drawInsideChildren ? right :  right + width;
-        double topEdge = drawInsideChildren ?  top : top - width;
-        double bottomEdge = drawInsideChildren ? bottom : bottom + width;
-
-        // Draw the four straight edges (excluding corners)
-        if (hasLeft) {
-            drawBlock(matrixStack, color, leftEdge, top + radius, leftEdge + width, bottom - radius);
-        }
-
-        if (hasTop) {
-            drawBlock(matrixStack, color, left + radius, topEdge, right - radius, topEdge + width);
-        }
-
-        if (hasRight) {
-            drawBlock(matrixStack, color, rightEdge - width, top + radius, rightEdge, bottom - radius);
-        }
-
-        if (hasBottom) {
-            drawBlock(matrixStack, color, left + radius, bottomEdge - width, right - radius, bottomEdge);
-        }
-
-        // Draw the four rounded corners
-        if (hasLeft && hasTop) {
-            drawRoundedCorner(matrixStack, color, left + radius, top + radius, innerRadius, outerRadius, 180, 270);
-        }
-
-        if (hasRight && hasTop) {
-            drawRoundedCorner(matrixStack, color, right - radius, top + radius, innerRadius, outerRadius, 270, 360);
-        }
-
-        if (hasRight && hasBottom) {
-            drawRoundedCorner(matrixStack, color, right - radius, bottom - radius, innerRadius, outerRadius, 0, 90);
-        }
-
-        if (hasLeft && hasBottom) {
-            drawRoundedCorner(matrixStack, color, left + radius, bottom - radius, innerRadius, outerRadius, 90, 180);
-        }
-    }
-
-    private void drawRoundedCorner(UMatrixStack matrixStack, Color color,
-                                   double centerX, double centerY,
-                                   float innerRadius, float outerRadius,
-                                   float startAngle, float endAngle) {
-        UGraphics.enableBlend();
-        UGraphics.tryBlendFuncSeparate(770, 771, 1, 0);
-
-        UGraphics buffer = UGraphics.getFromTessellator();
-        buffer.beginWithDefaultShader(UGraphics.DrawMode.QUADS, UGraphics.CommonVertexFormats. POSITION_COLOR);
-
-        float red = color.getRed() / 255f;
-        float green = color.getGreen() / 255f;
-        float blue = color.getBlue() / 255f;
-        float alpha = color.getAlpha() / 255f;
-
-        int segmentCount = segments / 4; // Segments per corner
-        float angleStep = (endAngle - startAngle) / segmentCount;
-
-        for (int i = 0; i < segmentCount; i++) {
-            float angle1 = (float) Math.toRadians(startAngle + i * angleStep);
-            float angle2 = (float) Math.toRadians(startAngle + (i + 1) * angleStep);
-
-            // Outer arc points
-            double x1Outer = centerX + Math.cos(angle1) * outerRadius;
-            double y1Outer = centerY + Math. sin(angle1) * outerRadius;
-            double x2Outer = centerX + Math.cos(angle2) * outerRadius;
-            double y2Outer = centerY + Math.sin(angle2) * outerRadius;
-
-            // Inner arc points
-            double x1Inner = centerX + Math.cos(angle1) * innerRadius;
-            double y1Inner = centerY + Math.sin(angle1) * innerRadius;
-            double x2Inner = centerX + Math.cos(angle2) * innerRadius;
-            double y2Inner = centerY + Math.sin(angle2) * innerRadius;
-
-            // Draw quad for this segment
-            buffer.pos(matrixStack, x1Inner, y1Inner, 0.0).color(red, green, blue, alpha).endVertex();
-            buffer.pos(matrixStack, x2Inner, y2Inner, 0.0).color(red, green, blue, alpha).endVertex();
-            buffer.pos(matrixStack, x2Outer, y2Outer, 0.0).color(red, green, blue, alpha).endVertex();
-            buffer.pos(matrixStack, x1Outer, y1Outer, 0.0).color(red, green, blue, alpha).endVertex();
-        }
-
-        buffer.drawDirect();
-        UGraphics. disableBlend();
+    private void drawBlock(UMatrixStack matrixStack, Color color, double left, double top, double right, double bottom) {
+        UIBlock.Companion.drawBlock(color, left, top, right, bottom);
+/*        try {
+            UIBlock.class.getMethod("drawBlock$Elementa", UMatrixStack.class, double.class, double.class, double.class, double.class).invoke(this.UIBLOCK, matrixStack, left, top, right, bottom);
+        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }*/
     }
 
     public enum Side {
@@ -342,27 +259,5 @@ public class RoundedOutlineEffect extends Effect {
         Top,
         Right,
         Bottom
-    }
-
-    @SuppressWarnings("deprecation")
-    private void drawBlock(UMatrixStack matrixStack, Color color, double x1, double y1, double x2, double y2) {
-        UGraphics.enableBlend();
-        UGraphics.tryBlendFuncSeparate(770, 771, 1, 0);
-
-        UGraphics buffer = UGraphics.getFromTessellator();
-        buffer.beginWithDefaultShader(UGraphics.DrawMode.QUADS, UGraphics.CommonVertexFormats.POSITION_COLOR);
-
-        float red = color.getRed() / 255f;
-        float green = color.getGreen() / 255f;
-        float blue = color.getBlue() / 255f;
-        float alpha = color.getAlpha() / 255f;
-
-        buffer. pos(matrixStack, x1, y2, 0.0).color(red, green, blue, alpha).endVertex();
-        buffer.pos(matrixStack, x2, y2, 0.0).color(red, green, blue, alpha).endVertex();
-        buffer.pos(matrixStack, x2, y1, 0.0).color(red, green, blue, alpha).endVertex();
-        buffer.pos(matrixStack, x1, y1, 0.0).color(red, green, blue, alpha).endVertex();
-
-        buffer.drawDirect();
-        UGraphics.disableBlend();
     }
 }
