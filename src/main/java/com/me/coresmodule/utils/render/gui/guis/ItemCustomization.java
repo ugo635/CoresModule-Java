@@ -85,7 +85,7 @@ public class ItemCustomization extends WindowScreen {
         main.addChild(titleBox);
         titleBox.addChild(titleText);
         //GUIs.addShadow(titleBox);
-        GUIs.addRoundedBorder(titleBox, 1.5f, Color.WHITE);
+        GUIs.addRoundedBorder(titleBox, 1.5f, new Color (80, 80, 80, 255));
 
         // <div>
         // <input type="text" placeholder="Enter item name">

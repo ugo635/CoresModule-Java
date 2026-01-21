@@ -61,12 +61,12 @@ public class GUIs {
         }
 
         // Create border container
-        UIBlock border = (UIBlock) new UIBlock()
+        UIBlock border = (UIBlock) new UIRoundedRectangle(rad)
                 .setX(x)
                 .setY(y)
                 .setWidth(new PixelConstraint(width))
                 .setHeight(new PixelConstraint(height))
-                .setColor(color); // Transparent background
+                .setColor(color);
 
         // Create the rounded outline effect with proper parameters
         RoundedOutlineEffect outlineEffect = new RoundedOutlineEffect(

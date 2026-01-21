@@ -1,11 +1,13 @@
-package com.me.coresmodule.utils. render. gui;
+package com.me.coresmodule.utils. render.gui;
 
+import gg.essential.elementa.UIComponent;
 import gg.essential.elementa.components.UIBlock;
+import gg.essential. elementa.components.UIRoundedRectangle;
 import gg.essential.elementa.effects.Effect;
 import gg.essential. elementa.state.BasicState;
 import gg.essential.elementa.state.MappedState;
-import gg. essential.elementa.state.State;
-import gg.essential. universal.UMatrixStack;
+import gg.essential.elementa.state.State;
+import gg.essential.universal.UMatrixStack;
 import kotlin.jvm.functions.Function1;
 
 import java.awt. Color;
@@ -16,7 +18,7 @@ import java.util.Set;
  * Draws a rounded outline around the component, following any corner curves.
  */
 public class RoundedOutlineEffect extends Effect {
-    private final UIBlock UIBLOCK;
+    private final UIComponent UICOMPONENT;
 
     private boolean hasLeft;
     private boolean hasTop;
@@ -35,9 +37,9 @@ public class RoundedOutlineEffect extends Effect {
     public boolean drawInsideChildren;
     private Set<Side> sides;
 
-    // Main constructor with radius support
+    // Main constructor with radius support (accepts UIComponent)
     public RoundedOutlineEffect(
-            UIBlock uiBlock,
+            UIComponent uiComponent,
             State<Color> color,
             State<Float> width,
             State<Float> radius,
@@ -45,7 +47,7 @@ public class RoundedOutlineEffect extends Effect {
             boolean drawInsideChildren,
             Set<Side> sides
     ) {
-        this.UIBLOCK = uiBlock;
+        this. UICOMPONENT = uiComponent;
         this.drawAfterChildren = drawAfterChildren;
         this.drawInsideChildren = drawInsideChildren;
         this.sides = sides;
@@ -54,10 +56,51 @@ public class RoundedOutlineEffect extends Effect {
 
         this.colorState = color. map((Function1<?  super Color, ? extends Color>) (Color c) -> c);
         this.widthState = width.map((Function1<? super Float, ? extends Float>) (Float w) -> w);
-        this.radiusState = radius.map((Function1<? super Float, ? extends Float>) (Float r) -> r);
+        this.radiusState = radius.map((Function1<? super Float, ?  extends Float>) (Float r) -> r);
     }
 
-    // Convenience constructors
+    // ============= UIRoundedRectangle constructors (auto-detect radius) =============
+
+    // Auto-detect radius from UIRoundedRectangle
+    public RoundedOutlineEffect(
+            UIRoundedRectangle uiRoundedRect,
+            State<Color> color,
+            State<Float> width,
+            boolean drawAfterChildren,
+            boolean drawInsideChildren,
+            Set<Side> sides
+    ) {
+        this((UIComponent) uiRoundedRect, color, width, new BasicState<>(uiRoundedRect. getRadius()),
+                drawAfterChildren, drawInsideChildren, sides);
+    }
+
+    public RoundedOutlineEffect(
+            UIRoundedRectangle uiRoundedRect,
+            Color color,
+            float width,
+            boolean drawAfterChildren,
+            boolean drawInsideChildren,
+            Set<Side> sides
+    ) {
+        this((UIComponent) uiRoundedRect, new BasicState<>(color), new BasicState<>(width),
+                new BasicState<>(uiRoundedRect.getRadius()), drawAfterChildren, drawInsideChildren, sides);
+    }
+
+    public RoundedOutlineEffect(UIRoundedRectangle uiRoundedRect, State<Color> color, State<Float> width) {
+        this(uiRoundedRect, color, width, false, false, getAllSides());
+    }
+
+    public RoundedOutlineEffect(UIRoundedRectangle uiRoundedRect, Color color, float width) {
+        this(uiRoundedRect, color, width, false, false, getAllSides());
+    }
+
+    public RoundedOutlineEffect(UIRoundedRectangle uiRoundedRect, Color color, float width,
+                                boolean drawAfterChildren, boolean drawInsideChildren) {
+        this(uiRoundedRect, color, width, drawAfterChildren, drawInsideChildren, getAllSides());
+    }
+
+    // ============= UIBlock constructors (manual radius) =============
+
     public RoundedOutlineEffect(
             UIBlock uiBlock,
             Color color,
@@ -67,29 +110,58 @@ public class RoundedOutlineEffect extends Effect {
             boolean drawInsideChildren,
             Set<Side> sides
     ) {
-        this(uiBlock, new BasicState<>(color), new BasicState<>(width), new BasicState<>(radius), drawAfterChildren, drawInsideChildren, sides);
+        this((UIComponent) uiBlock, new BasicState<>(color), new BasicState<>(width), new BasicState<>(radius),
+                drawAfterChildren, drawInsideChildren, sides);
     }
 
     public RoundedOutlineEffect(UIBlock uiBlock, State<Color> color, State<Float> width, State<Float> radius) {
-        this(uiBlock, color, width, radius, false, false, getAllSides());
+        this((UIComponent) uiBlock, color, width, radius, false, false, getAllSides());
     }
 
     public RoundedOutlineEffect(UIBlock uiBlock, Color color, float width, float radius) {
-        this(uiBlock, color, width, radius, false, false, getAllSides());
+        this((UIComponent) uiBlock, color, width, radius, false, false, getAllSides());
     }
 
     public RoundedOutlineEffect(UIBlock uiBlock, Color color, float width) {
-        this(uiBlock, color, width, 0f, false, false, getAllSides());
+        this((UIComponent) uiBlock, color, width, 0f, false, false, getAllSides());
+    }
+
+    public RoundedOutlineEffect(UIBlock uiBlock, Color color, float width,
+                                boolean drawAfterChildren, boolean drawInsideChildren) {
+        this((UIComponent) uiBlock, color, width, 0f, drawAfterChildren, drawInsideChildren, getAllSides());
+    }
+
+    // ============= Generic UIComponent constructors =============
+
+    public RoundedOutlineEffect(
+            UIComponent uiComponent,
+            Color color,
+            float width,
+            float radius,
+            boolean drawAfterChildren,
+            boolean drawInsideChildren,
+            Set<Side> sides
+    ) {
+        this(uiComponent, new BasicState<>(color), new BasicState<>(width), new BasicState<>(radius),
+                drawAfterChildren, drawInsideChildren, sides);
+    }
+
+    public RoundedOutlineEffect(UIComponent uiComponent, Color color, float width, float radius) {
+        this(uiComponent, color, width, radius, false, false, getAllSides());
+    }
+
+    public RoundedOutlineEffect(UIComponent uiComponent, Color color, float width) {
+        this(uiComponent, color, width, 0f, false, false, getAllSides());
     }
 
     private static Set<Side> getAllSides() {
         return EnumSet.of(Side.Left, Side.Top, Side.Right, Side.Bottom,
-                Side.TopLeft, Side.TopRight, Side. BottomLeft, Side.BottomRight);
+                Side.TopLeft, Side.TopRight, Side.BottomLeft, Side.BottomRight);
     }
 
     // Getters and setters
-    public UIBlock getUIBlock() {
-        return UIBLOCK;
+    public UIComponent getUIComponent() {
+        return UICOMPONENT;
     }
 
     public Color getColor() {
@@ -167,7 +239,7 @@ public class RoundedOutlineEffect extends Effect {
 
     @Override
     public void beforeChildrenDraw(UMatrixStack matrixStack) {
-        if (! drawAfterChildren) {
+        if (!drawAfterChildren) {
             drawOutline(matrixStack);
         }
     }
@@ -298,12 +370,12 @@ public class RoundedOutlineEffect extends Effect {
         // Draw the four sides (excluding corners)
         if (hasTop) {
             UIBlock. Companion.drawBlock(matrixStack, color,
-                    left + outerRadius, top - (drawInsideChildren ? 0 : width),
+                    left + outerRadius, top - (drawInsideChildren ? 0 :  width),
                     right - outerRadius, top + (drawInsideChildren ? width : 0));
         }
 
         if (hasBottom) {
-            UIBlock.Companion.drawBlock(matrixStack, color,
+            UIBlock. Companion.drawBlock(matrixStack, color,
                     left + outerRadius, bottom - (drawInsideChildren ? width : 0),
                     right - outerRadius, bottom + (drawInsideChildren ? 0 : width));
         }
@@ -368,12 +440,12 @@ public class RoundedOutlineEffect extends Effect {
 
             // Calculate bounding box for this segment
             double minX = Math. min(Math.min(x1Inner, x1Outer), Math.min(x2Inner, x2Outer));
-            double maxX = Math.max(Math. max(x1Inner, x1Outer), Math.max(x2Inner, x2Outer));
-            double minY = Math. min(Math.min(y1Inner, y1Outer), Math.min(y2Inner, y2Outer));
-            double maxY = Math.max(Math. max(y1Inner, y1Outer), Math.max(y2Inner, y2Outer));
+            double maxX = Math.max(Math.max(x1Inner, x1Outer), Math.max(x2Inner, x2Outer));
+            double minY = Math.min(Math.min(y1Inner, y1Outer), Math.min(y2Inner, y2Outer));
+            double maxY = Math.max(Math.max(y1Inner, y1Outer), Math.max(y2Inner, y2Outer));
 
             // Draw a small block for this arc segment using UIBlock. drawBlock
-            UIBlock. Companion.drawBlock(matrixStack, color, minX, minY, maxX, maxY);
+            UIBlock.Companion.drawBlock(matrixStack, color, minX, minY, maxX, maxY);
         }
     }
 
