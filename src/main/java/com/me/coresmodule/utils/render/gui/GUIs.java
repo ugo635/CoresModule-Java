@@ -22,6 +22,7 @@ import java.awt.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.Set;
 
 import static com.me.coresmodule.CoresModule.mc;
@@ -40,15 +41,15 @@ public class GUIs {
     }
 
     public static void addRoundedBorder(UIComponent ui, float thickness, Color color) {
-        float width = ui.getWidth();
+        float width = ui. getWidth();
         float height = ui.getHeight();
-        float rad =  ui.getRadius();
+        float rad = ui.getRadius();
         XConstraint x;
         YConstraint y;
 
         try {
             Field xField = UIConstraints.class.getDeclaredField("x");
-            Field yField = UIConstraints.class.getDeclaredField("y");
+            Field yField = UIConstraints.class. getDeclaredField("y");
             xField.setAccessible(true);
             yField.setAccessible(true);
             x = (XConstraint) xField.get(ui.getConstraints());
@@ -59,26 +60,42 @@ public class GUIs {
             return;
         }
 
-        Color shadowColor = new Color(80, 80, 80, 255); // getShadowColor(ui);
-        UIComponent border = new /*UIRoundedRectangle(rad)*/ UIBlock()
+        // Create border container
+        UIBlock border = (UIBlock) new UIBlock()
                 .setX(x)
                 .setY(y)
                 .setWidth(new PixelConstraint(width))
                 .setHeight(new PixelConstraint(height))
-                .setColor(shadowColor);
+                .setColor(new Color(0, 0, 0, 0)); // Transparent background
 
-        Effect ef;
-        //if (rad > 0) {
-            ef = new RoundedOutlineEffect((UIBlock) border, shadowColor, thickness, true, true);
-        //} else {
-        //    ef = new OutlineEffect(color, thickness, true, true);
-        //}
-        border.enableEffects(new ScissorEffect(), ef);
+        // Create the rounded outline effect with proper parameters
+        RoundedOutlineEffect outlineEffect = new RoundedOutlineEffect(
+                border,           // UIBlock
+                color,            // outline color
+                thickness,        // outline width
+                rad,              // radius to match the component's radius
+                true,             // drawAfterChildren - draw on top
+                true,             // drawInsideChildren - draw inside bounds
+                EnumSet.of(       // all sides and corners
+                        RoundedOutlineEffect.Side. Left,
+                        RoundedOutlineEffect.Side.Top,
+                        RoundedOutlineEffect.Side.Right,
+                        RoundedOutlineEffect.Side.Bottom,
+                        RoundedOutlineEffect.Side.TopLeft,
+                        RoundedOutlineEffect.Side. TopRight,
+                        RoundedOutlineEffect.Side. BottomLeft,
+                        RoundedOutlineEffect.Side. BottomRight
+                )
+        );
 
-        ui
-                .setX(new PixelConstraint(0))
+        // Enable effects on the border
+        border.enableEffects(new ScissorEffect(), outlineEffect);
+
+        // Reset original component position to be relative to border
+        ui. setX(new PixelConstraint(0))
                 .setY(new PixelConstraint(0));
 
+        // Replace the component with border wrapper
         replaceChild(ui, border);
         border.addChild(ui);
     }
