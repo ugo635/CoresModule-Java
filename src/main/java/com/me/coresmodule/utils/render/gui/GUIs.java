@@ -40,8 +40,8 @@ public class GUIs {
     }
 
     public static void addBorder(UIComponent ui, float thickness, Color color) {
-        float width = ui.getWidth() + thickness * 2;
-        float height = ui.getHeight() + thickness * 2;
+        float width = ui.getWidth();
+        float height = ui.getHeight();
         float rad =  ui.getRadius();
         XConstraint x;
         YConstraint y;
@@ -63,17 +63,18 @@ public class GUIs {
                 .setX(x)
                 .setY(y)
                 .setWidth(new PixelConstraint(width))
-                .setHeight(new PixelConstraint(height));
+                .setHeight(new PixelConstraint(height))
+                .setColor(getShadowColor(ui));
 
-        border.enableEffects(new ScissorEffect(), new OutlineEffect(color, 2f, true, false));
+        OutlineEffect ef = new OutlineEffect(color, thickness, true, true);
+        border.enableEffects(new ScissorEffect(), ef);
 
         ui
-                .setX(new PixelConstraint(thickness))
-                .setY(new PixelConstraint(thickness));
+                .setX(new PixelConstraint(0))
+                .setY(new PixelConstraint(0));
 
         replaceChild(ui, border);
         border.addChild(ui);
-
     }
 
     // TODO: Try making it without effect to see if there's still white outline or without scissor effect
