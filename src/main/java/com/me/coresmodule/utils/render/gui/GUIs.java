@@ -4,12 +4,16 @@ import com.me.coresmodule.utils.events.Register;
 import com.me.coresmodule.utils.render.gui.guis.ItemCustomization;
 import gg.essential.elementa.UIComponent;
 import gg.essential.elementa.UIConstraints;
+import gg.essential.elementa.components.GradientComponent;
 import gg.essential.elementa.components.UIBlock;
 import gg.essential.elementa.components.UIRoundedRectangle;
 import gg.essential.elementa.components.UIText;
 import gg.essential.elementa.constraints.PixelConstraint;
+import gg.essential.elementa.constraints.RelativeConstraint;
 import gg.essential.elementa.constraints.XConstraint;
 import gg.essential.elementa.constraints.YConstraint;
+import gg.essential.elementa.effects.OutlineEffect;
+import gg.essential.elementa.effects.ScissorEffect;
 import gg.essential.universal.UScreen;
 import net.minecraft.client.gui.screen.Screen;
 
@@ -34,6 +38,7 @@ public class GUIs {
 
 
 
+    // TODO: Myb try using effects like ui.enableEffects(new OutlineEffect(ui.getColor(), 2f, true, false));
     public static void addBorder(UIComponent ui, float thickness, Color color) {
         float width = ui.getWidth() + thickness * 2;
         float height = ui.getHeight() + thickness * 2;
@@ -72,7 +77,52 @@ public class GUIs {
 
     }
 
+    public static void addBorder(UIComponent ui, float thickness, Color from, Color to, GradientComponent.GradientDirection angle) {
+        float width = ui.getWidth() + thickness * 2;
+        float height = ui.getHeight() + thickness * 2;
+        float rad =  ui.getRadius();
+        XConstraint x;
+        YConstraint y;
 
+        try {
+            Field xField = UIConstraints.class.getDeclaredField("x");
+            Field yField = UIConstraints.class.getDeclaredField("y");
+            xField.setAccessible(true);
+            yField.setAccessible(true);
+            x = (XConstraint) xField.get(ui.getConstraints());
+            y = (YConstraint) yField.get(ui.getConstraints());
+
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+            return;
+        }
+
+
+        UIComponent gradient = new GradientComponent(from, to, angle)
+                .setX(new PixelConstraint(0))
+                .setY(new PixelConstraint(0))
+                .setWidth(new RelativeConstraint(1f))
+                .setHeight(new RelativeConstraint(1f));
+
+        UIComponent border = new UIRoundedRectangle(rad)
+                .setX(x)
+                .setY(y)
+                .setWidth(new PixelConstraint(width))
+                .setHeight(new PixelConstraint(height))
+                .enableEffects(new ScissorEffect(), new OutlineEffect(gradient.getColor(), 2f, true, false));
+
+        ui
+                .setX(new PixelConstraint(thickness))
+                .setY(new PixelConstraint(thickness));
+
+        replaceChild(ui, border);
+        border.addChild(ui);
+
+    }
+
+    public static void addBorder(UIComponent ui, float thickness, Color from, Color to) {
+        addBorder(ui, thickness, from, to, GradientComponent.GradientDirection.LEFT_TO_RIGHT);
+    }
 
 
 
@@ -86,7 +136,7 @@ public class GUIs {
 
 
 
-
+    // TODO: Use outline effects to make make the shadow be on Side.RIGHT/LEFT/TOP/BOTTOM?
     public static void addShadow(UIComponent ui, float shadowSize, float offsetX, float offsetY) {
         float width = ui.getWidth();
         float height = ui.getHeight();
