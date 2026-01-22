@@ -73,6 +73,17 @@ public class ItemCustomization extends WindowScreen {
         });
 
 
+        // Item Texture Display
+        UIComponent itemDisplayBox = new UIBlock()
+                .setX(new CenterConstraint())
+                .setY(new PixelConstraint(100f))
+                .setWidth(new PixelConstraint(260f))
+                .setHeight(new PixelConstraint(260f))
+                .setColor(new Color(40, 40, 40, 255));
+
+        UIComponent itemDisplay = GUIs.createItemTextureComponent();
+
+
 
 
         //main.onMouseEnterRunnable(() -> {
@@ -95,6 +106,10 @@ public class ItemCustomization extends WindowScreen {
         inputBox.addChild(input);
         GUIs.addBorder(inputBox, 1.5f, Color.WHITE);
         // </div>
+
+        // <img src="item_texture.png">
+        main.addChild(itemDisplayBox);
+        itemDisplayBox.addChild(itemDisplay);
 
         // </div>
     }

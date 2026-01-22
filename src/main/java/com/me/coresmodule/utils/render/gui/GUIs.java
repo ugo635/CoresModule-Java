@@ -1,29 +1,32 @@
 package com.me.coresmodule.utils.render.gui;
 
+import com.me.coresmodule.utils.ItemRenderingHelper;
 import com.me.coresmodule.utils.events.Register;
 import com.me.coresmodule.utils.render.gui.guis.ItemCustomization;
 import gg.essential.elementa.UIComponent;
 import gg.essential.elementa.UIConstraints;
-import gg.essential.elementa.components.GradientComponent;
-import gg.essential.elementa.components.UIBlock;
-import gg.essential.elementa.components.UIRoundedRectangle;
-import gg.essential.elementa.components.UIText;
-import gg.essential.elementa.constraints.PixelConstraint;
-import gg.essential.elementa.constraints.RelativeConstraint;
-import gg.essential.elementa.constraints.XConstraint;
-import gg.essential.elementa.constraints.YConstraint;
+import gg.essential.elementa.components.*;
+import gg.essential.elementa.constraints.*;
 import gg.essential.elementa.effects.Effect;
 import gg.essential.elementa.effects.OutlineEffect;
 import gg.essential.elementa.effects.ScissorEffect;
 import gg.essential.universal.UScreen;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.texture.NativeImage;
+import net.minecraft.client.texture.NativeImageBackedTexture;
+import net.minecraft.util.Identifier;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 import static com.me.coresmodule.CoresModule.mc;
 
@@ -173,6 +176,50 @@ public class GUIs {
         parent.removeChild(oldChild);
         parent.addChild(newChild);
         newChild.setParent(parent);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public static UIComponent createItemTextureComponent() {
+        ItemRenderingHelper helper = new ItemRenderingHelper();
+
+        // Get the BufferedImage and wrap it in a CompletableFuture
+        CompletableFuture<BufferedImage> imageFuture = CompletableFuture.supplyAsync(helper::renderHeldItemToImage);
+
+        // Create UIImage with the CompletableFuture
+
+        return new UIImage(imageFuture)
+                .setX(new CenterConstraint())
+                .setY(new CenterConstraint())
+                .setWidth(new PixelConstraint(256f))
+                .setHeight(new PixelConstraint(256f));
     }
 
 }
