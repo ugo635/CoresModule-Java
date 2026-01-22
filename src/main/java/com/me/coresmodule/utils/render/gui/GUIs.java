@@ -210,11 +210,13 @@ public class GUIs {
     public static UIComponent createItemTextureComponent() {
         ItemRenderingHelper helper = new ItemRenderingHelper();
 
-        // Get the BufferedImage and wrap it in a CompletableFuture
-        CompletableFuture<BufferedImage> imageFuture = CompletableFuture.supplyAsync(helper::renderHeldItemToImage);
+        // Execute on the CURRENT thread (render thread), not async
+        BufferedImage image = helper.renderHeldItemToImage();
+
+        // Wrap the already-rendered image in a completed future
+        CompletableFuture<BufferedImage> imageFuture = CompletableFuture.completedFuture(image);
 
         // Create UIImage with the CompletableFuture
-
         return new UIImage(imageFuture)
                 .setX(new CenterConstraint())
                 .setY(new CenterConstraint())
