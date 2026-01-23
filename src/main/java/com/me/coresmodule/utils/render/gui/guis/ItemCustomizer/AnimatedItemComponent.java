@@ -17,6 +17,7 @@ import org.lwjgl.opengl.GL11;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.InputStream;
 import java.lang.reflect.Field;
@@ -30,6 +31,10 @@ public class AnimatedItemComponent extends UIComponent {
     private BufferedImage localGlintImage;
     private ReleasedDynamicTexture currentTexture;
 
+    // Add these two lines to fix the errors
+    private long lastFrameTime = 0;
+    private static final long FRAME_TIME_MS = 50; // 20 FPS for the animation
+
     public AnimatedItemComponent() {
         loadItemTextures();
         loadLocalGlint();
@@ -38,13 +43,12 @@ public class AnimatedItemComponent extends UIComponent {
 
     private void loadLocalGlint() {
         try {
-            // Changed "textures" to "texture" to match your screenshot
             InputStream is = this.getClass().getResourceAsStream("/assets/coresmodule/texture/enchant_glint.png");
             if (is != null) {
                 localGlintImage = ImageIO.read(is);
-                System.out.println("Glint loaded successfully!"); // Debug log
+                System.out.println("Glint loaded successfully!");
             } else {
-                System.out.println("Glint file NOT found at path!"); // Debug log
+                System.out.println("Glint file NOT found at path!");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -87,14 +91,28 @@ public class AnimatedItemComponent extends UIComponent {
         BufferedImage combined = new BufferedImage(256, 256, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2d = combined.createGraphics();
 
-        // 1. Draw the shovel first
+        // 1. Draw the shovel base
         g2d.drawImage(baseItemImage, 0, 0, null);
 
-        // 2. Overlap the glint statically
+        // 2. Overlap the MOVING glint
         if (localGlintImage != null) {
-            // SRC_ATOP: Draw the glint ONLY where the shovel pixels are
             g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, 0.5f));
-            g2d.drawImage(localGlintImage, 0, 0, 256, 256, null);
+
+            // Calculate offset based on time
+            float speed = 0.15f;
+            long time = System.currentTimeMillis() % 10000;
+            int offset = (int) (time * speed);
+
+            AffineTransform old = g2d.getTransform();
+            g2d.rotate(Math.toRadians(-45), 128, 128);
+
+            // Tile the glint to loop
+            for (int x = -512; x < 512; x += 256) {
+                for (int y = -512; y < 512; y += 256) {
+                    g2d.drawImage(localGlintImage, x + (offset % 256), y + (offset % 256), 256, 256, null);
+                }
+            }
+            g2d.setTransform(old);
         }
 
         g2d.dispose();
@@ -111,6 +129,14 @@ public class AnimatedItemComponent extends UIComponent {
     @Override
     public void draw(UMatrixStack matrixStack) {
         beforeDrawCompat(matrixStack);
+
+        // Update animation logic
+        long currentTime = System.currentTimeMillis();
+        if (currentTime - lastFrameTime >= FRAME_TIME_MS) {
+            lastFrameTime = currentTime;
+            updateTexture();
+        }
+
         if (currentTexture == null) return;
 
         float x = getLeft();
@@ -126,9 +152,24 @@ public class AnimatedItemComponent extends UIComponent {
         int windowHeight = mc.getWindow().getHeight();
 
         GL11.glEnable(GL11.GL_SCISSOR_TEST);
-        GL11.glScissor((int)(x * scale), (int)(windowHeight - (y + height) * scale), (int)(width * scale), (int)(height * scale));
+        GL11.glScissor(
+                (int) (x * scale),
+                (int) (windowHeight - (y + height) * scale),
+                (int) (width * scale),
+                (int) (height * scale)
+        );
 
-        drawTexture(matrixStack, currentTexture, Color.WHITE, (double)x, (double)y, (double)width, (double)height, GL11.GL_NEAREST, GL11.GL_NEAREST);
+        drawTexture(
+                matrixStack,
+                currentTexture,
+                Color.WHITE,
+                (double) x,
+                (double) y,
+                (double) width,
+                (double) height,
+                GL11.GL_NEAREST,
+                GL11.GL_NEAREST
+        );
 
         GL11.glDisable(GL11.GL_SCISSOR_TEST);
         super.draw(matrixStack);
