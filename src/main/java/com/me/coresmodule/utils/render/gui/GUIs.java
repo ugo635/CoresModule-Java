@@ -52,7 +52,6 @@ public class GUIs {
             return;
         }
 
-        // Decoy to create the outline effect
         UIBlock decoy = (UIBlock) new UIBlock()
                 .setX(x)
                 .setY(y)
@@ -60,7 +59,6 @@ public class GUIs {
                 .setHeight(new PixelConstraint(height))
                 .setColor(new Color(0, 0, 0, 0));
 
-        // Main gui
         UIRoundedRectangle border = (UIRoundedRectangle) new UIRoundedRectangle(rad)
                 .setX(x)
                 .setY(y)
@@ -68,16 +66,13 @@ public class GUIs {
                 .setHeight(new PixelConstraint(height))
                 .setColor(new Color(0, 0, 0, 0));
 
-        // Create the rounded outline effect with proper parameters
         RoundedOutlineEffect outlineEffect = new RoundedOutlineEffect(decoy, color, thickness, rad * 0.75f, true, true, sides);
 
         border.enableEffects(new ScissorEffect(), outlineEffect);
 
-        // Reset original component position to be relative to border
         ui.setX(new PixelConstraint(0))
                 .setY(new PixelConstraint(0));
 
-        // Replace the component with border wrapper
         replaceChild(ui, border);
         border.addChild(ui);
     }
@@ -116,17 +111,15 @@ public class GUIs {
         Effect ef = new OutlineEffect(color, thickness, true, true);
         border.enableEffects(new ScissorEffect(), ef);
 
-        ui
-                .setX(new PixelConstraint(0))
+        ui.setX(new PixelConstraint(0))
                 .setY(new PixelConstraint(0));
 
         replaceChild(ui, border);
         border.addChild(ui);
     }
 
-    // TODO: Try making it without effect to see if there's still white outline or without scissor effect
     public static void addShadow(UIComponent ui, float shadowSize) {
-
+        // TODO: Implement shadow effect
     }
 
     public static void addShadow(UIComponent ui) {
@@ -153,7 +146,6 @@ public class GUIs {
 
         Color shadow = Color.getHSBColor(shadowHsb[0], shadowHsb[1], shadowHsb[2]);
         return new Color(shadow.getRed(), shadow.getGreen(), shadow.getBlue(), Math.round(shadowAlpha * 255));
-
     }
 
     public static void replaceChild(UIComponent oldChild, UIComponent newChild) {
@@ -163,12 +155,13 @@ public class GUIs {
         newChild.setParent(parent);
     }
 
-    public static UIComponent createItemTextureComponent() {
-        // Return the animated component instead of static UIImage
-        return new AnimatedItemComponent()
-                .setX(new CenterConstraint())
-                .setY(new CenterConstraint())
-                .setWidth(new PixelConstraint(256f))
-                .setHeight(new PixelConstraint(256f));
+    /**
+     * Creates an animated item texture component that shows the currently held item.
+     * The component will automatically animate enchantment glints if the item has them.
+     *
+     * @return AnimatedItemComponent instance that can be refreshed
+     */
+    public static AnimatedItemComponent createItemTextureComponent() {
+        return new AnimatedItemComponent();
     }
 }

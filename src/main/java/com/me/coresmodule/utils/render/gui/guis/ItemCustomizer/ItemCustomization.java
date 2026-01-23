@@ -74,7 +74,11 @@ public class ItemCustomization extends WindowScreen {
                 .setHeight(new PixelConstraint(260f))
                 .setColor(new Color(40, 40, 40, 255));
 
-        UIComponent itemDisplay = GUIs.createItemTextureComponent();
+        AnimatedItemComponent itemDisplay = (AnimatedItemComponent) GUIs.createItemTextureComponent()
+                .setX(new CenterConstraint())
+                .setY(new CenterConstraint())
+                .setWidth(new PixelConstraint(256f))
+                .setHeight(new PixelConstraint(256f));
 
 
 
