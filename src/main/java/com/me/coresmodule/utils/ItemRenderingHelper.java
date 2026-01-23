@@ -49,6 +49,12 @@ public class ItemRenderingHelper {
             // Use nearest-neighbor for crisp pixel art scaling
             g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
             g2d.drawImage(spriteImage, 0, 0, 256, 256, null);
+
+            // Add enchantment glint if the item has one
+            if (heldItem.hasGlint()) {
+                addEnchantmentGlint(g2d, 256, 256);
+            }
+
             g2d.dispose();
 
             return scaledImage;
@@ -57,6 +63,73 @@ public class ItemRenderingHelper {
             e.printStackTrace();
             return createEmptyImage();
         }
+    }
+
+    private void addEnchantmentGlint(Graphics2D g2d, int width, int height) {
+        try {
+            // Get the enchantment glint texture
+            Identifier glintId = Identifier.of("minecraft", "textures/misc/enchanted_glint_item.png");
+            Sprite glintSprite = mc.getSpriteAtlas(Identifier.of("minecraft", "textures/atlas/blocks.png"))
+                    .apply(Identifier.of("minecraft", "misc/enchanted_glint_item"));
+
+            BufferedImage glintImage = getBufferedImage(glintSprite);
+
+            // Scale the glint to match the item size
+            BufferedImage scaledGlint = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D glintG2d = scaledGlint.createGraphics();
+            glintG2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+
+            // Tile the glint texture to fill the area
+            int glintWidth = glintImage.getWidth();
+            int glintHeight = glintImage.getHeight();
+            for (int y = 0; y < height; y += glintHeight) {
+                for (int x = 0; x < width; x += glintWidth) {
+                    glintG2d.drawImage(glintImage, x, y, null);
+                }
+            }
+            glintG2d.dispose();
+
+            // Apply the glint with a purple tint and transparency
+            BufferedImage tintedGlint = applyPurpleTint(scaledGlint);
+
+            // Overlay the glint with partial transparency
+            g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));
+            g2d.drawImage(tintedGlint, 0, 0, null);
+            g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
+
+        } catch (Exception e) {
+            // If glint loading fails, just skip it
+            e.printStackTrace();
+        }
+    }
+
+    private BufferedImage applyPurpleTint(BufferedImage source) {
+        BufferedImage tinted = new BufferedImage(source.getWidth(), source.getHeight(), BufferedImage.TYPE_INT_ARGB);
+
+        // Purple color for enchantment glint (similar to Minecraft's)
+        float purpleR = 0.5f;
+        float purpleG = 0.25f;
+        float purpleB = 0.8f;
+
+        for (int y = 0; y < source.getHeight(); y++) {
+            for (int x = 0; x < source.getWidth(); x++) {
+                int argb = source.getRGB(x, y);
+                int alpha = (argb >> 24) & 0xFF;
+                int red = (argb >> 16) & 0xFF;
+                int green = (argb >> 8) & 0xFF;
+                int blue = argb & 0xFF;
+
+                // Apply purple tint
+                red = (int) (red * purpleR);
+                green = (int) (green * purpleG);
+                blue = (int) (blue * purpleB);
+
+                int tintedArgb = (alpha << 24) | (red << 16) | (green << 16) | blue;
+                tinted.setRGB(x, y, tintedArgb);
+            }
+        }
+
+        return tinted;
     }
 
     private static @NotNull BufferedImage getBufferedImage(Sprite sprite) throws NoSuchFieldException, IllegalAccessException {
