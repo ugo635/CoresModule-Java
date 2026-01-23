@@ -5,6 +5,7 @@ import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteContents;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 
@@ -12,18 +13,23 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.lang.reflect.Field;
 
+import static com.me.coresmodule.CoresModule.mc;
+import static com.me.coresmodule.CoresModule.overrides;
+
 public class ItemRenderingHelper {
     public BufferedImage renderHeldItemToImage() {
-        MinecraftClient mc = MinecraftClient.getInstance();
-        ItemStack heldItem = mc.player.getMainHandStack();
+        ItemStack heldItem = ItemHelper.getHeldItem();
 
-        if (heldItem.isEmpty()) {
+        if (heldItem.isEmpty() || heldItem.getItem() == Items.AIR) {
             return createEmptyImage();
         }
 
         try {
             // Get the item's identifier from the registry
-            Identifier itemId = Registries.ITEM.getId(heldItem.getItem());
+            Identifier itemId;
+            String uuid = ItemHelper.getUUID(heldItem);
+            if (overrides.containsKey(uuid)) itemId = Registries.ITEM.getId(overrides.get(uuid).second.getItem());
+            else itemId = Registries.ITEM.getId(heldItem.getItem());
 
             // Create sprite identifier: namespace stays the same, path becomes "item/{path}"
             Identifier spriteId = itemId.withPrefixedPath("item/");
