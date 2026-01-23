@@ -1,8 +1,7 @@
-package com.me.coresmodule.utils.render.gui.guis;
+package com.me.coresmodule.utils.render.gui.guis.ItemCustomizer;
 
 import com.me.coresmodule.utils.ItemHelper;
 import gg.essential.elementa.UIComponent;
-import gg.essential.elementa.constraints.PixelConstraint;
 import gg.essential.universal.UGraphics;
 import gg.essential.universal.UMatrixStack;
 import gg.essential.universal.utils.ReleasedDynamicTexture;

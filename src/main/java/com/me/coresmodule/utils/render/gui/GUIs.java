@@ -1,9 +1,9 @@
 package com.me.coresmodule.utils.render.gui;
 
-import com.me.coresmodule.utils.ItemRenderingHelper;
 import com.me.coresmodule.utils.events.Register;
-import com.me.coresmodule.utils.render.gui.guis.AnimatedItemComponent;
-import com.me.coresmodule.utils.render.gui.guis.ItemCustomization;
+import com.me.coresmodule.utils.render.gui.guis.ItemCustomizer.AnimatedItemComponent;
+import com.me.coresmodule.utils.render.gui.guis.ItemCustomizer.ItemCustomization;
+import com.me.coresmodule.utils.render.gui.guis.ItemCustomizer.RoundedOutlineEffect;
 import gg.essential.elementa.UIComponent;
 import gg.essential.elementa.UIConstraints;
 import gg.essential.elementa.components.*;
@@ -12,22 +12,10 @@ import gg.essential.elementa.effects.Effect;
 import gg.essential.elementa.effects.OutlineEffect;
 import gg.essential.elementa.effects.ScissorEffect;
 import gg.essential.universal.UScreen;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.texture.NativeImage;
-import net.minecraft.client.texture.NativeImageBackedTexture;
-import net.minecraft.util.Identifier;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 
 import static com.me.coresmodule.CoresModule.mc;
 

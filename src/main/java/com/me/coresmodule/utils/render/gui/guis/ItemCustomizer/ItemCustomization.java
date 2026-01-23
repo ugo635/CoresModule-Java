@@ -1,24 +1,17 @@
-package com.me.coresmodule.utils.render.gui.guis;
+package com.me.coresmodule.utils.render.gui.guis.ItemCustomizer;
 
-import com.me.coresmodule.utils.render.gui.RoundedOutlineEffect;
 import gg.essential.elementa.ElementaVersion;
 import gg.essential.elementa.UIComponent;
-import gg.essential.elementa.UIConstraints;
 import gg.essential.elementa.components.UIBlock;
 import gg.essential.elementa.WindowScreen;
 import gg.essential.elementa.components.UIRoundedRectangle;
 import gg.essential.elementa.components.UIText;
 import gg.essential.elementa.components.input.UITextInput;
 import gg.essential.elementa.constraints.*;
-import gg.essential.elementa.effects.OutlineEffect;
-import gg.essential.elementa.effects.ScissorEffect;
-import net.minecraft.command.CommandSource;
 
 import com.me.coresmodule.utils.render.gui.GUIs;
 
 import java.awt.*;
-import java.lang.reflect.Field;
-import java.util.EnumSet;
 
 public class ItemCustomization extends WindowScreen {
 
