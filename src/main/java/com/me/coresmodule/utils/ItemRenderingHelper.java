@@ -177,4 +177,3 @@ public class ItemRenderingHelper {
         return new BufferedImage(256, 256, BufferedImage.TYPE_INT_ARGB);
     }
 }
-

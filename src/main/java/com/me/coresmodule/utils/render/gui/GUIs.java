@@ -2,6 +2,7 @@ package com.me.coresmodule.utils.render.gui;
 
 import com.me.coresmodule.utils.ItemRenderingHelper;
 import com.me.coresmodule.utils.events.Register;
+import com.me.coresmodule.utils.render.gui.guis.AnimatedItemComponent;
 import com.me.coresmodule.utils.render.gui.guis.ItemCustomization;
 import gg.essential.elementa.UIComponent;
 import gg.essential.elementa.UIConstraints;
@@ -128,8 +129,8 @@ public class GUIs {
         border.enableEffects(new ScissorEffect(), ef);
 
         ui
-            .setX(new PixelConstraint(0))
-            .setY(new PixelConstraint(0));
+                .setX(new PixelConstraint(0))
+                .setY(new PixelConstraint(0));
 
         replaceChild(ui, border);
         border.addChild(ui);
@@ -140,13 +141,9 @@ public class GUIs {
 
     }
 
-
-
     public static void addShadow(UIComponent ui) {
         addShadow(ui, 2f);
     }
-
-
 
     private static Color getShadowColor(UIComponent element) {
         Color elementColor = element.getColor();
@@ -178,50 +175,12 @@ public class GUIs {
         newChild.setParent(parent);
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     public static UIComponent createItemTextureComponent() {
-        ItemRenderingHelper helper = new ItemRenderingHelper();
-
-        // Execute on the CURRENT thread (render thread), not async
-        BufferedImage image = helper.renderHeldItemToImage();
-
-        // Wrap the already-rendered image in a completed future
-        CompletableFuture<BufferedImage> imageFuture = CompletableFuture.completedFuture(image);
-
-        // Create UIImage with the CompletableFuture
-        return new UIImage(imageFuture)
+        // Return the animated component instead of static UIImage
+        return new AnimatedItemComponent()
                 .setX(new CenterConstraint())
                 .setY(new CenterConstraint())
                 .setWidth(new PixelConstraint(256f))
                 .setHeight(new PixelConstraint(256f));
     }
-
 }
