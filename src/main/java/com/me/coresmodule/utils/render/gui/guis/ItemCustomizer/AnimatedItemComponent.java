@@ -27,6 +27,8 @@ import static com.me.coresmodule.CoresModule.overrides;
 import static gg.essential.elementa.utils.ImageKt.drawTexture;
 
 public class AnimatedItemComponent extends UIComponent {
+    private static float speed = 0.03f; // High number = faster, small number = slower
+
     private BufferedImage baseItemImage;
     private BufferedImage localGlintImage;
     private ReleasedDynamicTexture currentTexture;
@@ -99,7 +101,6 @@ public class AnimatedItemComponent extends UIComponent {
             g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, 0.5f));
 
             // Calculate offset based on time
-            float speed = 0.15f;
             long time = System.currentTimeMillis() % 10000;
             int offset = (int) (time * speed);
 
