@@ -1,5 +1,6 @@
 package com.me.coresmodule.utils;
 
+import com.me.coresmodule.utils.render.gui.guis.ItemCustomization;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.Sprite;
@@ -8,6 +9,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -38,26 +40,7 @@ public class ItemRenderingHelper {
             Sprite sprite = mc.getSpriteAtlas(Identifier.of("minecraft", "textures/atlas/blocks.png"))
                     .apply(spriteId);
 
-            SpriteContents contents = sprite.getContents();
-
-            // Access the private image field via reflection
-            Field imageField = SpriteContents.class.getDeclaredField("image");
-            imageField.setAccessible(true);
-            NativeImage nativeImage = (NativeImage) imageField.get(contents);
-
-            int width = contents.getWidth();
-            int height = contents.getHeight();
-
-            // Create BufferedImage from sprite pixels
-            BufferedImage spriteImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-
-            // Read pixels using getColorArgb (returns ARGB format)
-            for (int y = 0; y < height; y++) {
-                for (int x = 0; x < width; x++) {
-                    int argb = nativeImage.getColorArgb(x, y);
-                    spriteImage.setRGB(x, y, argb);
-                }
-            }
+            BufferedImage spriteImage = getBufferedImage(sprite);
 
             // Scale to 256x256
             BufferedImage scaledImage = new BufferedImage(256, 256, BufferedImage.TYPE_INT_ARGB);
@@ -74,6 +57,30 @@ public class ItemRenderingHelper {
             e.printStackTrace();
             return createEmptyImage();
         }
+    }
+
+    private static @NotNull BufferedImage getBufferedImage(Sprite sprite) throws NoSuchFieldException, IllegalAccessException {
+        SpriteContents contents = sprite.getContents();
+
+        // Access the private image field via reflection
+        Field imageField = SpriteContents.class.getDeclaredField("image");
+        imageField.setAccessible(true);
+        NativeImage nativeImage = (NativeImage) imageField.get(contents);
+
+        int width = contents.getWidth();
+        int height = contents.getHeight();
+
+        // Create BufferedImage from sprite pixels
+        BufferedImage spriteImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+
+        // Read pixels using getColorArgb (returns ARGB format)
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                int argb = nativeImage.getColorArgb(x, y);
+                spriteImage.setRGB(x, y, argb);
+            }
+        }
+        return spriteImage;
     }
 
     private BufferedImage createEmptyImage() {
