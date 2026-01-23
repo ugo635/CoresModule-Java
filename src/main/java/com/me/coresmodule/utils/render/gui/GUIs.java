@@ -44,7 +44,7 @@ public class GUIs {
     }
 
     public static void addRoundedBorder(UIComponent ui, float thickness, Color color, EnumSet<RoundedOutlineEffect.Side> sides) {
-        float width = ui. getWidth();
+        float width = ui.getWidth();
         float height = ui.getHeight();
         float rad = ui.getRadius();
         XConstraint x;
@@ -52,7 +52,7 @@ public class GUIs {
 
         try {
             Field xField = UIConstraints.class.getDeclaredField("x");
-            Field yField = UIConstraints.class. getDeclaredField("y");
+            Field yField = UIConstraints.class.getDeclaredField("y");
             xField.setAccessible(true);
             yField.setAccessible(true);
             x = (XConstraint) xField.get(ui.getConstraints());
@@ -85,7 +85,7 @@ public class GUIs {
         border.enableEffects(new ScissorEffect(), outlineEffect);
 
         // Reset original component position to be relative to border
-        ui. setX(new PixelConstraint(0))
+        ui.setX(new PixelConstraint(0))
                 .setY(new PixelConstraint(0));
 
         // Replace the component with border wrapper
