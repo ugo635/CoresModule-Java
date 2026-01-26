@@ -390,4 +390,10 @@ public class ItemHelper {
         return map;
     }
 
+    public static String getItemId(ItemStack stack) {
+        if (stack == ItemStack.EMPTY || stack.getItem() == Items.AIR) return "minecraft:air";
+        if (overrides.containsKey(getUUID(stack))) return Registries.ITEM.getId(overrides.get(getUUID(stack)).second.getItem()).toString();
+        return Registries.ITEM.getId(stack.getItem()).toString();
+    }
+
 }

@@ -97,7 +97,7 @@ public class AnimatedItemComponent extends UIComponent {
         g2d.drawImage(baseItemImage, 0, 0, null);
 
         // 2. Overlap the MOVING glint
-        if (localGlintImage != null) {
+        if (localGlintImage != null && ItemHelper.getHeldItem().hasGlint()) {
             g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, 0.5f));
 
             // Calculate offset based on time
@@ -194,15 +194,6 @@ public class AnimatedItemComponent extends UIComponent {
     }
 
     private BufferedImage createTestPattern() {
-        BufferedImage img = new BufferedImage(128, 128, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g = img.createGraphics();
-        g.setColor(Color.MAGENTA);
-        g.fillRect(0, 0, 128, 128);
-        g.fillRect(128, 128, 128, 128);
-        g.setColor(Color.BLACK);
-        g.fillRect(128, 0, 128, 128);
-        g.fillRect(0, 128, 128, 128);
-        g.dispose();
-        return img;
+        return new BufferedImage(128, 128, BufferedImage.TYPE_INT_ARGB);
     }
 }

@@ -83,32 +83,6 @@ public class CoresModule implements ModInitializer {
 		configurator.register(Settings.class);
 		configurator.saveConfig(Settings.class);
 
-		/*
-		 * Edit first & third person texture, inventory texture & hotbar texture of an item
-		 */
-		Register.command("replaceItem", args -> {
-			if (!List.of(1, 2).contains(args.length)) {
-				Chat.chat("§cUsage: /replaceItem <item_to> <true/false (glint) (optional)>");
-				return;
-			}
-
-			String Uuid = ItemHelper.getUUID(ItemHelper.getHeldItem());
-			ItemStack overrideItemFrom = ItemHelper.getHeldItem();
-			ItemStack overrideItemTo = ItemHelper.createSecond(new ItemStack(Registries.ITEM.get(Identifier.of(args[0]))), Uuid);
-			boolean overrideItemToGlintBool = false;
-			if (args.length == 2) {
-				overrideItemToGlintBool = Boolean.parseBoolean(args[1]);
-			}
-
-			overrides.put(Uuid, new Triple<>(
-                    overrideItemFrom,
-                    overrideItemTo,
-					overrideItemToGlintBool
-            ));
-
-			Chat.chat("§aReplacing " + TextHelper.getUnFormattedString(overrideItemFrom.getItemName()) + " with " + TextHelper.getUnFormattedString(overrideItemTo.getName()) + " and " + (overrideItemToGlintBool ? "with " : "§cwithout §a") + "glint.");
-			SaveAndLoad.save(null);
-		});
 
 		Register.command("copyNbt", args -> {
 			mc.keyboard.setClipboard(new JSONObject(ItemHelper.getMainInfos(ItemHelper.getHeldItem())).toString(4));

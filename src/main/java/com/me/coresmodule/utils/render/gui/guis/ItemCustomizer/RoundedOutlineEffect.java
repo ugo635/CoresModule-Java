@@ -378,6 +378,11 @@ public class RoundedOutlineEffect extends Effect {
                                    double centerX, double centerY,
                                    double innerRadius, double outerRadius,
                                    double startAngle, double endAngle, int segments) {
+
+        // Swap gradient colors if it's on the left side to match the borders
+        Color localGradientStart = startAngle == 90 || startAngle == 180 ? this.gradientEnd : this.gradientStart;
+        Color localGradientEnd = startAngle == 90 || startAngle == 180 ? this.gradientStart : this.gradientEnd;
+
         double angleStep = (endAngle - startAngle) / segments;
 
         // Draw small rectangles along the arc to approximate the rounded corner
@@ -404,13 +409,13 @@ public class RoundedOutlineEffect extends Effect {
 
             Color drawColor = color;
 
-            if (gradientStart != null && gradientEnd != null) {
+            if (localGradientStart != null && localGradientEnd != null) {
                 double t = (double) i / (segments - 1);
 
-                int r = (int) (gradientStart.getRed() + (gradientEnd.getRed() - gradientStart.getRed()) * t);
-                int g = (int) (gradientStart.getGreen() + (gradientEnd.getGreen() - gradientStart.getGreen()) * t);
-                int b = (int) (gradientStart.getBlue() + (gradientEnd.getBlue() - gradientStart.getBlue()) * t);
-                int a = (int) (gradientStart.getAlpha() + (gradientEnd.getAlpha() - gradientStart.getAlpha()) * t);
+                int r = (int) (localGradientStart.getRed() + (localGradientEnd.getRed() - localGradientStart.getRed()) * t);
+                int g = (int) (localGradientStart.getGreen() + (localGradientEnd.getGreen() - localGradientStart.getGreen()) * t);
+                int b = (int) (localGradientStart.getBlue() + (localGradientEnd.getBlue() - localGradientStart.getBlue()) * t);
+                int a = (int) (localGradientStart.getAlpha() + (localGradientEnd.getAlpha() - localGradientStart.getAlpha()) * t);
 
                 drawColor = new Color(r, g, b, a);
             }
