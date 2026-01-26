@@ -14,6 +14,7 @@ import gg.essential.elementa.components.UIText;
 import gg.essential.elementa.components.input.UITextInput;
 import gg.essential.elementa.constraints.*;
 import com.me.coresmodule.utils.render.gui.GUIs;
+import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.minecraft.item.ItemStack;
 
 import java.awt.*;
@@ -161,6 +162,13 @@ public class ItemCustomization extends WindowScreen {
                             ? Color.GREEN
                             : Color.RED
             );
+
+            // Not sure if needed, TODO: Test if needed
+            ItemTooltipCallback.EVENT.register((stack, ctx, type, list) -> {
+                String uuid = ItemHelper.getUUID(stack);
+                if (uuid == null) return;
+                ItemHelper.replaceTooltipAt(0, list, overrides.get(uuid).fourth);
+            });
             return null;
         });
 
@@ -202,6 +210,12 @@ public class ItemCustomization extends WindowScreen {
             if (CustomItemRender.canReplace(itemIDInput.getText())) {
                 CustomItemRender.replaceItem(itemIDInput.getText());
                 itemDisplay.reload();
+
+                ItemTooltipCallback.EVENT.register((stack, ctx, type, list) -> {
+                    String uuid = ItemHelper.getUUID(stack);
+                    if (uuid == null) return;
+                    ItemHelper.replaceTooltipAt(0, list, overrides.get(uuid).fourth);
+                });
             } else {
                 itemIdCheck.setText("✘");
                 itemIdCheck.setColor(Color.RED);
