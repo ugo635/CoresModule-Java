@@ -79,6 +79,32 @@ public class ItemCustomization extends WindowScreen {
             input.grabWindowFocus();
             return null;
         });
+        input.onFocusLost((comp) -> {
+            /*
+            if (overrides.containsKey(ItemHelper.getUUID(ItemHelper.getHeldItem()))) {
+                overrides.compute(
+                        ItemHelper.getUUID(ItemHelper.getHeldItem()),
+                        (k, overrideTriple) -> new Triple<>(
+                                overrideTriple.first,
+                                overrideTriple.second,
+                                !overrideTriple.third
+                        )
+                );
+            } else {
+                overrides.put(
+                        ItemHelper.getUUID(ItemHelper.getHeldItem()),
+                        new Triple<>(
+                                ItemHelper.getHeldItem(),
+                                ItemHelper.createSecond(ItemHelper.getHeldItem(), ItemHelper.getUUID(ItemHelper.getHeldItem())),
+                                !ItemHelper.getHeldItem().hasGlint()
+                        )
+                );
+            }
+
+             */
+
+            return null;
+        });
 
         // Item Texture Display
         UIComponent itemDisplayBox = new UIRoundedRectangle(5f)
@@ -181,6 +207,7 @@ public class ItemCustomization extends WindowScreen {
         itemIdCheck.onMouseClick((comp, event) -> {
             if (CustomItemRender.canReplace(itemIDInput.getText())) {
                 CustomItemRender.replaceItem(itemIDInput.getText());
+                itemDisplay.reload();
             } else {
                 itemIdCheck.setText("✘");
                 itemIdCheck.setColor(Color.RED);

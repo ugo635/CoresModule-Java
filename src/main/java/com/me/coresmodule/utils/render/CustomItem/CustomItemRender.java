@@ -40,7 +40,7 @@ public class CustomItemRender {
                 overrideItemToGlintBool
         ));
 
-        SaveAndLoad.save(null);
+        SaveAndLoad.save();
     }
 
     public static boolean canReplace(String indentifier) {

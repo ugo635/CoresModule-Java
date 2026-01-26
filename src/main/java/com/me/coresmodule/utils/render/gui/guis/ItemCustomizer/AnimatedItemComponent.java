@@ -43,6 +43,12 @@ public class AnimatedItemComponent extends UIComponent {
         updateTexture();
     }
 
+    public void reload() {
+        loadItemTextures();
+        loadLocalGlint();
+        updateTexture();
+    }
+
     private void loadLocalGlint() {
         try {
             InputStream is = this.getClass().getResourceAsStream("/assets/coresmodule/texture/enchant_glint.png");

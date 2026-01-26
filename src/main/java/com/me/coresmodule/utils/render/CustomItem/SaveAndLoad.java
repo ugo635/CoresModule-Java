@@ -54,8 +54,7 @@ public class SaveAndLoad {
         return new HashMap<>();
     }
 
-    @CmEvent
-    public static void save(OnDisconnect event) {
+    public static void save() {
 
         System.out.println("[CoresModule] Saving...");
         HashMap<String, Object> map = new HashMap<>();

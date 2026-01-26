@@ -10,7 +10,6 @@ import com.me.coresmodule.utils.*;
 import com.me.coresmodule.utils.chat.Chat;
 import com.me.coresmodule.utils.chat.ClickActionManager;
 import com.me.coresmodule.utils.chat.SimulateChat;
-import com.me.coresmodule.utils.events.EventBus.CmEvents;
 import com.me.coresmodule.utils.events.Register;
 import com.me.coresmodule.utils.events.impl.OnDisconnect;
 import com.me.coresmodule.utils.events.processor.EventProcessor;
@@ -77,7 +76,6 @@ public class CoresModule implements ModInitializer {
 		EventProcessor.register();
 		CmCommands.register();
 		CustomItemRender.register();
-		CmEvents.register();
 		GUIs.register();
 
 		configurator.register(Settings.class);
@@ -87,7 +85,6 @@ public class CoresModule implements ModInitializer {
 		Register.command("copyNbt", args -> {
 			mc.keyboard.setClipboard(new JSONObject(ItemHelper.getMainInfos(ItemHelper.getHeldItem())).toString(4));
 			Chat.chat("§aCopied NBT HashCode to clipboard");
-
 			Chat.chat("§aUUID: §c" + ItemHelper.getUUID(ItemHelper.getHeldItem()));
 		});
 
