@@ -402,6 +402,7 @@ public class ItemHelper {
             }
         }
 
+        stack.set(DataComponentTypes.CUSTOM_NAME, NbtComponent.of(Text.of((String) map.get("custom_name"))));
         stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(tag));
 
         return stack;
