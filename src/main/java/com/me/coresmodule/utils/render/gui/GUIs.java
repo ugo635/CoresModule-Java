@@ -32,7 +32,7 @@ public class GUIs {
         });
     }
 
-    public static void addRoundedBorder(UIComponent ui, float thickness, Color color, EnumSet<RoundedOutlineEffect.Side> sides) {
+    public static void addRoundedBorder(UIComponent ui, float thickness, Color color, EnumSet<RoundedOutlineEffect.Side> sides, boolean drawInside) {
         float width = ui.getWidth();
         float height = ui.getHeight();
         float rad = ui.getRadius();
@@ -66,7 +66,7 @@ public class GUIs {
                 .setHeight(new PixelConstraint(height))
                 .setColor(new Color(0, 0, 0, 0));
 
-        RoundedOutlineEffect outlineEffect = new RoundedOutlineEffect(decoy, color, thickness, rad * 0.75f, true, true, sides);
+        RoundedOutlineEffect outlineEffect = new RoundedOutlineEffect(decoy, color, thickness, rad * 0.75f, true, drawInside, sides);
 
         border.enableEffects(new ScissorEffect(), outlineEffect);
 
@@ -78,7 +78,11 @@ public class GUIs {
     }
 
     public static void addRoundedBorder(UIComponent ui, float thickness, Color color) {
-        addRoundedBorder(ui, thickness, color, EnumSet.allOf(RoundedOutlineEffect.Side.class));
+        addRoundedBorder(ui, thickness, color, EnumSet.allOf(RoundedOutlineEffect.Side.class), true);
+    }
+
+    public static void addRoundedBorder(UIComponent ui, float thickness, Color color, EnumSet<RoundedOutlineEffect.Side> sides) {
+        addRoundedBorder(ui, thickness, color, sides, true);
     }
 
     public static void addBorder(UIComponent ui, float thickness, Color color) {
@@ -119,7 +123,23 @@ public class GUIs {
     }
 
     public static void addShadow(UIComponent ui, float shadowSize) {
-        // TODO: Implement shadow effect
+        GUIs.addRoundedBorder(ui, shadowSize, new Color (80, 80, 80, 255), EnumSet.of(
+                RoundedOutlineEffect.Side.TopLeft,
+                RoundedOutlineEffect.Side.Left,
+                RoundedOutlineEffect.Side.Top
+        ));
+
+        GUIs.addRoundedBorder(ui, shadowSize, new Color (65, 65, 65, 255), EnumSet.of(
+                RoundedOutlineEffect.Side.TopRight,
+                RoundedOutlineEffect.Side.BottomLeft
+        ));
+
+        GUIs.addRoundedBorder(ui, shadowSize, new Color (25, 25, 25, 255), EnumSet.of(
+                RoundedOutlineEffect.Side.BottomRight,
+                RoundedOutlineEffect.Side.Right,
+                RoundedOutlineEffect.Side.Bottom
+        ));
+
     }
 
     public static void addShadow(UIComponent ui) {

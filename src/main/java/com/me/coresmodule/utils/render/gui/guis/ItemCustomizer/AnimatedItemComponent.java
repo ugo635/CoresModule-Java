@@ -79,10 +79,10 @@ public class AnimatedItemComponent extends UIComponent {
 
             BufferedImage spriteImage = getBufferedImage(sprite);
 
-            baseItemImage = new BufferedImage(256, 256, BufferedImage.TYPE_INT_ARGB);
+            baseItemImage = new BufferedImage(128, 128, BufferedImage.TYPE_INT_ARGB);
             Graphics2D g2d = baseItemImage.createGraphics();
             g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
-            g2d.drawImage(spriteImage, 0, 0, 256, 256, null);
+            g2d.drawImage(spriteImage, 0, 0, 128, 128, null);
             g2d.dispose();
         } catch (Exception e) {
             baseItemImage = createTestPattern();
@@ -90,7 +90,7 @@ public class AnimatedItemComponent extends UIComponent {
     }
 
     private void updateTexture() {
-        BufferedImage combined = new BufferedImage(256, 256, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage combined = new BufferedImage(128, 128, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2d = combined.createGraphics();
 
         // 1. Draw the shovel base
@@ -108,9 +108,9 @@ public class AnimatedItemComponent extends UIComponent {
             g2d.rotate(Math.toRadians(-45), 128, 128);
 
             // Tile the glint to loop
-            for (int x = -512; x < 512; x += 256) {
-                for (int y = -512; y < 512; y += 256) {
-                    g2d.drawImage(localGlintImage, x + (offset % 256), y + (offset % 256), 256, 256, null);
+            for (int x = -512; x < 512; x += 128) {
+                for (int y = -512; y < 512; y += 128) {
+                    g2d.drawImage(localGlintImage, x + (offset % 128), y + (offset % 128), 128, 128, null);
                 }
             }
             g2d.setTransform(old);
@@ -194,7 +194,7 @@ public class AnimatedItemComponent extends UIComponent {
     }
 
     private BufferedImage createTestPattern() {
-        BufferedImage img = new BufferedImage(256, 256, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage img = new BufferedImage(128, 128, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = img.createGraphics();
         g.setColor(Color.MAGENTA);
         g.fillRect(0, 0, 128, 128);

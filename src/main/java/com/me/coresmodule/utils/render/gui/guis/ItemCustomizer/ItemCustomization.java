@@ -10,6 +10,7 @@ import gg.essential.elementa.components.input.UITextInput;
 import gg.essential.elementa.constraints.*;
 import com.me.coresmodule.utils.render.gui.GUIs;
 import java.awt.*;
+import java.util.EnumSet;
 
 public class ItemCustomization extends WindowScreen {
 
@@ -67,18 +68,23 @@ public class ItemCustomization extends WindowScreen {
         UIComponent itemDisplayBox = new UIBlock()
                 .setX(new CenterConstraint())
                 .setY(new PixelConstraint(100f))
-                .setWidth(new PixelConstraint(260f))
-                .setHeight(new PixelConstraint(260f))
+                .setWidth(new PixelConstraint(192f))
+                .setHeight(new PixelConstraint(192f))
                 .setColor(new Color(40, 40, 40, 255));
 
         AnimatedItemComponent itemDisplay = (AnimatedItemComponent) GUIs.createItemTextureComponent()
                 .setX(new CenterConstraint())
                 .setY(new CenterConstraint())
-                .setWidth(new PixelConstraint(256f))
-                .setHeight(new PixelConstraint(256f));
+                .setWidth(new PixelConstraint(128f))
+                .setHeight(new PixelConstraint(128f));
 
         // Glint Toggle
-
+        UIComponent glintToggleBox = new UIRoundedRectangle(5f)
+                .setX(new PixelConstraint(25f))
+                .setY(new PixelConstraint(300f))
+                .setWidth(new PixelConstraint(256f))
+                .setHeight(new PixelConstraint(20f))
+                .setColor(new Color(40, 40, 40, 255));
 
         // Item ID Input
 
@@ -90,8 +96,7 @@ public class ItemCustomization extends WindowScreen {
         // Header
         main.addChild(titleBox);
         titleBox.addChild(titleText);
-        //GUIs.addShadow(titleBox);
-        GUIs.addRoundedBorder(titleBox, 1.5f, new Color (80, 80, 80, 255));
+        GUIs.addShadow(titleBox);
 
         // Name Input
         main.addChild(inputBox);
@@ -103,8 +108,10 @@ public class ItemCustomization extends WindowScreen {
         itemDisplayBox.addChild(itemDisplay);
 
         // Glint toggle
+        main.addChild(glintToggleBox);
+        GUIs.addRoundedBorder(glintToggleBox, 1.5f, new Color (80, 80, 80, 255));
 
-        // Item ID Inout
+        // Item ID Input
 
     }
 
