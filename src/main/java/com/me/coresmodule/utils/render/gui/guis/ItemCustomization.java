@@ -92,26 +92,21 @@ public class ItemCustomization extends WindowScreen {
 
 
 
-        // <div>
-
-        // <h1> Item Customization </h1>
+        // Header
         main.addChild(titleBox);
         titleBox.addChild(titleText);
         //GUIs.addShadow(titleBox);
         GUIs.addRoundedBorder(titleBox, 1.5f, new Color (80, 80, 80, 255));
 
-        // <div>
-        // <input type="text" placeholder="Enter item name">
+        // Input
         main.addChild(inputBox);
         inputBox.addChild(input);
         GUIs.addBorder(inputBox, 1.5f, Color.WHITE);
-        // </div>
 
-        // <img src="item_texture.png">
+        // Item texture display
         main.addChild(itemDisplayBox);
         itemDisplayBox.addChild(itemDisplay);
 
-        // </div>
     }
 
 }
