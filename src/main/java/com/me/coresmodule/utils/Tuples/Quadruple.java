@@ -1,18 +1,21 @@
-package com.me.coresmodule.utils;
+package com.me.coresmodule.utils.Tuples;
 
+import com.me.coresmodule.utils.ItemHelper;
 import net.minecraft.item.ItemStack;
 
 import java.util.HashMap;
 
-public class Triple<T, S, U> {
+public class Quadruple<T, S, U, V> {
     public T first;
     public S second;
     public U third;
+    public V fourth;
 
-    public Triple(T first, S second, U third) {
+    public Quadruple(T first, S second, U third, V fourth) {
         this.first = first;
         this.second = second;
         this.third = third;
+        this.fourth = fourth;
     }
 
     public HashMap<String, Object> toMap() {
@@ -20,15 +23,17 @@ public class Triple<T, S, U> {
         map.put("first", first);
         map.put("second", second);
         map.put("third", third);
+        map.put("fourth", fourth);
         return map;
     }
 
     @SuppressWarnings("unchecked")
-    public static <T, S, U> Triple<T, S, U> fromMap(HashMap<String, Object> map) {
+    public static <T, S, U, V> Quadruple<T, S, U, V> fromMap(HashMap<String, Object> map) {
         T first = (T) map.get("first");
         S second = (S) map.get("second");
         U third = (U) map.get("third");
-        return new Triple<>(first, second, third);
+        V fourth = (V) map.get("fourth");
+        return new Quadruple<>(first, second, third, fourth);
     }
 
     public HashMap<String, Object> toMapItemStack() {
@@ -36,6 +41,7 @@ public class Triple<T, S, U> {
         map.put("first", ItemHelper.toMap((ItemStack) first));
         map.put("second", ItemHelper.toMap((ItemStack) second));
         map.put("third", third);
+        map.put("fourth", fourth);
         return map;
     }
 

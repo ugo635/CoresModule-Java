@@ -35,6 +35,10 @@ public class ItemHelper {
         return item != ItemStack.EMPTY ? TextHelper.getFormattedString(item.getName()) : "";
     }
 
+    public static String getFormattedHeldItemName() {
+        return getFormattedItemName(getHeldItem());
+    }
+
     public static List<ItemStack> getArmorItems() {
         PlayerInventory inventory;
         if (mc.player != null && mc.player.getInventory() != null) {
@@ -364,12 +368,6 @@ public class ItemHelper {
         HashMap<String, Object> map = new HashMap<>();
         String itemId = Registries.ITEM.getId(stack.getItem()).toString();
         map.put("itemId", itemId);
-        String uuid = getUUID(stack);
-        String custom_name = uuid != null && overrides.containsKey(uuid)
-                ? TextHelper.getFormattedString(overrides.get(uuid).first.getName())
-                : TextHelper.getFormattedString(stack.getName());
-
-        map.put("custom_name", custom_name);
         NbtComponent comp = stack.get(DataComponentTypes.CUSTOM_DATA);
         if (comp != null) {
             NbtCompound tag = comp.copyNbt();
@@ -408,12 +406,18 @@ public class ItemHelper {
             }
         }
 
-        String customName = (String) map.get("custom_name");
-
         stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(tag));
-        if (customName != null) stack.set(DataComponentTypes.CUSTOM_NAME, Text.of(customName));
+
 
         return stack;
     }
 
+    public static void replaceTooltipAt(int index, List<Text> list, Text content) {
+        if (index < 0 || index >= list.size()) return;
+        list.set(index, content);
+    }
+
+    public static void replaceTooltipAt(int index, List<Text> list, String content) {
+        replaceTooltipAt(index, list, Text.of(content));
+    }
 }

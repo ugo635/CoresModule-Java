@@ -2,29 +2,21 @@ package com.me.coresmodule.utils.render.gui.guis.ItemCustomizer;
 
 import com.me.coresmodule.utils.Helper;
 import com.me.coresmodule.utils.ItemHelper;
-import com.me.coresmodule.utils.Triple;
+import com.me.coresmodule.utils.TextHelper;
+import com.me.coresmodule.utils.Tuples.Quadruple;
+import com.me.coresmodule.utils.Tuples.Triple;
 import com.me.coresmodule.utils.render.CustomItem.CustomItemRender;
 import gg.essential.elementa.ElementaVersion;
 import gg.essential.elementa.UIComponent;
-import gg.essential.elementa.components.UIBlock;
 import gg.essential.elementa.WindowScreen;
-import gg.essential.elementa.components.UIImage;
 import gg.essential.elementa.components.UIRoundedRectangle;
 import gg.essential.elementa.components.UIText;
 import gg.essential.elementa.components.input.UITextInput;
 import gg.essential.elementa.constraints.*;
 import com.me.coresmodule.utils.render.gui.GUIs;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.registry.Registries;
-import net.minecraft.util.Identifier;
 
 import java.awt.*;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.EnumSet;
 
 import static com.me.coresmodule.CoresModule.overrides;
 
@@ -146,19 +138,21 @@ public class ItemCustomization extends WindowScreen {
             if (overrides.containsKey(ItemHelper.getUUID(ItemHelper.getHeldItem()))) {
                 overrides.compute(
                         ItemHelper.getUUID(ItemHelper.getHeldItem()),
-                        (k, overrideTriple) -> new Triple<>(
+                        (k, overrideTriple) -> new Quadruple<ItemStack, ItemStack, Boolean, String>(
                                 overrideTriple.first,
                                 overrideTriple.second,
-                                !overrideTriple.third
+                                !overrideTriple.third,
+                                overrideTriple.fourth
                         )
                 );
             } else {
                 overrides.put(
                         ItemHelper.getUUID(ItemHelper.getHeldItem()),
-                        new Triple<>(
+                        new Quadruple<ItemStack, ItemStack, Boolean, String>(
                                 ItemHelper.getHeldItem(),
                                 ItemHelper.createSecond(ItemHelper.getHeldItem(), ItemHelper.getUUID(ItemHelper.getHeldItem())),
-                                !ItemHelper.getHeldItem().hasGlint()
+                                !ItemHelper.getHeldItem().hasGlint(),
+                                ItemHelper.getFormattedHeldItemName()
                         )
                 );
             }
