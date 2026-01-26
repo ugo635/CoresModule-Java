@@ -364,7 +364,12 @@ public class ItemHelper {
         HashMap<String, Object> map = new HashMap<>();
         String itemId = Registries.ITEM.getId(stack.getItem()).toString();
         map.put("itemId", itemId);
-        map.put("custom_name", TextHelper.getFormattedString(stack.getName()));
+        String uuid = getUUID(stack);
+        String custom_name = uuid != null && overrides.containsKey(uuid)
+                ? TextHelper.getFormattedString(overrides.get(uuid).first.getName())
+                : TextHelper.getFormattedString(stack.getName());
+
+        map.put("custom_name", custom_name);
         NbtComponent comp = stack.get(DataComponentTypes.CUSTOM_DATA);
         if (comp != null) {
             NbtCompound tag = comp.copyNbt();
@@ -390,6 +395,7 @@ public class ItemHelper {
         ItemStack stack = new ItemStack(Registries.ITEM.get(id));
         NbtCompound tag = new NbtCompound();
         for (String key : map.keySet()) {
+            if (key.contains("custom_name")) continue;
             Object value = map.get(key);
             if (value instanceof Boolean) {
                 tag.putBoolean(key, (Boolean) value);
@@ -402,8 +408,10 @@ public class ItemHelper {
             }
         }
 
-        stack.set(DataComponentTypes.CUSTOM_NAME, NbtComponent.of(Text.of((String) map.get("custom_name"))));
+        String customName = (String) map.get("custom_name");
+
         stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(tag));
+        if (customName != null) stack.set(DataComponentTypes.CUSTOM_NAME, Text.of(customName));
 
         return stack;
     }
