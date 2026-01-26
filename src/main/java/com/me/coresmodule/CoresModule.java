@@ -85,8 +85,6 @@ public class CoresModule implements ModInitializer {
 
 		/*
 		 * Edit first & third person texture, inventory texture & hotbar texture of an item
-		 * FIXME: No glint when dropped/third person
-		 * FIXME: Texture no longer switched after switching the item to offhand -> Problem is uuid = null
 		 */
 		Register.command("replaceItem", args -> {
 			if (!List.of(1, 2).contains(args.length)) {

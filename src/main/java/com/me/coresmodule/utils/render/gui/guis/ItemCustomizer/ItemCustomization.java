@@ -25,7 +25,7 @@ public class ItemCustomization extends WindowScreen {
                 .setColor(new Color(50, 50, 50, 255))
                 .setChildOf(getWindow());
 
-        // Titles
+        // Header
         UIComponent titleBox = new UIRoundedRectangle(7.5f)
                 .setX(new CenterConstraint())
                 .setY(new PixelConstraint(12.5f))
@@ -42,7 +42,7 @@ public class ItemCustomization extends WindowScreen {
 
 
 
-        // Inputs
+        // Name Input
         UIComponent inputBox = new UIRoundedRectangle(5f)
                 .setX(new CenterConstraint())
                 .setY(new PixelConstraint(50f))
@@ -77,6 +77,12 @@ public class ItemCustomization extends WindowScreen {
                 .setWidth(new PixelConstraint(256f))
                 .setHeight(new PixelConstraint(256f));
 
+        // Glint Toggle
+
+
+        // Item ID Input
+
+
         //main.onMouseEnterRunnable(() -> {
         //
         //});
@@ -87,7 +93,7 @@ public class ItemCustomization extends WindowScreen {
         //GUIs.addShadow(titleBox);
         GUIs.addRoundedBorder(titleBox, 1.5f, new Color (80, 80, 80, 255));
 
-        // Input
+        // Name Input
         main.addChild(inputBox);
         inputBox.addChild(input);
         GUIs.addBorder(inputBox, 1.5f, Color.WHITE);
@@ -95,6 +101,10 @@ public class ItemCustomization extends WindowScreen {
         // Item texture display
         main.addChild(itemDisplayBox);
         itemDisplayBox.addChild(itemDisplay);
+
+        // Glint toggle
+
+        // Item ID Inout
 
     }
 
