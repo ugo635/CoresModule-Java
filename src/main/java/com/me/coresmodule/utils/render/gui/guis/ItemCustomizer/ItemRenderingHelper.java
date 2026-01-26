@@ -1,7 +1,6 @@
-package com.me.coresmodule.utils;
+package com.me.coresmodule.utils.render.gui.guis.ItemCustomizer;
 
-import com.me.coresmodule.utils.render.gui.guis.ItemCustomization;
-import net.minecraft.client.MinecraftClient;
+import com.me.coresmodule.utils.ItemHelper;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteContents;
