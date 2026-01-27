@@ -15,11 +15,13 @@ import gg.essential.elementa.components.input.UITextInput;
 import gg.essential.elementa.constraints.*;
 import com.me.coresmodule.utils.render.gui.GUIs;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 import java.awt.*;
 
 import static com.me.coresmodule.CoresModule.overrides;
+import static com.me.coresmodule.utils.render.CustomItem.CustomItemRender.overridesPut;
 
 public class ItemCustomization extends WindowScreen {
 
@@ -67,34 +69,36 @@ public class ItemCustomization extends WindowScreen {
                 .setHeight(new PixelConstraint(20f))
                 .setColor(new Color(255, 255, 255, 255));
 
-        input.setPlaceholder("Enter item name...");
+        input.setText(CustomItemRender.getItemName(ItemHelper.getHeldItem()));
+
         input.onMouseClick((inp, ignored) -> {
             input.grabWindowFocus();
             return null;
         });
-        input.onFocusLost((comp) -> {
-            /*
-            if (overrides.containsKey(ItemHelper.getUUID(ItemHelper.getHeldItem()))) {
-                overrides.compute(
-                        ItemHelper.getUUID(ItemHelper.getHeldItem()),
-                        (k, overrideTriple) -> new Triple<>(
-                                overrideTriple.first,
-                                overrideTriple.second,
-                                !overrideTriple.third
+        input.onKeyType((comp, ignored, ignored2) -> {
+            String uuid = ItemHelper.getUUID(ItemHelper.getHeldItem());
+            if (overrides.containsKey(uuid)) {
+                Quadruple<ItemStack, ItemStack, Boolean, String> overrideQuadruple = overrides.get(uuid);
+                overridesPut(
+                        uuid,
+                        new Quadruple<>(
+                                overrideQuadruple.first,
+                                overrideQuadruple.second,
+                                overrideQuadruple.third,
+                                input.getText().replace("&&", "§")
                         )
                 );
             } else {
-                overrides.put(
+                overridesPut(
                         ItemHelper.getUUID(ItemHelper.getHeldItem()),
-                        new Triple<>(
+                        new Quadruple<>(
                                 ItemHelper.getHeldItem(),
                                 ItemHelper.createSecond(ItemHelper.getHeldItem(), ItemHelper.getUUID(ItemHelper.getHeldItem())),
-                                !ItemHelper.getHeldItem().hasGlint()
+                                ItemHelper.getHeldItem().hasGlint(),
+                                input.getText().replace("&&", "§")
                         )
                 );
             }
-
-             */
 
             return null;
         });
@@ -136,24 +140,26 @@ public class ItemCustomization extends WindowScreen {
                 .setColor(ItemHelper.getHeldItem().hasGlint() ? Color.GREEN : Color.RED);
 
         glintToggleButton.onMouseClick((comp, event) -> {
-            if (overrides.containsKey(ItemHelper.getUUID(ItemHelper.getHeldItem()))) {
-                overrides.compute(
-                        ItemHelper.getUUID(ItemHelper.getHeldItem()),
-                        (k, overrideTriple) -> new Quadruple<ItemStack, ItemStack, Boolean, String>(
-                                overrideTriple.first,
-                                overrideTriple.second,
-                                !overrideTriple.third,
-                                overrideTriple.fourth
+            String uuid = ItemHelper.getUUID(ItemHelper.getHeldItem());
+            if (overrides.containsKey(uuid)) {
+                Quadruple<ItemStack, ItemStack, Boolean, String> overrideQuadruple = overrides.get(uuid);
+                overridesPut(
+                        uuid,
+                        new Quadruple<>(
+                                overrideQuadruple.first,
+                                overrideQuadruple.second,
+                                !overrideQuadruple.third,
+                                input.getText().replace("&&", "§")
                         )
                 );
             } else {
-                overrides.put(
+                overridesPut(
                         ItemHelper.getUUID(ItemHelper.getHeldItem()),
                         new Quadruple<ItemStack, ItemStack, Boolean, String>(
                                 ItemHelper.getHeldItem(),
                                 ItemHelper.createSecond(ItemHelper.getHeldItem(), ItemHelper.getUUID(ItemHelper.getHeldItem())),
                                 !ItemHelper.getHeldItem().hasGlint(),
-                                ItemHelper.getFormattedHeldItemName()
+                                input.getText().replace("&&", "§")
                         )
                 );
             }
@@ -165,8 +171,7 @@ public class ItemCustomization extends WindowScreen {
 
             // Not sure if needed, TODO: Test if needed
             ItemTooltipCallback.EVENT.register((stack, ctx, type, list) -> {
-                String uuid = ItemHelper.getUUID(stack);
-                if (uuid == null) return;
+                if (uuid == null || !overrides.containsKey(uuid)) return;
                 ItemHelper.replaceTooltipAt(0, list, overrides.get(uuid).fourth);
             });
             return null;
@@ -213,7 +218,7 @@ public class ItemCustomization extends WindowScreen {
 
                 ItemTooltipCallback.EVENT.register((stack, ctx, type, list) -> {
                     String uuid = ItemHelper.getUUID(stack);
-                    if (uuid == null) return;
+                    if (uuid == null || !overrides.containsKey(uuid)) return;
                     ItemHelper.replaceTooltipAt(0, list, overrides.get(uuid).fourth);
                 });
             } else {
@@ -229,7 +234,7 @@ public class ItemCustomization extends WindowScreen {
 
         /*
         main.onKeyType((comp, character, keycode) -> {
-            if (keycode == 256) {
+            if (keycode == 256) { // Escape key
                 this.close();
             }
            return null;
