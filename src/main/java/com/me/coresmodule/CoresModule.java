@@ -24,6 +24,7 @@ import net.fabricmc.api.ModInitializer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Identifier;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,13 +81,13 @@ public class CoresModule implements ModInitializer {
 
 
 		Register.command("copyNbt", args -> {
-			mc.keyboard.setClipboard(new JSONObject(ItemHelper.getMainInfos(ItemHelper.getHeldItem())).toString(4));
+			mc.keyboard.setClipboard(new JSONObject(ItemHelper.toMap(ItemHelper.getHeldItem())).toString(4));
 			Chat.chat("§aCopied NBT HashCode to clipboard");
 			Chat.chat("§aUUID: §c" + ItemHelper.getUUID(ItemHelper.getHeldItem()));
 		});
 
 		Register.command("getHand", args -> {
-			Chat.chat(overrides.get(ItemHelper.getUUID(ItemHelper.getHeldItem())).fourth);
+			Chat.chat(ItemHelper.isSkull() == null ? "null" : ItemHelper.isSkull());
 		});
 
 

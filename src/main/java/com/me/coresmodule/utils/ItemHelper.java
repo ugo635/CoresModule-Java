@@ -420,4 +420,19 @@ public class ItemHelper {
     public static void replaceTooltipAt(int index, List<Text> list, String content) {
         replaceTooltipAt(index, list, Text.of(content));
     }
+
+    public static String getInternalId(ItemStack stack) {
+        return toMap(stack).get("id").toString();
+    }
+
+    public static String isSkull() {
+        return isSkull(String.valueOf(Registries.ITEM.getId(getHeldItem().getItem())));
+    }
+
+    public static String isSkull(String path) {
+        if (path.contains("minecraft:player_head") || path.contains("minecraft:skull")) {
+            return getInternalId(getHeldItem());
+        }
+        return null;
+    }
 }
