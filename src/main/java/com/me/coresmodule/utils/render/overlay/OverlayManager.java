@@ -3,6 +3,8 @@ package com.me.coresmodule.utils.render.overlay;
 import com.me.coresmodule.utils.events.Register;
 import com.me.coresmodule.utils.events.annotations.CmEvent;
 import com.me.coresmodule.utils.events.impl.AfterHudRenderer;
+import com.me.coresmodule.utils.events.impl.GUIMouseClick;
+import com.me.coresmodule.utils.events.impl.GUIRender;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents;
 import net.minecraft.client.gui.DrawContext;
@@ -21,9 +23,6 @@ public final class OverlayManager {
     }
 
     public static void register() {
-        registerRenderer();
-        registerMouseLeftClick();
-
         Register.command("cmguis", args -> {
             mc.send(() -> mc.setScreen(new OverlayEditScreen()));
         });
@@ -57,26 +56,20 @@ public final class OverlayManager {
         }
     }
 
-    public static void registerRenderer() {
-        ScreenEvents.AFTER_INIT.register((client, screen, scaledWidth, scaledHeight) -> {
-            ScreenEvents.afterRender(screen).register((renderScreen, drawContext, mouseX, mouseY, tickDelta) -> {
-                if (!(renderScreen instanceof OverlayEditScreen)) {
-                    postRender(drawContext, renderScreen);
-                }
-            });
-        });
+    @CmEvent
+    public static void registerRenderer(GUIRender event) {
+        if (!(event.screen instanceof OverlayEditScreen)) {
+            postRender(event.drawContext, event.screen);
+        }
     }
 
-    public static void registerMouseLeftClick() {
-        ScreenEvents.AFTER_INIT.register((client, screen, scaledWidth, scaledHeight) -> {
-            ScreenMouseEvents.afterMouseClick(screen).register((clickedScreen, mouseX, mouseY, button) -> {
-                if (!(clickedScreen instanceof OverlayEditScreen) && button == 0) {
-                    for (Overlay overlay : overlays) {
-                        overlay.overlayClicked(mouseX, mouseY);
-                    }
-                }
-            });
-        });
+    @CmEvent
+    public static void registerMouseLeftClick(GUIMouseClick event) {
+        if (!(event.screen instanceof OverlayEditScreen) && event.button == 0) {
+            for (Overlay overlay : overlays) {
+                overlay.overlayClicked(event.mouseX, event.mouseY);
+            }
+        }
     }
 
     @CmEvent

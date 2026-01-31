@@ -168,8 +168,8 @@ public class Overlay {
         var textRenderer = mc.textRenderer;
         if (textRenderer == null) return;
 
-        drawContext.getMatrices().push();
-        drawContext.getMatrices().scale(scale, scale, 1.0f);
+        drawContext.getMatrices().pushMatrix();
+        drawContext.getMatrices().scale(scale, scale);
 
         float currentY = y / scale;
         float currentX = x / scale;
@@ -203,10 +203,10 @@ public class Overlay {
             }
         }
 
-        drawContext.getMatrices().pop();
+        drawContext.getMatrices().popMatrix();
     }
 
     private void drawDebugBox(DrawContext drawContext, int x, int y, int width, int height) {
-        drawContext.drawBorder(x, y, width, height, new Color(255, 0, 0, 170).getRGB());
+        drawContext.drawStrokedRectangle(x, y, width, height, new Color(255, 0, 0, 170).getRGB());
     }
 }

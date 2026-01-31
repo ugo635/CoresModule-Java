@@ -9,6 +9,7 @@ import gg.essential.universal.utils.ReleasedDynamicTexture;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteContents;
+import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
@@ -80,8 +81,11 @@ public class AnimatedItemComponent extends UIComponent {
             }
 
             Identifier spriteId = itemId.withPrefixedPath("item/");
-            Sprite sprite = mc.getSpriteAtlas(Identifier.of("minecraft", "textures/atlas/blocks.png"))
-                    .apply(spriteId);
+            SpriteIdentifier spriteIdentifier = new SpriteIdentifier(
+                    Identifier.of("minecraft", "textures/atlas/blocks.png"),
+                    spriteId
+            );
+            Sprite sprite = mc.getAtlasManager().getSprite(spriteIdentifier);
 
             BufferedImage spriteImage = getBufferedImage(sprite);
 
@@ -153,7 +157,7 @@ public class AnimatedItemComponent extends UIComponent {
 
         if (width <= 0 || height <= 0) return;
 
-        RenderSystem.setShaderTexture(0, currentTexture.getGlTexture());
+        RenderSystem.setShaderTexture(0, currentTexture.getGlTextureView());
 
         double scale = mc.getWindow().getScaleFactor();
         int windowHeight = mc.getWindow().getHeight();
