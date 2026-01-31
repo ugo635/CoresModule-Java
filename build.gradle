@@ -28,7 +28,7 @@ repositories {
 	}
 
 	maven {
-			url = "https://repo.essential.gg/repository/maven-public"
+		url = "https://repo.essential.gg/repository/maven-public"
 	}
 }
 
@@ -53,12 +53,12 @@ dependencies {
 
 	// UIs
 	modImplementation("gg.essential:elementa:$elementaVersion")
-	modImplementation "gg.essential:universalcraft-1.21.5-fabric:$uc_version"
+	modImplementation "gg.essential:universalcraft-1.21.9-fabric:$uc_version"
 
 	modImplementation "org.jetbrains.kotlin:kotlin-stdlib:1.9.22"
 	modImplementation(include("org.json:json:$json_version"))
 
-	implementation "io.github.classgraph:classgraph:4.8.154"
+	modImplementation(include("io.github.classgraph:classgraph:4.8.165"))
 
 }
 

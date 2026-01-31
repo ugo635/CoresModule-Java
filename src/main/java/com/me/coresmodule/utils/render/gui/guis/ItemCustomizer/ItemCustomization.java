@@ -55,27 +55,27 @@ public class ItemCustomization extends WindowScreen {
 
 
         // Name Input
-        UIComponent inputBox = new UIRoundedRectangle(5f)
+        UIComponent nameInputBox = new UIRoundedRectangle(5f)
                 .setX(new CenterConstraint())
                 .setY(new PixelConstraint(50f))
                 .setWidth(new PixelConstraint(200f))
                 .setHeight(new PixelConstraint(25f))
                 .setColor(new Color(40, 40, 40, 255));
 
-        UITextInput input = (UITextInput) new UITextInput()
+        UITextInput nameInput = (UITextInput) new UITextInput()
                 .setX(new PixelConstraint(new RelativeConstraint().getValue() + 5f))
                 .setY(new PixelConstraint(7.5f))
                 .setWidth(new PixelConstraint(200f))
                 .setHeight(new PixelConstraint(20f))
                 .setColor(new Color(255, 255, 255, 255));
 
-        input.setText(CustomItemRender.getItemName(ItemHelper.getHeldItem()));
+        nameInput.setText(CustomItemRender.getItemName(ItemHelper.getHeldItem()));
 
-        input.onMouseClick((inp, ignored) -> {
-            input.grabWindowFocus();
+        nameInput.onMouseClick((inp, ignored) -> {
+            nameInput.grabWindowFocus();
             return null;
         });
-        input.onKeyType((comp, ignored, ignored2) -> {
+        nameInput.onKeyType((comp, ignored, ignored2) -> {
             String uuid = ItemHelper.getUUID(ItemHelper.getHeldItem());
             if (overrides.containsKey(uuid)) {
                 Quadruple<ItemStack, ItemStack, Boolean, String> overrideQuadruple = overrides.get(uuid);
@@ -85,7 +85,7 @@ public class ItemCustomization extends WindowScreen {
                                 overrideQuadruple.first,
                                 overrideQuadruple.second,
                                 overrideQuadruple.third,
-                                input.getText().replace("&&", "§")
+                                nameInput.getText().replace("&&", "§")
                         )
                 );
             } else {
@@ -95,7 +95,7 @@ public class ItemCustomization extends WindowScreen {
                                 ItemHelper.getHeldItem(),
                                 ItemHelper.createSecond(ItemHelper.getHeldItem(), ItemHelper.getUUID(ItemHelper.getHeldItem())),
                                 ItemHelper.getHeldItem().hasGlint(),
-                                input.getText().replace("&&", "§")
+                                nameInput.getText().replace("&&", "§")
                         )
                 );
             }
@@ -149,7 +149,7 @@ public class ItemCustomization extends WindowScreen {
                                 overrideQuadruple.first,
                                 overrideQuadruple.second,
                                 !overrideQuadruple.third,
-                                input.getText().replace("&&", "§")
+                                nameInput.getText().replace("&&", "§")
                         )
                 );
             } else {
@@ -159,7 +159,7 @@ public class ItemCustomization extends WindowScreen {
                                 ItemHelper.getHeldItem(),
                                 ItemHelper.createSecond(ItemHelper.getHeldItem(), ItemHelper.getUUID(ItemHelper.getHeldItem())),
                                 !ItemHelper.getHeldItem().hasGlint(),
-                                input.getText().replace("&&", "§")
+                                nameInput.getText().replace("&&", "§")
                         )
                 );
             }
@@ -169,11 +169,6 @@ public class ItemCustomization extends WindowScreen {
                             : Color.RED
             );
 
-            // Not sure if needed, TODO: Test if needed
-            ItemTooltipCallback.EVENT.register((stack, ctx, type, list) -> {
-                if (uuid == null || !overrides.containsKey(uuid)) return;
-                ItemHelper.replaceTooltipAt(0, list, overrides.get(uuid).fourth);
-            });
             return null;
         });
 
@@ -213,14 +208,9 @@ public class ItemCustomization extends WindowScreen {
         });
         itemIdCheck.onMouseClick((comp, event) -> {
             if (CustomItemRender.canReplace(itemIDInput.getText())) {
-                CustomItemRender.replaceItem(itemIDInput.getText());
+                CustomItemRender.replaceItem(itemIDInput.getText(), nameInput.getText().replace("&&", "§"));
                 itemDisplay.reload();
 
-                ItemTooltipCallback.EVENT.register((stack, ctx, type, list) -> {
-                    String uuid = ItemHelper.getUUID(stack);
-                    if (uuid == null || !overrides.containsKey(uuid)) return;
-                    ItemHelper.replaceTooltipAt(0, list, overrides.get(uuid).fourth);
-                });
             } else {
                 itemIdCheck.setText("✘");
                 itemIdCheck.setColor(Color.RED);
@@ -232,14 +222,15 @@ public class ItemCustomization extends WindowScreen {
             return null;
         });
 
-        /*
-        main.onKeyType((comp, character, keycode) -> {
+
+        main.onKeyType((comp, character, keycode) -> { // Never called
+            System.out.println("The keycode is: " + keycode + " for character: " + character);
             if (keycode == 256) { // Escape key
                 this.close();
             }
            return null;
         });
-        */
+
 
         // Header
         main.addChild(titleBox);
@@ -247,9 +238,9 @@ public class ItemCustomization extends WindowScreen {
         GUIs.addShadow(titleBox);
 
         // Name Input
-        main.addChild(inputBox);
-        inputBox.addChild(input);
-        GUIs.addBorder(inputBox, 1.5f, Color.WHITE);
+        main.addChild(nameInputBox);
+        nameInputBox.addChild(nameInput);
+        GUIs.addBorder(nameInputBox, 1.5f, Color.WHITE);
 
         // Item texture display
         main.addChild(itemDisplayBox);

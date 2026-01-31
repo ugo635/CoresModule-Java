@@ -47,15 +47,10 @@ public class CustomItemRender {
         save();
     }
 
-    public static void replaceItem(String itemID) {
-        replaceItem(itemID, null);
-    }
-
     public static void updateName(String uuid) {
         ItemTooltipCallback.EVENT.register((stack, ctx, type, list) -> {
-            if (uuid == null || !overrides.containsKey(uuid)) return;
-            Quadruple<ItemStack, ItemStack, Boolean, String> quadruple = overrides.get(uuid);
-            ItemHelper.replaceTooltipAt(0, list, quadruple.fourth);
+            if (uuid == null || !overrides.containsKey(uuid) || !ItemHelper.getUUID(stack).equals(uuid)) return;
+            ItemHelper.replaceTooltipAt(0, list, overrides.get(uuid).fourth);
         });
     }
 

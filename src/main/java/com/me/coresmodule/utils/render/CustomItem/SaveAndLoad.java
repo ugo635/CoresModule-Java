@@ -23,8 +23,7 @@ public class SaveAndLoad {
             Quadruple<ItemStack, ItemStack, Boolean, String> quadruple = CoresModule.overrides.get(key);
             ItemTooltipCallback.EVENT.register((stack, ctx, type, list) -> {
                 String uuid = ItemHelper.getUUID(stack);
-                if (uuid == null) return;
-                if (uuid.equals(key)) {
+                if (uuid != null && uuid.equals(key)) {
                     ItemHelper.replaceTooltipAt(0, list, quadruple.fourth);
                 }
             });
