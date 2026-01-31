@@ -6,7 +6,6 @@
     "BeaconBlockEntityRendererInvoker",
     "ExampleMixin",
     "GameRenderMixin",
-    "ItemRendering.ItemFirstPersonRendererMixin",
     "ItemRendering.ItemThirdPersonRendererMixin",
     "ItemRendering.ItemGuiRendererMixin",
     "ItemRendering.ItemHotbarRendererMixin",

@@ -190,6 +190,7 @@ public class Bot {
         });
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            if (botProcess == null) return;
             if (botProcess.isAlive()) Helper.print("Game closing, stopping bot...");
             try {
                 FilesHandler.writeToFile("bot/stop.txt", "true");

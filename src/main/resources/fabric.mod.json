@@ -3,9 +3,9 @@
 	"id": "coresmodule",
 	"version": "${version}",
 	"name": "CoresModule",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "A mod that adds QOL features to Hypixel Skyblock.",
 	"authors": [
-		"Me!"
+		"JudgementCorePls"
 	],
 	"contact": {
 		"homepage": "https://fabricmc.net/",
@@ -27,7 +27,7 @@
 	],
 	"depends": {
 		"fabricloader": ">=0.17.2",
-		"minecraft": "~1.21.5",
+		"minecraft": "~1.21.10",
 		"java": ">=21",
 		"fabric-api": "*"
 	},

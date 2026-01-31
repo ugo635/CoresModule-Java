@@ -25,17 +25,9 @@ public class ItemThirdPersonRendererMixin {
 
     @ModifyArg(
             method = "update",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/item/ItemModelManager;resolveProfileComponent(Lnet/minecraft/item/ItemStack;)V")
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/model/ItemModel;update(Lnet/minecraft/client/render/item/ItemRenderState;Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/item/ItemModelManager;Lnet/minecraft/item/ItemDisplayContext;Lnet/minecraft/client/world/ClientWorld;Lnet/minecraft/util/HeldItemContext;I)V")
     )
     private ItemStack replaceHandThirdPersonItemStack1(ItemStack stack) {
-        return CustomItemRender.replaceItemStack(stack);
-    }
-
-    @ModifyArg(
-            method = "update",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/model/ItemModel;update(Lnet/minecraft/client/render/item/ItemRenderState;Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/item/ItemModelManager;Lnet/minecraft/item/ItemDisplayContext;Lnet/minecraft/client/world/ClientWorld;Lnet/minecraft/entity/LivingEntity;I)V")
-    )
-    private ItemStack replaceHandThirdPersonItemStack2(ItemStack stack) {
         return CustomItemRender.replaceItemStack(stack);
     }
 }

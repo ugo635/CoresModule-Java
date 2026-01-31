@@ -141,7 +141,7 @@ public class MfCalcHelper {
                 Integer id = entry.getKey();
                 ArmorStandEntity armorStand = entry.getValue();
 
-                if (!armorStand.isAlive() || armorStand.getWorld() != world) {
+                if (!armorStand.isAlive() || armorStand.getEntityWorld() != world) {
                     iterator.remove();
                     defeated.remove(id);
                     continue;

@@ -2,11 +2,13 @@ package com.me.coresmodule.utils.render;
 
 import com.me.coresmodule.mixin.BeaconBlockEntityRendererInvoker;
 import com.me.coresmodule.utils.math.CmVectors;
-import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
+import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.VertexRendering;
+import net.minecraft.client.render.command.OrderedRenderCommandQueue;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.math.RotationAxis;
@@ -57,8 +59,8 @@ public class RenderUtil {
             float alpha,
             boolean throughWalls
     ) {
-        MatrixStack matrices = context.matrixStack();
-        Vec3d cameraPos = context.camera().getPos();
+        MatrixStack matrices = context.matrices();
+        Vec3d cameraPos = getCamera().getPos();
 
         matrices.push();
         matrices.translate(pos.x + 0.5 - cameraPos.x, pos.y - cameraPos.y, pos.z + 0.5 - cameraPos.z);
@@ -151,10 +153,10 @@ public class RenderUtil {
             double scale,
             boolean throughWalls
     ) {
-        MatrixStack matrices = context.matrixStack();
-        Vec3d cameraPos = context.camera().getPos();
-        float cameraYaw = context.camera().getYaw();
-        float cameraPitch = context.camera().getPitch();
+        MatrixStack matrices = context.matrices();
+        Vec3d cameraPos = getCamera().getPos();
+        float cameraYaw = getCamera().getYaw();
+        float cameraPitch = getCamera().getPitch();
         TextRenderer textRenderer = mc.textRenderer;
 
         matrices.push();
@@ -197,30 +199,31 @@ public class RenderUtil {
             int yOffset,
             float[] colorComponents
     ) {
-        MatrixStack matrices = context.matrixStack();
-        Vec3d cameraPos = context.camera().getPos();
-        ClientWorld world = context.world();
+        MatrixStack matrices = context.matrices();
+        Vec3d cameraPos = getCamera().getPos();
+        ClientWorld world = mc.world;
 
         matrices.push();
         matrices.translate(pos.x - cameraPos.x, pos.y - cameraPos.y, pos.z - cameraPos.z);
 
         VertexConsumerProvider consumers = context.consumers();
-        float partialTicks = context.tickCounter().getTickProgress(true);
-        long worldAge = world.getTime();
+        float partialTicks = mc.getRenderTickCounter().getTickProgress(true);
 
-        int beamHeight = context.world().getHeight();
+        int beamHeight = world.getHeight();
         float[] beamColor = new float[] {colorComponents[0], colorComponents[1], colorComponents[2], 1.0f};
+
+        OrderedRenderCommandQueue queue = context.gameRenderer().getEntityRenderCommandQueue();
 
         BeaconBlockEntityRendererInvoker.renderBeam(
                 matrices,
-                consumers,
+                queue,
                 partialTicks,
                 1.0f,
-                worldAge,
                 yOffset,
                 beamHeight,
                 new Color(beamColor[0], beamColor[1], beamColor[2]).getRGB()
         );
+
 
         // TODO: Add through walls option
         matrices.pop();
@@ -236,9 +239,9 @@ public class RenderUtil {
     ) {
         if (alpha == 0) alpha = 0.5f;
 
-        var camera = context.camera();
+        var camera = getCamera();
         var cameraPos = camera.getPos();
-        var matrices = context.matrixStack();
+        var matrices = context.matrices();
 
         matrices.push();
         matrices.translate(-cameraPos.x, -cameraPos.y, -cameraPos.z);
@@ -269,6 +272,8 @@ public class RenderUtil {
         matrices.pop();
     }
 
-
+    private static Camera getCamera() {
+        return mc.gameRenderer.getCamera();
+    }
 
 }

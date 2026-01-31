@@ -13,6 +13,7 @@ import com.me.coresmodule.utils.chat.Chat;
 import com.me.coresmodule.utils.chat.ClickActionManager;
 import com.me.coresmodule.utils.chat.SimulateChat;
 import com.me.coresmodule.utils.events.Register;
+import com.me.coresmodule.utils.events.impl.CmEventReg;
 import com.me.coresmodule.utils.events.processor.EventProcessor;
 import com.me.coresmodule.utils.render.CustomItem.CustomItemRender;
 import com.me.coresmodule.utils.render.WaypointManager;
@@ -69,11 +70,11 @@ public class CoresModule implements ModInitializer {
 		MfCalcHelper.register();
 		OverlayData.register();
 		OverlayManager.register();
-		AlwaysRightSphinxQuestion.register();
 		DianaFeatures.register();
 		EventProcessor.register();
 		CmCommands.register();
 		CustomItemRender.register();
+		CmEventReg.register();
 		GUIs.register();
 
 		configurator.register(Settings.class);

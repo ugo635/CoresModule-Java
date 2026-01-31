@@ -1,7 +1,7 @@
 package com.me.coresmodule.utils.render;
 
 import com.me.coresmodule.settings.categories.Tracker;
-import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents;
 
 import java.util.HashMap;
 import java.util.List;
@@ -21,7 +21,7 @@ public class WaypointManager {
     )*/);
 
     public static void register() {
-        WorldRenderEvents.AFTER_TRANSLUCENT.register(context -> {
+        WorldRenderEvents.BEFORE_TRANSLUCENT.register(context -> {
             for (Waypoint waypoint : waypoints) {
                 switch (waypoint.type) {
                     case "" -> {
