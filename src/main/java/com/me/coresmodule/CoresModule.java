@@ -7,15 +7,14 @@ import com.me.coresmodule.features.bot.Bot;
 import com.me.coresmodule.features.priv.MainPrivate;
 import com.me.coresmodule.settings.Settings;
 import com.me.coresmodule.utils.*;
+import com.me.coresmodule.utils.Tuples.Quadruple;
+import com.me.coresmodule.utils.Tuples.Triple;
 import com.me.coresmodule.utils.chat.Chat;
 import com.me.coresmodule.utils.chat.ClickActionManager;
 import com.me.coresmodule.utils.chat.SimulateChat;
-import com.me.coresmodule.utils.events.EventBus.CmEvents;
 import com.me.coresmodule.utils.events.Register;
-import com.me.coresmodule.utils.events.impl.OnDisconnect;
 import com.me.coresmodule.utils.events.processor.EventProcessor;
 import com.me.coresmodule.utils.render.CustomItem.CustomItemRender;
-import com.me.coresmodule.utils.render.CustomItem.SaveAndLoad;
 import com.me.coresmodule.utils.render.WaypointManager;
 import com.me.coresmodule.utils.render.gui.GUIs;
 import com.me.coresmodule.utils.render.overlay.OverlayData;
@@ -23,10 +22,8 @@ import com.me.coresmodule.utils.render.overlay.OverlayManager;
 import com.teamresourceful.resourcefulconfig.api.loader.Configurator;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -39,7 +36,7 @@ public class CoresModule implements ModInitializer {
 	public static String player = MinecraftClient.getInstance().getSession().getUsername();
 	public static MinecraftClient mc = MinecraftClient.getInstance();
 	public static final String MOD_ID = "coresmodule";
-	public static HashMap<String, Triple<ItemStack, ItemStack, Boolean>> overrides = new HashMap<>();
+	public static HashMap<String, Quadruple<ItemStack, ItemStack, Boolean, String>> overrides = new HashMap<>();
 
 	// This logger is used to write text to the console and the log file.
 	// It is considered best practice to use your mod id as the logger's name.
@@ -77,48 +74,21 @@ public class CoresModule implements ModInitializer {
 		EventProcessor.register();
 		CmCommands.register();
 		CustomItemRender.register();
-		CmEvents.register();
 		GUIs.register();
 
 		configurator.register(Settings.class);
 		configurator.saveConfig(Settings.class);
 
-		/*
-		 * Edit first & third person texture, inventory texture & hotbar texture of an item
-		 * FIXME: No glint when dropped/third person
-		 * FIXME: Texture no longer switched after switching the item to offhand -> Problem is uuid = null
-		 */
-		Register.command("replaceItem", args -> {
-			if (!List.of(1, 2).contains(args.length)) {
-				Chat.chat("§cUsage: /replaceItem <item_to> <true/false (glint) (optional)>");
-				return;
-			}
-
-			String Uuid = ItemHelper.getUUID(ItemHelper.getHeldItem());
-			ItemStack overrideItemFrom = ItemHelper.getHeldItem();
-			ItemStack overrideItemTo = ItemHelper.createSecond(new ItemStack(Registries.ITEM.get(Identifier.of(args[0]))), Uuid);
-			boolean overrideItemToGlintBool = false;
-			if (args.length == 2) {
-				overrideItemToGlintBool = Boolean.parseBoolean(args[1]);
-			}
-
-			overrides.put(Uuid, new Triple<>(
-                    overrideItemFrom,
-                    overrideItemTo,
-					overrideItemToGlintBool
-            ));
-
-			Chat.chat("§aReplacing " + TextHelper.getUnFormattedString(overrideItemFrom.getItemName()) + " with " + TextHelper.getUnFormattedString(overrideItemTo.getName()) + " and " + (overrideItemToGlintBool ? "with " : "§cwithout §a") + "glint.");
-			SaveAndLoad.save(null);
-		});
 
 		Register.command("copyNbt", args -> {
-			mc.keyboard.setClipboard(new JSONObject(ItemHelper.getMainInfos(ItemHelper.getHeldItem())).toString(4));
+			mc.keyboard.setClipboard(new JSONObject(ItemHelper.toMap(ItemHelper.getHeldItem())).toString(4));
 			Chat.chat("§aCopied NBT HashCode to clipboard");
-
 			Chat.chat("§aUUID: §c" + ItemHelper.getUUID(ItemHelper.getHeldItem()));
 		});
 
+		Register.command("getHand", args -> {
+			Chat.chat(ItemHelper.isSkull() == null ? "null" : ItemHelper.isSkull());
+		});
 
 
 		/*

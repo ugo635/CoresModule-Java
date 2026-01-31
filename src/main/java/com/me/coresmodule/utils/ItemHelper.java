@@ -6,6 +6,7 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.Item.TooltipContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -32,6 +33,10 @@ public class ItemHelper {
 
     public static String getFormattedItemName(ItemStack item) {
         return item != ItemStack.EMPTY ? TextHelper.getFormattedString(item.getName()) : "";
+    }
+
+    public static String getFormattedHeldItemName() {
+        return getFormattedItemName(getHeldItem());
     }
 
     public static List<ItemStack> getArmorItems() {
@@ -198,51 +203,6 @@ public class ItemHelper {
         };
     }
 
-    public static HashMap<String, Object> toMap(ItemStack stack) {
-        HashMap<String, Object> map = new HashMap<>();
-        String itemId = Registries.ITEM.getId(stack.getItem()).toString();
-        map.put("itemId", itemId);
-        NbtComponent comp = stack.get(DataComponentTypes.CUSTOM_DATA);
-        if (comp != null) {
-            NbtCompound tag = comp.copyNbt();
-            for (String key : tag.getKeys()) {
-                if (key.contains("timestamp")) continue;
-                String type = getType(tag.get(key));
-                switch (type) {
-                    case "byte" -> map.put(key, tag.getBoolean(key).orElse(null));
-                    case "integer" -> map.put(key, tag.getInt(key).orElse(null));
-                    case "double" -> map.put(key, tag.getDouble(key).orElse(null));
-                    case "string" -> map.put(key, tag.getString(key).orElse(null));
-                    default -> map.put(key, tag.get(key));
-                }
-
-            }
-        }
-        map.put("glint", overrides.containsKey(getUUID(stack)));
-        return map;
-    }
-
-    public static ItemStack fromMap(HashMap<String, Object> map) {
-        Identifier id = Identifier.of((String) map.get("itemId"));
-        ItemStack stack = new ItemStack(Registries.ITEM.get(id));
-        NbtCompound tag = new NbtCompound();
-        for (String key : map.keySet()) {
-            Object value = map.get(key);
-            if (value instanceof Boolean) {
-                tag.putBoolean(key, (Boolean) value);
-            } else if (value instanceof Integer) {
-                tag.putInt(key, (Integer) value);
-            } else if (value instanceof Double) {
-                tag.putDouble(key, (Double) value);
-            } else if (value instanceof String) {
-                tag.putString(key, (String) value);
-            }
-        }
-
-        stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(tag));
-        return stack;
-    }
-
     /*
     public static void copyNBTTagToClipboard(Tag nbtTag, String message) {
         if (nbtTag == null) {
@@ -390,4 +350,89 @@ public class ItemHelper {
         return map;
     }
 
+    public static String getItemId(ItemStack stack) {
+        if (stack == ItemStack.EMPTY || stack.getItem() == Items.AIR) return "minecraft:air";
+        if (overrides.containsKey(getUUID(stack))) return Registries.ITEM.getId(overrides.get(getUUID(stack)).second.getItem()).toString();
+        return Registries.ITEM.getId(stack.getItem()).toString();
+    }
+
+    public static Text fromString(String s) {
+        return Text.of(s.replace("&&", "§"));
+    }
+
+    public static String toString(Text t) {
+        return TextHelper.getFormattedString(t).replace("§", "&&");
+    }
+
+    public static HashMap<String, Object> toMap(ItemStack stack) {
+        HashMap<String, Object> map = new HashMap<>();
+        String itemId = Registries.ITEM.getId(stack.getItem()).toString();
+        map.put("itemId", itemId);
+        NbtComponent comp = stack.get(DataComponentTypes.CUSTOM_DATA);
+        if (comp != null) {
+            NbtCompound tag = comp.copyNbt();
+            for (String key : tag.getKeys()) {
+                if (key.contains("timestamp")) continue;
+                String type = getType(tag.get(key));
+                switch (type) {
+                    case "byte" -> map.put(key, tag.getBoolean(key).orElse(null));
+                    case "integer" -> map.put(key, tag.getInt(key).orElse(null));
+                    case "double" -> map.put(key, tag.getDouble(key).orElse(null));
+                    case "string" -> map.put(key, tag.getString(key).orElse(null));
+                    default -> map.put(key, tag.get(key));
+                }
+
+            }
+        }
+        map.put("glint", overrides.containsKey(getUUID(stack)));
+        return map;
+    }
+
+    public static ItemStack fromMap(HashMap<String, Object> map) {
+        Identifier id = Identifier.of((String) map.get("itemId"));
+        ItemStack stack = new ItemStack(Registries.ITEM.get(id));
+        NbtCompound tag = new NbtCompound();
+        for (String key : map.keySet()) {
+            if (key.contains("custom_name")) continue;
+            Object value = map.get(key);
+            if (value instanceof Boolean) {
+                tag.putBoolean(key, (Boolean) value);
+            } else if (value instanceof Integer) {
+                tag.putInt(key, (Integer) value);
+            } else if (value instanceof Double) {
+                tag.putDouble(key, (Double) value);
+            } else if (value instanceof String) {
+                tag.putString(key, (String) value);
+            }
+        }
+
+        stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(tag));
+
+
+        return stack;
+    }
+
+    public static void replaceTooltipAt(int index, List<Text> list, Text content) {
+        if (index < 0 || index >= list.size()) return;
+        list.set(index, content);
+    }
+
+    public static void replaceTooltipAt(int index, List<Text> list, String content) {
+        replaceTooltipAt(index, list, Text.of(content));
+    }
+
+    public static String getInternalId(ItemStack stack) {
+        return toMap(stack).get("id").toString();
+    }
+
+    public static String isSkull() {
+        return isSkull(String.valueOf(Registries.ITEM.getId(getHeldItem().getItem())));
+    }
+
+    public static String isSkull(String path) {
+        if (path.contains("minecraft:player_head") || path.contains("minecraft:skull")) {
+            return getInternalId(getHeldItem());
+        }
+        return null;
+    }
 }

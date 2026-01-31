@@ -1,14 +1,14 @@
-package com.me.coresmodule.utils. render. gui;
+package com.me.coresmodule.utils.render.gui.guis.ItemCustomizer;
 
 import gg.essential.elementa.components.UIBlock;
 import gg.essential.elementa.effects.Effect;
-import gg.essential. elementa.state.BasicState;
+import gg.essential.elementa.state.BasicState;
 import gg.essential.elementa.state.MappedState;
-import gg. essential.elementa.state.State;
-import gg.essential. universal.UMatrixStack;
+import gg.essential.elementa.state.State;
+import gg.essential.universal.UMatrixStack;
 import kotlin.jvm.functions.Function1;
 
-import java.awt. Color;
+import java.awt.Color;
 import java.util.EnumSet;
 import java.util.Set;
 
@@ -31,6 +31,9 @@ public class RoundedOutlineEffect extends Effect {
     private final MappedState<Float, Float> widthState;
     private final MappedState<Float, Float> radiusState;
 
+    private Color gradientStart = null;
+    private Color gradientEnd = null;
+
     public boolean drawAfterChildren;
     public boolean drawInsideChildren;
     private Set<Side> sides;
@@ -52,10 +55,37 @@ public class RoundedOutlineEffect extends Effect {
 
         updateSideFlags();
 
-        this.colorState = color. map((Function1<?  super Color, ? extends Color>) (Color c) -> c);
+        this.colorState = color.map((Function1<?  super Color, ? extends Color>) (Color c) -> c);
         this.widthState = width.map((Function1<? super Float, ? extends Float>) (Float w) -> w);
         this.radiusState = radius.map((Function1<? super Float, ? extends Float>) (Float r) -> r);
     }
+
+    public RoundedOutlineEffect(
+            UIBlock uiBlock,
+            Color color,
+            Float width,
+            Float radius,
+            boolean drawAfterChildren,
+            boolean drawInsideChildren,
+            Set<Side> sides,
+            Color gradientStart,
+            Color gradientEnd
+    ) {
+        this.UIBLOCK = uiBlock;
+        this.drawAfterChildren = drawAfterChildren;
+        this.drawInsideChildren = drawInsideChildren;
+        this.sides = sides;
+
+        this.gradientStart = gradientStart;
+        this.gradientEnd = gradientEnd;
+
+        updateSideFlags();
+
+        this.colorState = new BasicState<>(color).map((Function1<? super Color, ? extends Color>) (Color c) -> c);
+        this.widthState = new BasicState<>(width).map((Function1<? super Float, ? extends Float>) (Float w) -> w);
+        this.radiusState = new BasicState<>(radius).map((Function1<? super Float, ? extends Float>) (Float r) -> r);
+    }
+
 
     // Convenience constructors
     public RoundedOutlineEffect(
@@ -84,7 +114,7 @@ public class RoundedOutlineEffect extends Effect {
 
     private static Set<Side> getAllSides() {
         return EnumSet.of(Side.Left, Side.Top, Side.Right, Side.Bottom,
-                Side.TopLeft, Side.TopRight, Side. BottomLeft, Side.BottomRight);
+                Side.TopLeft, Side.TopRight, Side.BottomLeft, Side.BottomRight);
     }
 
     // Getters and setters
@@ -143,10 +173,10 @@ public class RoundedOutlineEffect extends Effect {
     private void updateSideFlags() {
         this.hasLeft = sides.contains(Side.Left);
         this.hasTop = sides.contains(Side.Top);
-        this.hasRight = sides.contains(Side. Right);
+        this.hasRight = sides.contains(Side.Right);
         this.hasBottom = sides.contains(Side.Bottom);
         this.hasTopLeft = sides.contains(Side.TopLeft);
-        this.hasTopRight = sides.contains(Side. TopRight);
+        this.hasTopRight = sides.contains(Side.TopRight);
         this.hasBottomLeft = sides.contains(Side.BottomLeft);
         this.hasBottomRight = sides.contains(Side.BottomRight);
     }
@@ -182,9 +212,9 @@ public class RoundedOutlineEffect extends Effect {
     private void drawOutline(UMatrixStack matrixStack) {
         Color color = colorState.get();
         float width = widthState.get();
-        float radius = radiusState. get();
+        float radius = radiusState.get();
 
-        double left = boundComponent. getLeft();
+        double left = boundComponent.getLeft();
         double right = boundComponent.getRight();
         double top = boundComponent.getTop();
         double bottom = boundComponent.getBottom();
@@ -238,19 +268,19 @@ public class RoundedOutlineEffect extends Effect {
         }
 
         if (hasLeft) {
-            UIBlock. Companion.drawBlock(matrixStack, color, leftBoundsFirst, top, leftBoundsSecond, bottom);
+            UIBlock.Companion.drawBlock(matrixStack, color, leftBoundsFirst, top, leftBoundsSecond, bottom);
         }
 
         if (hasTop) {
-            UIBlock. Companion.drawBlock(matrixStack, color, left, topBoundsFirst, right, topBoundsSecond);
+            UIBlock.Companion.drawBlock(matrixStack, color, left, topBoundsFirst, right, topBoundsSecond);
         }
 
         if (hasRight) {
-            UIBlock. Companion.drawBlock(matrixStack, color, rightBoundsFirst, top, rightBoundsSecond, bottom);
+            UIBlock.Companion.drawBlock(matrixStack, color, rightBoundsFirst, top, rightBoundsSecond, bottom);
         }
 
         if (hasBottom) {
-            UIBlock. Companion.drawBlock(matrixStack, color, left, bottomBoundsFirst, right, bottomBoundsSecond);
+            UIBlock.Companion.drawBlock(matrixStack, color, left, bottomBoundsFirst, right, bottomBoundsSecond);
         }
 
         if (! drawInsideChildren) {
@@ -261,12 +291,12 @@ public class RoundedOutlineEffect extends Effect {
 
             // Top right corner
             if (hasTopRight || (hasRight && hasTop)) {
-                UIBlock. Companion.drawBlock(matrixStack, color, right, topBoundsFirst, rightBoundsSecond, top);
+                UIBlock.Companion.drawBlock(matrixStack, color, right, topBoundsFirst, rightBoundsSecond, top);
             }
 
             // Bottom right corner
             if (hasBottomRight || (hasRight && hasBottom)) {
-                UIBlock. Companion.drawBlock(matrixStack, color, right, bottom, rightBoundsSecond, bottomBoundsSecond);
+                UIBlock.Companion.drawBlock(matrixStack, color, right, bottom, rightBoundsSecond, bottomBoundsSecond);
             }
 
             // Bottom left corner
@@ -297,7 +327,7 @@ public class RoundedOutlineEffect extends Effect {
 
         // Draw the four sides (excluding corners)
         if (hasTop) {
-            UIBlock. Companion.drawBlock(matrixStack, color,
+            UIBlock.Companion.drawBlock(matrixStack, color,
                     left + outerRadius, top - (drawInsideChildren ? 0 : width),
                     right - outerRadius, top + (drawInsideChildren ? width : 0));
         }
@@ -315,7 +345,7 @@ public class RoundedOutlineEffect extends Effect {
         }
 
         if (hasRight) {
-            UIBlock.Companion. drawBlock(matrixStack, color,
+            UIBlock.Companion.drawBlock(matrixStack, color,
                     right - (drawInsideChildren ? width : 0), top + outerRadius,
                     right + (drawInsideChildren ? 0 : width), bottom - outerRadius);
         }
@@ -348,6 +378,11 @@ public class RoundedOutlineEffect extends Effect {
                                    double centerX, double centerY,
                                    double innerRadius, double outerRadius,
                                    double startAngle, double endAngle, int segments) {
+
+        // Swap gradient colors if it's on the left side to match the borders
+        Color localGradientStart = startAngle == 90 || startAngle == 180 ? this.gradientEnd : this.gradientStart;
+        Color localGradientEnd = startAngle == 90 || startAngle == 180 ? this.gradientStart : this.gradientEnd;
+
         double angleStep = (endAngle - startAngle) / segments;
 
         // Draw small rectangles along the arc to approximate the rounded corner
@@ -362,20 +397,35 @@ public class RoundedOutlineEffect extends Effect {
             double y1Outer = centerY + Math.sin(angle1) * outerRadius;
 
             double x2Inner = centerX + Math.cos(angle2) * innerRadius;
-            double y2Inner = centerY + Math. sin(angle2) * innerRadius;
+            double y2Inner = centerY + Math.sin(angle2) * innerRadius;
             double x2Outer = centerX + Math.cos(angle2) * outerRadius;
             double y2Outer = centerY + Math.sin(angle2) * outerRadius;
 
             // Calculate bounding box for this segment
-            double minX = Math. min(Math.min(x1Inner, x1Outer), Math.min(x2Inner, x2Outer));
-            double maxX = Math.max(Math. max(x1Inner, x1Outer), Math.max(x2Inner, x2Outer));
-            double minY = Math. min(Math.min(y1Inner, y1Outer), Math.min(y2Inner, y2Outer));
-            double maxY = Math.max(Math. max(y1Inner, y1Outer), Math.max(y2Inner, y2Outer));
+            double minX = Math.min(Math.min(x1Inner, x1Outer), Math.min(x2Inner, x2Outer));
+            double maxX = Math.max(Math.max(x1Inner, x1Outer), Math.max(x2Inner, x2Outer));
+            double minY = Math.min(Math.min(y1Inner, y1Outer), Math.min(y2Inner, y2Outer));
+            double maxY = Math.max(Math.max(y1Inner, y1Outer), Math.max(y2Inner, y2Outer));
 
-            // Draw a small block for this arc segment using UIBlock. drawBlock
-            UIBlock. Companion.drawBlock(matrixStack, color, minX, minY, maxX, maxY);
+            Color drawColor = color;
+
+            if (localGradientStart != null && localGradientEnd != null) {
+                double t = (double) i / (segments - 1);
+
+                int r = (int) (localGradientStart.getRed() + (localGradientEnd.getRed() - localGradientStart.getRed()) * t);
+                int g = (int) (localGradientStart.getGreen() + (localGradientEnd.getGreen() - localGradientStart.getGreen()) * t);
+                int b = (int) (localGradientStart.getBlue() + (localGradientEnd.getBlue() - localGradientStart.getBlue()) * t);
+                int a = (int) (localGradientStart.getAlpha() + (localGradientEnd.getAlpha() - localGradientStart.getAlpha()) * t);
+
+                drawColor = new Color(r, g, b, a);
+            }
+
+            // Draw a small block for this arc segment using UIBlock.drawBlock
+            UIBlock.Companion.drawBlock(matrixStack, drawColor, minX, minY, maxX, maxY);
         }
     }
+
+
 
     public enum Side {
         Left,
