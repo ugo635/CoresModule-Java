@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import static com.me.coresmodule.CoresModule.MOD_ID;
+import static com.me.coresmodule.CoresModule.mc;
 
 public class CmCommands {
     public static void register() {
@@ -44,8 +45,8 @@ public class CmCommands {
             else arg = "";
 
             if (arg.equals("config") || arg.equals("settings") || arg.isEmpty()) {
-                MinecraftClient.getInstance().send(() -> {
-                    MinecraftClient.getInstance().setScreen(ResourcefulConfigScreen.getFactory(MOD_ID).apply(null));
+                mc.send(() -> {
+                    mc.setScreen(ResourcefulConfigScreen.getFactory(MOD_ID).apply(null));
                 });
                 return;
             } else {

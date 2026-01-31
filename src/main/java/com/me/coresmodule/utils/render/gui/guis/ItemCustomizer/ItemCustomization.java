@@ -20,6 +20,7 @@ import net.minecraft.item.ItemStack;
 
 import java.awt.*;
 
+import static com.me.coresmodule.CoresModule.mc;
 import static com.me.coresmodule.CoresModule.overrides;
 import static com.me.coresmodule.utils.render.CustomItem.CustomItemRender.overridesPut;
 
@@ -223,10 +224,9 @@ public class ItemCustomization extends WindowScreen {
         });
 
 
-        main.onKeyType((comp, character, keycode) -> { // Never called
-            System.out.println("The keycode is: " + keycode + " for character: " + character);
+        getWindow().onKeyType((comp, character, keycode) -> { // Never called
             if (keycode == 256) { // Escape key
-                this.close();
+                mc.send(() -> mc.setScreen(null));
             }
            return null;
         });
