@@ -18,16 +18,12 @@
 		"main": [
 			"com.me.coresmodule.CoresModule"
 		],
-		"client": [
-			"com.me.coresmodule.CoresModuleClient"
+		"fabric-datagen": [
+			"com.me.coresmodule.CoresModuleDataGenerator"
 		]
 	},
 	"mixins": [
-		"coresmodule.mixins.json",
-		{
-			"config": "coresmodule.client.mixins.json",
-			"environment": "client"
-		}
+		"coresmodule.mixins.json"
 	],
 	"depends": {
 		"fabricloader": ">=0.17.2",

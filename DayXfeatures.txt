@@ -1,0 +1,68 @@
+1. Day 1: 03/10/2025 (DD/MM/YYYY)
+    • /mymf <mf> <kc (optionnal)> Command
+    • Helper Functions
+
+2. Day 2:
+    • Screenshot on Inquisitor Death
+    • Helper Functions
+
+3. Day 3:
+    • Modified Sreenshot on to only happend on Chimera Drop
+    • Create a config folder
+    • Add chimeras message to /config/coresmodule/chimeras.txt
+
+4. Day 4:
+    • !mymf command
+    • /clear command
+    • Make AH chat message clickable
+    • /color command
+    • /fp command
+
+5. Day 5:
+    • Started working on settings menu, didn't worked much, was sick :c
+
+6. Day 6:
+    • Finished making the setting menu
+
+7. Day 7:
+    • Made AH clickable message toggleable in the settings menu • Made Chimera Drop Screenshot toggleable in the settings menu
+    • Started working on ColorReplacor, my goal is to finish it in under a week, it currently has 1 bug but 'should' just change the username color
+    • (Maybe not to do, if I don't need to, will see with the future stuff) TODO: Merge texts with same click/hover action/value: Make each into an array with each having text, click/hover value and merge to limit the amt of stuff -> basicly do like CT => Does editing the sibling by making its text smth else remove it's .Style() ?
+
+8. Day 8:
+    • Made ColorReplacor fuse strings, will prob be useful for future stuff
+    • Fixed formattedString() not returning what it should unlike how getFormattedString() did, so made formattedString() use getFormattedString() instead of editing the files alrd using FomattedString
+
+9. Day 9:
+    • Made a custom rank replacor
+    • Made a selector in settings to choose color & custom rank
+    • Fixed setting not saving other settings than the main one
+
+10. Day 10:
+    • Made a credit part in the settings menu
+    • Added a few credits
+    • Made main setting look better
+
+11. Day 11:
+    • Hide Hoppity's hunt message
+
+12. Day 12:
+    • Fixed few things & removed color replacor
+
+13. Day 13:
+    • Fixed a bug & made pickaxe ability message show on screen
+
+14. Day 14 - Day 18:
+    • Did nothing
+
+19. Day 19:
+    • ftax <player> command
+    • Made a Register.onChatMessageCancelable(), looks like it do replace at the correct emplacement and not before (e.g: if we replace a msg in /pl it will indeed appear in the right spot and not above the ------- as before)
+    • Made a @CmEvent, not complete yet
+
+20. Day 20 - Day 24:
+    • Did nothing
+
+25. Day 25 - Day 28:
+    • Bot
+

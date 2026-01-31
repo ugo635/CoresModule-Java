@@ -16,18 +16,26 @@ repositories {
 	// Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
 	// See https://docs.gradle.org/current/userguide/declaring_repositories.html
 	// for more information about repositories.
-}
 
-loom {
-	splitEnvironmentSourceSets()
-
-	mods {
-		"coresmodule" {
-			sourceSet sourceSets.main
-			sourceSet sourceSets.client
-		}
+	maven {
+		name = "Team Resourceful Maven"
+		url = "https://maven.teamresourceful.com/repository/maven-public/"
 	}
 
+	maven {
+		name = "Terraformers"
+		url = "https://maven.terraformersmc.com/"
+	}
+
+	maven {
+			url = "https://repo.essential.gg/repository/maven-public"
+	}
+}
+
+fabricApi {
+	configureDataGeneration {
+		client = true
+	}
 }
 
 dependencies {
@@ -38,7 +46,20 @@ dependencies {
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-	
+
+	// Config menu
+	modImplementation "com.teamresourceful.resourcefulconfig:resourcefulconfig-common-$minecraft_version:$rconfig_version"
+	modImplementation "com.teamresourceful.resourcefulconfig:resourcefulconfig-fabric-$minecraft_version:$rconfig_version"
+
+	// UIs
+	modImplementation("gg.essential:elementa:$elementaVersion")
+	modImplementation "gg.essential:universalcraft-1.21.5-fabric:$uc_version"
+
+	modImplementation "org.jetbrains.kotlin:kotlin-stdlib:1.9.22"
+	modImplementation(include("org.json:json:$json_version"))
+
+	implementation "io.github.classgraph:classgraph:4.8.154"
+
 }
 
 processResources {
