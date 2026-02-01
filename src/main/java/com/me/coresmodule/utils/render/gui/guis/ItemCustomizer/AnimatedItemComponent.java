@@ -1,6 +1,7 @@
 package com.me.coresmodule.utils.render.gui.guis.ItemCustomizer;
 
 import com.me.coresmodule.utils.ItemHelper;
+import com.me.coresmodule.utils.render.CustomItem.CustomItemRender;
 import gg.essential.elementa.UIComponent;
 import gg.essential.universal.UGraphics;
 import gg.essential.universal.UMatrixStack;
@@ -65,6 +66,13 @@ public class AnimatedItemComponent extends UIComponent {
         }
     }
 
+    private boolean shouldGlint(ItemStack stack) {
+        if (stack == null || stack.isEmpty()) return false;
+        if (!overrides.containsKey(ItemHelper.getUUID(stack))) return stack.hasGlint();
+        Boolean glint = overrides.get(ItemHelper.getUUID(stack)).third;
+        return glint != null && glint;
+    }
+
     private void loadItemTextures() {
         try {
             ItemStack heldItem = ItemHelper.getHeldItem();
@@ -74,7 +82,7 @@ public class AnimatedItemComponent extends UIComponent {
                 return;
             }
 
-            hasGlint = heldItem.hasGlint();
+            hasGlint = shouldGlint(heldItem);
 
             Identifier itemId;
             String uuid = ItemHelper.getUUID(heldItem);
@@ -97,8 +105,6 @@ public class AnimatedItemComponent extends UIComponent {
             g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
             g2d.drawImage(spriteImage, 0, 0, 128, 128, null);
             g2d.dispose();
-
-            System.out.println("Item texture loaded successfully!");
         } catch (Exception e) {
             e.printStackTrace();
             baseItemImage = createTestPattern();

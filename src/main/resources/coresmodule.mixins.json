@@ -10,6 +10,7 @@
     "ItemRendering.ItemGuiRendererMixin",
     "ItemRendering.ItemHotbarRendererMixin",
     "ItemRendering.GlintMixin",
+    "ItemRendering.GlintMixin2",
     "ItemRendering.DropItemMixin"
   ],
   "injectors": {
