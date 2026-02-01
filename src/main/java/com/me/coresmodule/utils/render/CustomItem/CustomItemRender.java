@@ -4,6 +4,7 @@ import com.me.coresmodule.utils.TextHelper;
 import com.me.coresmodule.utils.Tuples.Quadruple;
 import com.me.coresmodule.utils.Tuples.Triple;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;

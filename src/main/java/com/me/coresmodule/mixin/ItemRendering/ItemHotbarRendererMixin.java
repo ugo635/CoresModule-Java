@@ -35,7 +35,7 @@ public class ItemHotbarRendererMixin {
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawStackOverlay(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/item/ItemStack;II)V"),
             index = 1
     )
-    private ItemStack replaceHotbarItemStack2(ItemStack stack) {if (stack.getName().getString().contains("Moody")) Helper.print("Name: %s ItemName: %s".formatted(stack.getName().getString(), CustomItemRender.replaceItemStack(stack).getItem().toString()));
+    private ItemStack replaceHotbarItemStack2(ItemStack stack) {
         return CustomItemRender.replaceItemStack(stack);
     }
 
