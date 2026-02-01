@@ -170,6 +170,8 @@ public class ItemCustomization extends WindowScreen {
                             : Color.RED
             );
 
+            itemDisplay.reload();
+
             return null;
         });
 
