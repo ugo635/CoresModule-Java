@@ -244,7 +244,7 @@ public class ItemCustomization extends WindowScreen {
 
         // Item texture display
         main.addChild(itemDisplayBox);
-        itemDisplayBox.addChild(itemDisplay);
+        //itemDisplayBox.addChild(itemDisplay);
         GUIs.addShadow(itemDisplayBox);
 
         // Glint toggle
