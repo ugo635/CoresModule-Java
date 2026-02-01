@@ -156,7 +156,7 @@ public class ItemCustomization extends WindowScreen {
             } else {
                 overridesPut(
                         ItemHelper.getUUID(ItemHelper.getHeldItem()),
-                        new Quadruple<ItemStack, ItemStack, Boolean, String>(
+                        new Quadruple<>(
                                 ItemHelper.getHeldItem(),
                                 ItemHelper.createSecond(ItemHelper.getHeldItem(), ItemHelper.getUUID(ItemHelper.getHeldItem())),
                                 !ItemHelper.getHeldItem().hasGlint(),
