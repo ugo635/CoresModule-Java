@@ -1,7 +1,6 @@
 package com.me.coresmodule.utils.render.gui.guis.ItemCustomizer;
 
 import com.me.coresmodule.utils.ItemHelper;
-import com.mojang.blaze3d.systems.RenderSystem;
 import gg.essential.elementa.UIComponent;
 import gg.essential.universal.UGraphics;
 import gg.essential.universal.UMatrixStack;
@@ -14,7 +13,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
-import org.lwjgl.opengl.GL11;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -28,26 +26,29 @@ import static com.me.coresmodule.CoresModule.overrides;
 import static gg.essential.elementa.utils.ImageKt.drawTexture;
 
 public class AnimatedItemComponent extends UIComponent {
-    private static final float speed = 0.03f; // High number = faster, small number = slower
+    private static final float speed = 0.03f;
+    private static final long FRAME_TIME_MS = 50; // 20 FPS
 
     private BufferedImage baseItemImage;
     private BufferedImage localGlintImage;
     private ReleasedDynamicTexture currentTexture;
-
-    // Add these two lines to fix the errors
     private long lastFrameTime = 0;
-    private static final long FRAME_TIME_MS = 50; // 20 FPS for the animation
+    private boolean hasGlint = false;
+    private boolean needsTextureUpdate = true;
 
     public AnimatedItemComponent() {
         loadItemTextures();
         loadLocalGlint();
-        updateTexture();
     }
 
     public void reload() {
+        if (currentTexture != null) {
+            currentTexture.close();
+            currentTexture = null;
+        }
         loadItemTextures();
         loadLocalGlint();
-        updateTexture();
+        needsTextureUpdate = true;
     }
 
     private void loadLocalGlint() {
@@ -69,8 +70,11 @@ public class AnimatedItemComponent extends UIComponent {
             ItemStack heldItem = ItemHelper.getHeldItem();
             if (heldItem.isEmpty() || heldItem.getItem() == Items.AIR) {
                 baseItemImage = createTestPattern();
+                hasGlint = false;
                 return;
             }
+
+            hasGlint = heldItem.hasGlint();
 
             Identifier itemId;
             String uuid = ItemHelper.getUUID(heldItem);
@@ -86,7 +90,6 @@ public class AnimatedItemComponent extends UIComponent {
                     spriteId
             );
             Sprite sprite = mc.getAtlasManager().getSprite(spriteIdentifier);
-
             BufferedImage spriteImage = getBufferedImage(sprite);
 
             baseItemImage = new BufferedImage(128, 128, BufferedImage.TYPE_INT_ARGB);
@@ -94,20 +97,28 @@ public class AnimatedItemComponent extends UIComponent {
             g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
             g2d.drawImage(spriteImage, 0, 0, 128, 128, null);
             g2d.dispose();
+
+            System.out.println("Item texture loaded successfully!");
         } catch (Exception e) {
+            e.printStackTrace();
             baseItemImage = createTestPattern();
+            hasGlint = false;
         }
     }
 
-    private void updateTexture() {
+    private BufferedImage createAnimatedFrame() {
+        if (baseItemImage == null) {
+            return createTestPattern();
+        }
+
         BufferedImage combined = new BufferedImage(128, 128, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2d = combined.createGraphics();
 
-        // 1. Draw the shovel base
+        // Draw base item
         g2d.drawImage(baseItemImage, 0, 0, null);
 
-        // 2. Overlap the MOVING glint
-        if (localGlintImage != null && ItemHelper.getHeldItem().hasGlint()) {
+        // Draw animated glint if item has enchantment
+        if (localGlintImage != null && hasGlint) {
             g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, 0.5f));
 
             // Calculate offset based on time
@@ -115,11 +126,11 @@ public class AnimatedItemComponent extends UIComponent {
             int offset = (int) (time * speed);
 
             AffineTransform old = g2d.getTransform();
-            g2d.rotate(Math.toRadians(-45), 128, 128);
+            g2d.rotate(Math.toRadians(-45), 64, 64);
 
-            // Tile the glint to loop
-            for (int x = -512; x < 512; x += 128) {
-                for (int y = -512; y < 512; y += 128) {
+            // Tile the glint
+            for (int x = -256; x < 256; x += 128) {
+                for (int y = -256; y < 256; y += 128) {
                     g2d.drawImage(localGlintImage, x + (offset % 128), y + (offset % 128), 128, 128, null);
                 }
             }
@@ -127,13 +138,22 @@ public class AnimatedItemComponent extends UIComponent {
         }
 
         g2d.dispose();
+        return combined;
+    }
+
+    private void updateTexture() {
+        BufferedImage frame = createAnimatedFrame();
 
         if (currentTexture != null) {
             currentTexture.close();
         }
-        currentTexture = UGraphics.getTexture(combined);
+
+        currentTexture = UGraphics.getTexture(frame);
         if (currentTexture != null) {
             currentTexture.uploadTexture();
+            System.out.println("Texture uploaded successfully!");
+        } else {
+            System.out.println("Failed to create texture!");
         }
     }
 
@@ -141,35 +161,31 @@ public class AnimatedItemComponent extends UIComponent {
     public void draw(UMatrixStack matrixStack) {
         beforeDrawCompat(matrixStack);
 
-        // Update animation logic
+        // Update texture if needed or if animation frame changed
         long currentTime = System.currentTimeMillis();
-        if (currentTime - lastFrameTime >= FRAME_TIME_MS) {
+        if (needsTextureUpdate || (hasGlint && currentTime - lastFrameTime >= FRAME_TIME_MS)) {
             lastFrameTime = currentTime;
             updateTexture();
+            needsTextureUpdate = false;
         }
 
-        if (currentTexture == null) return;
+        if (currentTexture == null) {
+            System.out.println("No texture to draw!");
+            super.draw(matrixStack);
+            return;
+        }
 
         float x = getLeft();
         float y = getTop();
         float width = getWidth();
         float height = getHeight();
 
-        if (width <= 0 || height <= 0) return;
+        if (width <= 0 || height <= 0) {
+            super.draw(matrixStack);
+            return;
+        }
 
-        RenderSystem.setShaderTexture(0, currentTexture.getGlTextureView());
-
-        double scale = mc.getWindow().getScaleFactor();
-        int windowHeight = mc.getWindow().getHeight();
-
-        GL11.glEnable(GL11.GL_SCISSOR_TEST);
-        GL11.glScissor(
-                (int) (x * scale),
-                (int) (windowHeight - (y + height) * scale),
-                (int) (width * scale),
-                (int) (height * scale)
-        );
-
+        // Draw the texture using Elementa's utility
         drawTexture(
                 matrixStack,
                 currentTexture,
@@ -178,11 +194,10 @@ public class AnimatedItemComponent extends UIComponent {
                 (double) y,
                 (double) width,
                 (double) height,
-                GL11.GL_NEAREST,
-                GL11.GL_NEAREST
+                org.lwjgl.opengl.GL11.GL_NEAREST,
+                org.lwjgl.opengl.GL11.GL_NEAREST
         );
 
-        GL11.glDisable(GL11.GL_SCISSOR_TEST);
         super.draw(matrixStack);
     }
 
@@ -204,6 +219,11 @@ public class AnimatedItemComponent extends UIComponent {
     }
 
     private BufferedImage createTestPattern() {
-        return new BufferedImage(128, 128, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage img = new BufferedImage(128, 128, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = img.createGraphics();
+        g.setColor(Color.RED);
+        g.fillRect(0, 0, 128, 128);
+        g.dispose();
+        return img;
     }
 }
