@@ -3,6 +3,7 @@ package com.me.coresmodule.utils;
 import com.me.coresmodule.utils.chat.Chat;
 
 import java.awt.image.BufferedImage;
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
@@ -106,5 +107,20 @@ public class Helper {
 
     public static void copyToClipboard(BufferedImage image) {
         ScreenshotUtils.copyImageToClipboard(image);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> T getField(Class<?> clazz, String fieldName, Object instance) {
+        try {
+            Field f = clazz.getDeclaredField(fieldName);
+            f.setAccessible(true);
+            return (T) f.get(instance);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            return null;
+        }
+    }
+
+    public static <T> T getField(Class<?> clazz, String fieldName) {
+        return getField(clazz, fieldName, null);
     }
 }

@@ -107,70 +107,6 @@ public class ItemHelper {
         return "";
     }
 
-    public static ItemStack markNbt(ItemStack stack, String key, boolean value) {
-        NbtCompound tag = new NbtCompound();
-        tag.putBoolean(key, value);
-        stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(tag));
-        return stack;
-    }
-
-    public static ItemStack markNbt(ItemStack stack, String key, int value) {
-        NbtCompound tag = new NbtCompound();
-        tag.putInt(key, value);
-        stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(tag));
-        return stack;
-    }
-
-    public static ItemStack markNbt(ItemStack stack, String key, double value) {
-        NbtCompound tag = new NbtCompound();
-        tag.putDouble(key, value);
-        stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(tag));
-        return stack;
-    }
-
-    public static ItemStack markNbt(ItemStack stack, String key, String value) {
-        NbtCompound tag = new NbtCompound();
-        tag.putString(key, value);
-        stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(tag));
-        return stack;
-    }
-
-    public static ItemStack addMarkNbt(ItemStack stack, String key, boolean value) {
-        NbtComponent comp = stack.get(DataComponentTypes.CUSTOM_DATA);
-        if (comp == null) return null; // Try adding instead of creating
-        NbtCompound tag = comp.copyNbt(); // Add existing data
-        tag.putBoolean(key, value);
-        stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(tag));
-        return stack;
-    }
-
-    public static ItemStack addMarkNbt(ItemStack stack, String key, int value) {
-        NbtComponent comp = stack.get(DataComponentTypes.CUSTOM_DATA);
-        if (comp == null) return null; // Try adding instead of creating
-        NbtCompound tag = comp.copyNbt(); // Add existing data
-        tag.putInt(key, value);
-        stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(tag));
-        return stack;
-    }
-
-    public static ItemStack addMarkNbt(ItemStack stack, String key, double value) {
-        NbtComponent comp = stack.get(DataComponentTypes.CUSTOM_DATA);
-        if (comp == null) return null; // Try adding instead of creating
-        NbtCompound tag = comp.copyNbt(); // Add existing data
-        tag.putDouble(key, value);
-        stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(tag));
-        return stack;
-    }
-
-    public static ItemStack addMarkNbt(ItemStack stack, String key, String value) {
-        NbtComponent comp = stack.get(DataComponentTypes.CUSTOM_DATA);
-        if (comp == null) return null; // Try adding instead of creating
-        NbtCompound tag = comp.copyNbt(); // Add existing data
-        tag.putString(key, value);
-        stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(tag));
-        return stack;
-    }
-
     @SuppressWarnings("unchecked")
     public static <T> T getComponent(ItemStack stack, String name, String result) {
         NbtComponent comp = stack.get(DataComponentTypes.CUSTOM_DATA);
@@ -319,11 +255,11 @@ public class ItemHelper {
 
         if (!customData.contains("uuid")) return null;
 
-        return customData.getString("uuid").orElse("null");
+        return customData.getString("uuid").orElse(null);
     }
 
     public static ItemStack createSecond(ItemStack stack, String uuid) {
-        return markNbt(stack, "uuid", uuid);
+        return stack;
     }
 
     public static HashMap<String, Object> getMainInfos(ItemStack stack) {

@@ -21,7 +21,7 @@ public class CustomItemRender {
     }
 
     public static boolean shouldGlint(ItemStack stack) {
-        if (stack == null) return false;
+        if (stack == null || stack.isEmpty()) return false;
         if (!overrides.containsKey(ItemHelper.getUUID(stack))) return false;
         Boolean glint = overrides.get(ItemHelper.getUUID(stack)).third;
         return glint != null && glint;
@@ -29,11 +29,11 @@ public class CustomItemRender {
 
     public static void replaceItem(String itemID, String name) {
         ItemStack heldItem = ItemHelper.getHeldItem();
-        String Uuid = ItemHelper.getUUID(heldItem);
-        ItemStack overrideItemTo = ItemHelper.createSecond(new ItemStack(Registries.ITEM.get(Identifier.of(itemID))), Uuid);
+        String uuid = ItemHelper.getUUID(heldItem);
+        ItemStack overrideItemTo = ItemHelper.createSecond(new ItemStack(Registries.ITEM.get(Identifier.of(itemID))), uuid);
         boolean overrideItemToGlintBool = heldItem.hasGlint();
 
-        overridesPut(Uuid, new Quadruple<>(
+        overridesPut(uuid, new Quadruple<>(
                 heldItem,
                 overrideItemTo,
                 overrideItemToGlintBool,
@@ -49,7 +49,7 @@ public class CustomItemRender {
 
     public static void updateName(String uuid) {
         ItemTooltipCallback.EVENT.register((stack, ctx, type, list) -> {
-            if (uuid == null || !overrides.containsKey(uuid) || !ItemHelper.getUUID(stack).equals(uuid)) return;
+            if (uuid == null || !overrides.containsKey(uuid) || ItemHelper.getUUID(stack) == null || !ItemHelper.getUUID(stack).equals(uuid)) return;
             ItemHelper.replaceTooltipAt(0, list, overrides.get(uuid).fourth);
         });
     }

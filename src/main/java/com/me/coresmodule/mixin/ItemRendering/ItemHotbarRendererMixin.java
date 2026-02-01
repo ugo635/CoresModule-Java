@@ -1,5 +1,6 @@
 package com.me.coresmodule.mixin.ItemRendering;
 
+import com.me.coresmodule.utils.Helper;
 import com.me.coresmodule.utils.TextHelper;
 import com.me.coresmodule.utils.render.CustomItem.CustomItemRender;
 import net.minecraft.client.gui.hud.InGameHud;
@@ -34,7 +35,7 @@ public class ItemHotbarRendererMixin {
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawStackOverlay(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/item/ItemStack;II)V"),
             index = 1
     )
-    private ItemStack replaceHotbarItemStack2(ItemStack stack) {
+    private ItemStack replaceHotbarItemStack2(ItemStack stack) {if (stack.getName().getString().contains("Moody")) Helper.print("Name: %s ItemName: %s".formatted(stack.getName().getString(), CustomItemRender.replaceItemStack(stack).getItem().toString()));
         return CustomItemRender.replaceItemStack(stack);
     }
 
@@ -45,14 +46,7 @@ public class ItemHotbarRendererMixin {
     // Don't ask why the method name is so long, there will be no answers
     private MutableText replaceItemNameDisplayedAboveTheHotbarWhenEquippingItem(MutableText t) {
         InGameHud inGameHud = ((InGameHud) ((Object) this));
-        try {
-            Field f = InGameHud.class.getDeclaredField("currentStack");
-            f.setAccessible(true);
-            ItemStack stack = (ItemStack) f.get(inGameHud);
-            return Text.empty().append(CustomItemRender.replaceItemName(stack));
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            e.printStackTrace();
-            return t;
-        }
+        ItemStack stack = Helper.<ItemStack>getField(InGameHud.class, "currentStack", inGameHud);
+        return stack != null ? Text.empty().append(CustomItemRender.replaceItemName(stack)) : t;
     }
 }

@@ -67,8 +67,6 @@ public class SaveAndLoad {
     }
 
     public static void save() {
-
-        System.out.println("[CoresModule] Saving...");
         HashMap<String, Object> map = new HashMap<>();
         for (String key : CoresModule.overrides.keySet()) {
             Quadruple<ItemStack, ItemStack, Boolean, String> quadruple = CoresModule.overrides.get(key);
@@ -77,7 +75,6 @@ public class SaveAndLoad {
 
 
         try {
-            System.out.println(map);
             JSONObject json = new JSONObject(map);
             FilesHandler.writeToFile("CustomItemRenderer.json", json.toString(4));
         } catch (IOException e) {
