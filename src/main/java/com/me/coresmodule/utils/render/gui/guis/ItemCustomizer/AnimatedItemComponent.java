@@ -206,7 +206,14 @@ public class AnimatedItemComponent extends UIComponent {
 
     private static BufferedImage getBufferedImage(Sprite sprite) {
         SpriteContents contents = sprite.getContents();
+        System.out.println("=== All fields in SpriteContents class ===");
+        Field[] fields = SpriteContents.class.getDeclaredFields();
+        for (Field field : fields) {
+            System.out.println("Field name: " + field.getName() + " | Type: " + field.getType().getSimpleName());
+        }
+        System.out.println("==========================================");
         NativeImage nativeImage = Helper.<NativeImage>getField(SpriteContents.class, "image", contents);
+        if (nativeImage == null) nativeImage = Helper.<NativeImage>getField(SpriteContents.class, "field_40539", contents); // For main config with obfuscated field names
 
         int w = contents.getWidth();
         int h = contents.getHeight();

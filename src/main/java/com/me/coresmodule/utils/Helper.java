@@ -115,7 +115,8 @@ public class Helper {
             Field f = clazz.getDeclaredField(fieldName);
             f.setAccessible(true);
             return (T) f.get(instance);
-        } catch (NoSuchFieldException | NullPointerException | IllegalAccessException e) {
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
             return null;
         }
     }
