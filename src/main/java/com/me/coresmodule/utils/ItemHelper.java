@@ -153,9 +153,14 @@ public class ItemHelper {
         RegistryWrapper.WrapperLookup registryAccess = registryAccess();
 
         if (itemStack.getItem() == Items.AIR) return null;
-        return ItemStack.CODEC.encodeStart(
-                registryAccess.getOps(NbtOps.INSTANCE), itemStack
-        ).getOrThrow();
+        try {
+            return ItemStack.CODEC.encodeStart(
+                    registryAccess.getOps(NbtOps.INSTANCE), itemStack
+            ).getOrThrow();
+        } catch (Exception e) {
+            return null;
+        }
+
     }
 
     private static RegistryWrapper.WrapperLookup registryAccess() {

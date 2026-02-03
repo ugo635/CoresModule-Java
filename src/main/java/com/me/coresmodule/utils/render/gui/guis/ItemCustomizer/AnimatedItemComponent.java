@@ -1,5 +1,6 @@
 package com.me.coresmodule.utils.render.gui.guis.ItemCustomizer;
 
+import com.me.coresmodule.utils.Helper;
 import com.me.coresmodule.utils.ItemHelper;
 import com.me.coresmodule.utils.render.CustomItem.CustomItemRender;
 import gg.essential.elementa.UIComponent;
@@ -155,12 +156,8 @@ public class AnimatedItemComponent extends UIComponent {
         }
 
         currentTexture = UGraphics.getTexture(frame);
-        if (currentTexture != null) {
-            currentTexture.uploadTexture();
-            System.out.println("Texture uploaded successfully!");
-        } else {
-            System.out.println("Failed to create texture!");
-        }
+        currentTexture.uploadTexture();
+        System.out.println("Texture uploaded successfully!");
     }
 
     @Override
@@ -207,11 +204,9 @@ public class AnimatedItemComponent extends UIComponent {
         super.draw(matrixStack);
     }
 
-    private static BufferedImage getBufferedImage(Sprite sprite) throws Exception {
+    private static BufferedImage getBufferedImage(Sprite sprite) {
         SpriteContents contents = sprite.getContents();
-        Field imageField = SpriteContents.class.getDeclaredField("image");
-        imageField.setAccessible(true);
-        NativeImage nativeImage = (NativeImage) imageField.get(contents);
+        NativeImage nativeImage = Helper.<NativeImage>getField(SpriteContents.class, "image", contents);
 
         int w = contents.getWidth();
         int h = contents.getHeight();

@@ -115,12 +115,13 @@ public class Helper {
             Field f = clazz.getDeclaredField(fieldName);
             f.setAccessible(true);
             return (T) f.get(instance);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
+        } catch (NoSuchFieldException | NullPointerException | IllegalAccessException e) {
             return null;
         }
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> T getField(Class<?> clazz, String fieldName) {
-        return getField(clazz, fieldName, null);
+        return (T) getField(clazz, fieldName, null);
     }
 }
