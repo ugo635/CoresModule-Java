@@ -153,5 +153,30 @@ public class Features {
 
             Chat.chat(TextHelper.listToText(gradient));
         });
+
+        Register.onChatMessage(text -> {
+            String msg = TextHelper.getUnFormattedString(text);
+
+            if (!msg.contains("BRRR!")) return;
+
+            int coldInt = 0;
+
+            if (msg.contains("It's getting really cold in here! But you've got to keep moving...")) {
+                coldInt = 25;
+            } else if (msg.contains("It's so cold that you can barely feel your fingers. Moving is getting difficult...")) {
+                coldInt = 50;
+            } else if (msg.contains("Your movement slows to a crawl as the cold threatens to take over. Time to get out of here...")) {
+                coldInt = 75;
+            } else if (msg.contains("You're freezing! All you can think about is getting out of here to a warm campfire...")) {
+                coldInt = 90;
+            } else {
+                return;
+            }
+
+            String cold = "§b" + (coldInt) + "❄";
+
+            Helper.showTitle(cold, "", 0, 25, 35);
+        });
+
     }
 }
