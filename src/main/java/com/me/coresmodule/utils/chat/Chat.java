@@ -83,7 +83,6 @@ public class Chat {
      * @param typeC The type of ClickEvent by default ClickEvent.RunCommand
      */
     public static void clickableChat(String message, String hover, String command, String typeC) throws URISyntaxException {
-        Text hoverText = Text.literal(hover).formatted(Formatting.YELLOW);
         ClickEvent clickEvent;
         HoverEvent hoverEvent;
 
