@@ -6,7 +6,8 @@ import com.mojang.blaze3d.platform.DepthTestFunction;
 import com.mojang.blaze3d.vertex.VertexFormat.DrawMode;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.RenderPhase;
+import net.minecraft.client.render.LayeringTransform;
+import net.minecraft.client.render.RenderSetup;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.util.Identifier;
 
@@ -16,52 +17,36 @@ import static com.me.coresmodule.CoresModule.MOD_ID;
 
 public class CmRenderLayers {
 
-    public static final RenderLayer.MultiPhase FILLED_BOX = RenderLayer.of(
+    public static final RenderLayer FILLED_BOX = RenderLayer.of(
             "filled_box",
-            RenderLayer.DEFAULT_BUFFER_SIZE,
-            false,
-            true,
-            RenderPipelines.DEBUG_FILLED_BOX,
-            RenderLayer.MultiPhaseParameters.builder()
-                    .layering(RenderPhase.VIEW_OFFSET_Z_LAYERING)
-                    .build(false)
+            RenderSetup.builder(RenderPipelines.DEBUG_FILLED_BOX)
+                     .layeringTransform(LayeringTransform.VIEW_OFFSET_Z_LAYERING)
+                     .translucent()
+                     .build()
     );
 
-    public static final RenderLayer.MultiPhase FILLED_BOX_THROUGH_WALLS = RenderLayer.of(
+    public static final RenderLayer FILLED_BOX_THROUGH_WALLS = RenderLayer.of(
             "filled_box_through_walls",
-            RenderLayer.DEFAULT_BUFFER_SIZE,
-            false,
-            true,
-            CmRenderPipelines.FILLED_BOX_THROUGH_WALLS,
-            RenderLayer.MultiPhaseParameters.builder()
-                    .layering(RenderPhase.VIEW_OFFSET_Z_LAYERING)
-                    .build(false)
+            RenderSetup.builder(CmRenderPipelines.FILLED_BOX_THROUGH_WALLS)
+                    .layeringTransform(LayeringTransform.VIEW_OFFSET_Z_LAYERING)
+                    .translucent()
+                    .build()
     );
 
     public static RenderLayer getLines(double lineWidth, boolean throughWalls) {
         if (throughWalls) {
             return RenderLayer.of(
                     "lines_through_walls",
-                    RenderLayer.DEFAULT_BUFFER_SIZE,
-                    false,
-                    true,
-                    CmRenderPipelines.LINES_THROUGH_WALLS,
-                    RenderLayer.MultiPhaseParameters.builder()
-                            .layering(RenderPhase.VIEW_OFFSET_Z_LAYERING)
-                            .lineWidth(new RenderPhase.LineWidth(OptionalDouble.of(lineWidth)))
-                            .build(false)
+                    RenderSetup.builder(CmRenderPipelines.LINES)
+                             .translucent()
+                             .build()
             );
         } else {
             return RenderLayer.of(
                     "lines",
-                    RenderLayer.DEFAULT_BUFFER_SIZE,
-                    false,
-                    true,
-                    CmRenderPipelines.LINES,
-                    RenderLayer.MultiPhaseParameters.builder()
-                            .layering(RenderPhase.VIEW_OFFSET_Z_LAYERING)
-                            .lineWidth(new RenderPhase.LineWidth(OptionalDouble.of(lineWidth)))
-                            .build(false)
+                    RenderSetup.builder(CmRenderPipelines.LINES_THROUGH_WALLS)
+                            .translucent()
+                            .build()
             );
         }
     }

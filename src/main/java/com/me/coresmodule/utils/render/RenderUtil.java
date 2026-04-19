@@ -4,15 +4,15 @@ import com.me.coresmodule.mixin.BeaconBlockEntityRendererInvoker;
 import com.me.coresmodule.utils.math.CmVectors;
 import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.VertexRendering;
+import net.minecraft.client.render.*;
 import net.minecraft.client.render.command.OrderedRenderCommandQueue;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.debug.gizmo.GizmoDrawing;
 
 import java.awt.*;
 
@@ -59,31 +59,16 @@ public class RenderUtil {
             float alpha,
             boolean throughWalls
     ) {
-        MatrixStack matrices = context.matrices();
-        Vec3d cameraPos = getCamera().getPos();
+        int r = (int) (Math.clamp(colorComponents[0], 0f, 1f) * 255);
+        int g = (int) (Math.clamp(colorComponents[1], 0f, 1f) * 255);
+        int b = (int) (Math.clamp(colorComponents[2], 0f, 1f) * 255);
+        int a = (int) (Math.clamp(alpha, 0f, 1f) * 255);
 
-        matrices.push();
-        matrices.translate(pos.x + 0.5 - cameraPos.x, pos.y - cameraPos.y, pos.z + 0.5 - cameraPos.z);
+        int argbColor = (a << 24) | (r << 16) | (g << 8) | b;
 
-        VertexConsumer buffer = context.consumers().getBuffer(
-                throughWalls ? CmRenderLayers.FILLED_BOX_THROUGH_WALLS : CmRenderLayers.FILLED_BOX
-        );
+        BlockPos bPos = new BlockPos((int) pos.x, (int) pos.y, (int) pos.z);
 
-        float minX = (float)(-width / 2.0);
-        float minY = 0f;
-        float minZ = (float)(-depth / 2.0);
-        float maxX = (float)(width / 2.0);
-        float maxY = (float)height;
-        float maxZ = (float)(depth / 2.0);
-
-        VertexRendering.drawFilledBox(
-                matrices, buffer,
-                minX, minY, minZ,
-                maxX, maxY, maxZ,
-                colorComponents[0], colorComponents[1], colorComponents[2], alpha
-        );
-
-        matrices.pop();
+        GizmoDrawing.box(Box.enclosing(bPos, bPos), DrawStyle.filled(argbColor));
     }
 
     /*
@@ -154,7 +139,7 @@ public class RenderUtil {
             boolean throughWalls
     ) {
         MatrixStack matrices = context.matrices();
-        Vec3d cameraPos = getCamera().getPos();
+        Vec3d cameraPos = getCamera().getCameraPos();
         float cameraYaw = getCamera().getYaw();
         float cameraPitch = getCamera().getPitch();
         TextRenderer textRenderer = mc.textRenderer;
@@ -200,7 +185,7 @@ public class RenderUtil {
             float[] colorComponents
     ) {
         MatrixStack matrices = context.matrices();
-        Vec3d cameraPos = getCamera().getPos();
+        Vec3d cameraPos = getCamera().getCameraPos();
         ClientWorld world = mc.world;
 
         matrices.push();
@@ -225,7 +210,6 @@ public class RenderUtil {
         );
 
 
-        // TODO: Add through walls option
         matrices.pop();
     }
 
@@ -240,7 +224,7 @@ public class RenderUtil {
         if (alpha == 0) alpha = 0.5f;
 
         var camera = getCamera();
-        var cameraPos = camera.getPos();
+        var cameraPos = camera.getCameraPos();
         var matrices = context.matrices();
 
         matrices.push();
