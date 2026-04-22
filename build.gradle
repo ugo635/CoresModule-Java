@@ -59,10 +59,15 @@ dependencies {
 	modImplementation("gg.essential:elementa:$elementaVersion")
 	modImplementation "gg.essential:universalcraft-1.21.9-fabric:$uc_version"
 
+	// Jetbrains annotations
 	modImplementation "org.jetbrains.kotlin:kotlin-stdlib:1.9.22"
 	modImplementation(include("org.json:json:$json_version"))
 
+	// ClassGraph - for preprocessor scanning.
 	modImplementation(include("io.github.classgraph:classgraph:4.8.165"))
+
+	// For devauth
+	modImplementation "org.apache.httpcomponents:httpclient:4.5.14"
 
 	// Discord API (JDA) - included in the mod jar so it works.
 	// Also include a simple SLF4J binding to avoid runtime warnings about missing SLF4J implementations.

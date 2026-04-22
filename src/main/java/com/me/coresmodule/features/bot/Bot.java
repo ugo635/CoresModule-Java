@@ -51,7 +51,7 @@ public class Bot extends ListenerAdapter {
         commands = new ArrayList<>();
 
         commands.add(Commands.slash("disconnect", "Disconnect from the bot."));
-        commands.add(Commands.slash("takeScreenshot", "Take a screenshot."));
+        commands.add(Commands.slash("takescreenshot", "Take a screenshot."));
 
         commands.add(
                 Commands.slash("say", "Makes the player send the message passed as argument.")
@@ -64,13 +64,13 @@ public class Bot extends ListenerAdapter {
         );
 
         commands.add(
-                Commands.slash("startMessageTracking", "Sends all messages sent in the chat in this channel or specified one in the argument.")
+                Commands.slash("startmessagetracking", "Sends all messages sent in the chat in this channel or specified one in the argument.")
+                    .addOption(OptionType.BOOLEAN, "pretty-display", "Display the messages as an image with formatting.", true)
                     .addOption(OptionType.CHANNEL, "channel", "The channel to send the messages in.", false)
-                    .addOption(OptionType.BOOLEAN, "pretty-display", "display the messages as an image with formatting.", true)
         );
 
         commands.add(
-                Commands.slash("stopMessageTracking", "Stops the messages tracking.")
+                Commands.slash("stopmessagetracking", "Stops the messages tracking.")
         );
     }
 
