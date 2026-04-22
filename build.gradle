@@ -71,8 +71,10 @@ dependencies {
 
 	// Discord API (JDA) - included in the mod jar so it works.
 	// Also include a simple SLF4J binding to avoid runtime warnings about missing SLF4J implementations.
+	// Also include Trove4j, which JDA depends on, to avoid NoClassDefFoundErrors at runtime.
 	modImplementation(include("net.dv8tion:JDA:$JDA_v"))
 	modImplementation(include("org.slf4j:slf4j-simple:2.0.9"))
+	modImplementation(include("net.sf.trove4j:trove4j:3.0.3"))
 }
 
 processResources {
