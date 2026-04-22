@@ -4,6 +4,7 @@ import com.me.coresmodule.features.Diana.*;
 import com.me.coresmodule.features.Features;
 import com.me.coresmodule.features.Party;
 import com.me.coresmodule.features.bot.Bot;
+import com.me.coresmodule.features.farming.HoldDirection;
 import com.me.coresmodule.features.priv.MainPrivate;
 import com.me.coresmodule.settings.Settings;
 import com.me.coresmodule.utils.*;
@@ -73,6 +74,7 @@ public class CoresModule implements ModInitializer {
 		CustomItemRender.register();
 		CmEventReg.register();
 		GUIs.register();
+		HoldDirection.register();
 
 		configurator.register(Settings.class);
 		configurator.saveConfig(Settings.class);

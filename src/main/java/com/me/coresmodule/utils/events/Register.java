@@ -1,11 +1,13 @@
 package com.me.coresmodule.utils.events;
 
+import com.me.coresmodule.features.farming.HoldDirection;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.minecraft.client.gui.screen.Screen;
@@ -71,6 +73,10 @@ public class Register {
      */
     public static void onChatMessage(Consumer<Text> action) {
         ClientReceiveMessageEvents.GAME.register((message, signed) -> action.accept(message));
+    }
+
+    public static void onClientStart(Consumer<String[]> action) {
+        ClientLifecycleEvents.CLIENT_STARTED.register(client -> action.accept(new String[0]));
     }
 
     /**

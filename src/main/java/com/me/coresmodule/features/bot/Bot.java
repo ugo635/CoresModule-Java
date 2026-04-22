@@ -43,12 +43,12 @@ import java.util.function.Supplier;
 import java.util.logging.FileHandler;
 
 public class Bot extends ListenerAdapter {
-    public static JDA jda;
-    public static Thread thread;
-    public static List<CommandData> commands;
-    public static Bot instance = null;
-    public static HashMap<String, Boolean> trackedMessages = new HashMap<>();
-    public String uuid;
+    private static JDA jda;
+    private static Thread thread;
+    private static List<CommandData> commands;
+    private static Bot instance = null;
+    private static HashMap<String, Boolean> trackedMessages = new HashMap<>();
+    private String uuid;
 
     static {
         commands = new ArrayList<>();
