@@ -3,120 +3,209 @@ package com.me.coresmodule.features.bot;
 import com.me.coresmodule.utils.FilesHandler;
 import com.me.coresmodule.utils.Helper;
 import com.me.coresmodule.utils.ScreenshotUtils;
+import com.me.coresmodule.utils.TextHelper;
 import com.me.coresmodule.utils.chat.Chat;
 import com.me.coresmodule.utils.events.Register;
+import net.dv8tion.jda.api.AccountType;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.entities.MessageActivity;
+import net.dv8tion.jda.api.entities.channel.Channel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.session.ReadyEvent;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.utils.FileUpload;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.text.Text;
 import org.json.JSONObject;
-import org.json.JSONArray;
 
+import javax.imageio.ImageIO;
+import javax.security.auth.login.LoginException;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.io.*;
-import java.nio.file.*;
+import java.util.function.Supplier;
+import java.util.logging.FileHandler;
 
-public class Bot {
+public class Bot extends ListenerAdapter {
+    public static JDA jda;
+    public static Thread thread;
+    public static List<CommandData> commands;
+    public static Bot instance = null;
+    public static HashMap<String, Boolean> trackedMessages;
+    public String uuid;
 
-    private static Process botProcess = null;
+    static {
+        commands = new ArrayList<>();
 
-    private static Thread thread = new Thread(() -> {
-        while (true) {
+        commands.add(Commands.slash("disconnect", "Disconnect from the bot."));
+        commands.add(Commands.slash("takeScreenshot", "Take a screenshot."));
+
+        commands.add(
+                Commands.slash("say", "Makes the player send the message passed as argument.")
+                        .addOption(OptionType.STRING, "message", "The message to send.", true)
+        );
+
+        commands.add(
+                Commands.slash("command", "Makes the player execute the command passed as argument.")
+                        .addOption(OptionType.STRING, "command", "The command to send.", true)
+        );
+
+        commands.add(
+                Commands.slash("startMessageTracking", "Sends all messages sent in the chat in this channel or specified one in the argument.")
+                    .addOption(OptionType.CHANNEL, "channel", "The channel to send the messages in.", false)
+                    .addOption(OptionType.BOOLEAN, "pretty-display", "display the messages as an image with formatting.", true)
+        );
+
+        commands.add(
+                Commands.slash("stopMessageTracking", "Stops the messages tracking.")
+        );
+    }
+
+    public Bot() throws IOException {
+        this.uuid = UUID.randomUUID().toString();
+        instance = this;
+        String token = FilesHandler.getContent("bot/token.txt").trim();
+        if (token.isEmpty()) return;
+
+        thread = new Thread(() -> {
             try {
-                String content = FilesHandler.getContent("bot/sharedForMod.json");
-                content = content.trim();
-                if (!content.isEmpty() && !content.equals("{}")) {
-                    JSONObject json = new JSONObject(content);
-                    String request = json.getString("request");
+                jda = JDABuilder.createDefault(token)
+                        .addEventListeners(this)
+                        .build()
+                        .awaitReady();
 
-                    switch (request) {
-                        case "screenshot" -> {
-                            MinecraftClient.getInstance().execute(() -> {
-                                ScreenshotUtils.takeScreenshotAsync(path -> {
-                                    if (path.isEmpty()) return;
-                                    HashMap<String, String> response = new HashMap<>();
-                                    response.put("timestamp", String.valueOf(System.currentTimeMillis()));
-                                    response.put("answer", path);
-                                    try {
-                                        FilesHandler.writeToFile("bot/sharedForBot.json", new JSONObject(response).toString(4));
-                                        clearRequest();
-                                    } catch (IOException e) {
-                                        throw new RuntimeException(e);
-                                    }
-                                });
-                            });
-                        }
-                        case "say" -> {
-                            Chat.say(json.getString("content"));
-                            HashMap<String, String> response = new HashMap<>();
-                            response.put("timestamp", String.valueOf(System.currentTimeMillis()));
-                            response.put("answer", "done");
-                            try {
-                                FilesHandler.writeToFile("bot/sharedForBot.json", new JSONObject(response).toString(4));
-                                clearRequest();
-                            } catch (IOException e) {
-                                throw new RuntimeException(e);
-                            }
-                        }
-                        case "command" -> {
-                            Chat.command(json.getString("content"));
-                            HashMap<String, String> response = new HashMap<>();
-                            response.put("timestamp", String.valueOf(System.currentTimeMillis()));
-                            response.put("answer", "done");
-                            try {
-                                FilesHandler.writeToFile("bot/sharedForBot.json", new JSONObject(response).toString(4));
-                                clearRequest();
-                            } catch (IOException e) {
-                                throw new RuntimeException(e);
-                            }
-                        }
-                    }
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            try {
-                Thread.sleep(1000);
+                jda.updateCommands()
+                        .addCommands(commands)
+                        .queue();
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
+
+        });
+
+        thread.start();
+
+    }
+
+    @Override
+    public void onSlashCommandInteraction(SlashCommandInteractionEvent command) {
+
+        MessageChannelUnion channel = command.getInteraction().getChannel();
+        //command.getInteraction().getGuild().getTextChannelsByName("", true);
+
+        switch (command.getName()) {
+            case "disconnect" -> this.disconnect(command);
+            case "takeScreenshot" -> this.takeScreenshot(command);
+            case "say" -> say( command.getOption("message").getAsString());
+            case "command" -> command( command.getOption("command").getAsString());
+            case "startMessageTracking" -> startMessageTracking(
+                command,
+                command.getOption("channel", channel.asTextChannel(), option -> option.getAsChannel().asTextChannel()),
+                command.getOption("pretty-display", false, OptionMapping::getAsBoolean)
+            );
         }
-    });
+    }
+
+    @Override
+    public void onReady(ReadyEvent event) {
+        System.out.println("Bot is ready!");
+
+        try {
+            event.getJDA().updateCommands().queue(commands -> {
+                System.out.println("Synced " + commands.size() + " commands:");
+
+                for (Command cmd : commands) {
+                    System.out.println("    -" + cmd.getName());
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void disconnect(SlashCommandInteractionEvent interaction) {
+        interaction.reply("Disconnecting...").queue();
+        thread.interrupt();
+        instance = null;
+    }
+
+    public void takeScreenshot(SlashCommandInteractionEvent interaction) {
+        long timeBefore = System.currentTimeMillis();
+        BufferedImage screenshot = ScreenshotUtils.takeScreenshotWithReturn();
+        double time = (System.currentTimeMillis() - timeBefore) * 1000;
+
+        if (screenshot == null) {
+            interaction.reply("Failled to take screenshot").queue();
+            return;
+        }
+
+        // Creates the InputStream
+        try {
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            ImageIO.write(screenshot,"png", outputStream);
+            InputStream image = new ByteArrayInputStream(outputStream.toByteArray());
+
+            FileUpload file = FileUpload.fromStreamSupplier("screenshot.png", () -> image);
+            interaction
+                    .reply("Screenshot taken in %.2f seconds!".formatted(time))
+                    .addFiles(file)
+                    .queue();
+        } catch (IOException e) {
+            print(e.getMessage());
+        }
+
+    }
+
+    public void say(String message) {
+        Chat.say(message);
+    }
+
+    public void command(String command) {
+        Chat.command(command);
+    }
+
+    public void startMessageTracking(SlashCommandInteractionEvent interaction, TextChannel channel, boolean pretty) {
+        interaction.reply("Started tracking messages").queue();
+        trackedMessages.replace(uuid, true);
+
+        if (!pretty) {
+            // TODO: Add this.
+        } else {
+            Register.onChatMessage(message -> {
+                if (isTrackingMessages()) channel.sendMessage(TextHelper.getUnFormattedString(message)).queue();
+            });
+        }
+    }
+
+    public void stopMessageTracking(SlashCommandInteractionEvent interaction) {
+        interaction.reply("Stopped tracking messages").queue();
+        trackedMessages.replace(uuid, true);
+    }
 
     public static void register() {
         try {
             FilesHandler.createNewFolder("bot");
             FilesHandler.createFile("bot/bot.log");
-            FilesHandler.createFile("bot/stop.txt");
             FilesHandler.createFile("bot/token.txt");
-            FilesHandler.createFile("bot/sharedForMod.json");
-            FilesHandler.createFile("bot/sharedForBot.json");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
-        try {
-            String[] resources = {"javaConnection.py", "JsonCreator.py"};
-
-            File targetDir = new File("config/coresmodule/bot");
-            if (!targetDir.exists()) targetDir.mkdirs();
-
-            for (String resourceName : resources) {
-                InputStream is = Bot.class.getResourceAsStream("/" + resourceName);
-                if (is == null) {
-                    Helper.print(resourceName + " not found in resources!");
-                    continue;
-                }
-
-                File targetFile = new File(targetDir, resourceName);
-                Files.copy(is, targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                is.close();
-
-                Helper.print(resourceName + " copied to " + targetFile.getAbsolutePath());
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        File targetDir = new File("config/coresmodule/bot");
+        if (!targetDir.exists()) targetDir.mkdirs();
 
 
         Register.command("setBotToken", args -> {
@@ -129,79 +218,43 @@ public class Bot {
         });
 
         Register.command("connectToBot", args -> {
-            if (botProcess != null && botProcess.isAlive()) {
-                Chat.chat("§6[Cm] §cBot is already running.");
-                return;
-            }
             try {
-                FilesHandler.writeToFile("bot/stop.txt", "false");
-
-                String pythonExe = "python";
-                String scriptPath = "config/coresmodule/bot/javaConnection.py";
-
-                ProcessBuilder builder = new ProcessBuilder(pythonExe, scriptPath);
-                builder.redirectErrorStream(true);
-                builder.redirectOutput(new File("config/coresmodule/bot/bot.log"));
-                Process process = builder.start();
-                thread.start();
-
-                botProcess = process;
-
-                Chat.chat("§6[Cm] §aConnected to bot successfully!");
-
+                instance = new Bot();
+                Chat.chat("§a[Cm] Connected to bot successfully!");
             } catch (IOException e) {
-                e.printStackTrace();
-                Chat.chat("§6[Cm] §cError connecting bot. Check python path: " + e.getMessage());
+                Chat.chat("§c[Cm] Failed to connect to bot!");
             }
         });
 
         Register.command("disconnectFromBot", args -> {
-            if (botProcess == null || !botProcess.isAlive()) {
-                Chat.chat("§6[Cm] §cBot is not running.");
+            if (instance == null) {
+                Chat.chat("§c[Cm] Not connected to any bot!");
                 return;
             }
-            try {
-                FilesHandler.writeToFile("bot/stop.txt", "true");
-                Chat.chat("§6[Cm] §eSent shutdown signal to Python. Waiting for termination...");
 
-                new Thread(() -> {
-                    try {
-                        if (botProcess.waitFor(5, TimeUnit.SECONDS)) {
-                            thread.interrupt();
-                            Chat.chat("§6[Cm] §aBot shut down gracefully.");
-                        } else {
-                            botProcess.destroyForcibly();
-                            thread.interrupt();
-                            Chat.chat("§6[Cm] §eBot was forcefully terminated.");
-                        }
-
-                        botProcess = null;
-
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        Chat.chat("§6[Cm] §cError while disconnecting from bot: " + e.getMessage());
-                    }
-                }).start();
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                Chat.chat("§6[Cm] §cError while disconnecting from bot: " + e.getMessage());
-            }
+            thread.interrupt();
+            instance = null;
+            Chat.chat("§a[Cm] Disconnected from bot.");
         });
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            if (botProcess == null) return;
-            if (botProcess.isAlive()) Helper.print("Game closing, stopping bot...");
-            try {
-                FilesHandler.writeToFile("bot/stop.txt", "true");
-            } catch (IOException e) {
-                e.printStackTrace();
+            if (thread == null) return;
+            if (thread.isAlive()) {
+                Helper.print("Game closing, stopping bot...");
+                thread.interrupt();
             }
         }));
     }
 
-    public static void clearRequest() throws IOException {
-        FilesHandler.writeToFile("bot/sharedForMod.json","{}");
+    public static void print(String message) {
+        try {
+            FilesHandler.appendToFile("bot/bot.log", message);
+        } catch (IOException e) {
+            Helper.printErr(Arrays.toString(e.getStackTrace()));
+        }
     }
 
+    public boolean isTrackingMessages() {
+        return trackedMessages.containsKey(uuid) && trackedMessages.get(uuid);
+    }
 }

@@ -11,7 +11,9 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.function.Consumer;
+import java.util.concurrent.atomic.AtomicReference;
+
+import static com.me.coresmodule.CoresModule.mc;
 
 
 public class ScreenshotUtils {
@@ -63,39 +65,39 @@ public class ScreenshotUtils {
 
 
 
-    public static void takeScreenshotAsync(Consumer<String> callback) {
-        MinecraftClient client = MinecraftClient.getInstance();
-        if (client.player == null) {
-            callback.accept("");
-            return;
+    public static BufferedImage takeScreenshotWithReturn() {
+        if (mc.player == null) {
+            return null;
         }
 
-        Framebuffer framebuffer = client.getFramebuffer();
+        Framebuffer framebuffer = mc.getFramebuffer();
+        AtomicReference<BufferedImage> bufferedImage = new AtomicReference<>();
 
         MinecraftClient.getInstance().execute(() -> {
             ScreenshotRecorder.takeScreenshot(framebuffer, nativeImage -> {
                 try {
-                    BufferedImage bufferedImage = new BufferedImage(
+                    bufferedImage.set(new BufferedImage(
                             nativeImage.getWidth(), nativeImage.getHeight(), BufferedImage.TYPE_INT_ARGB
-                    );
+                    ));
+
                     for (int y = 0; y < nativeImage.getHeight(); y++) {
                         for (int x = 0; x < nativeImage.getWidth(); x++) {
-                            bufferedImage.setRGB(x, y, nativeImage.getColorArgb(x, y));
+                            bufferedImage.get().setRGB(x, y, nativeImage.getColorArgb(x, y));
                         }
                     }
 
-                    String savedPath = "";
-                    savedPath = saveToFileWithName(bufferedImage);
-                    callback.accept(savedPath);
+
 
                 } catch (Exception e) {
+                    bufferedImage.set(null);
                     e.printStackTrace();
-                    callback.accept("");
                 } finally {
                     nativeImage.close();
                 }
             });
         });
+
+        return bufferedImage.get();
     }
 
     private static String saveToFile(BufferedImage image) throws Exception {
@@ -158,7 +160,7 @@ public class ScreenshotUtils {
         }
 
         public DataFlavor[] getTransferDataFlavors() {
-            return new DataFlavor[]{DataFlavor.imageFlavor};
+            return new DataFlavor[] {DataFlavor.imageFlavor};
         }
 
         public boolean isDataFlavorSupported(DataFlavor flavor) {

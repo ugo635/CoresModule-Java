@@ -4,6 +4,7 @@ import com.me.coresmodule.utils.chat.Chat;
 import com.me.coresmodule.utils.events.Register;
 import com.teamresourceful.resourcefulconfig.api.client.ResourcefulConfigScreen;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.Screen;
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -45,9 +46,7 @@ public class CmCommands {
             else arg = "";
 
             if (arg.equals("config") || arg.equals("settings") || arg.isEmpty()) {
-                mc.send(() -> {
-                    mc.setScreen(ResourcefulConfigScreen.getFactory(MOD_ID).apply(null));
-                });
+                mc.send(() -> mc.setScreen(ResourcefulConfigScreen.getFactory(MOD_ID).apply(null)));
                 return;
             } else {
                 // For stuff that isn't opening the config screen
