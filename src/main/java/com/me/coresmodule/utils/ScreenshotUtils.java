@@ -11,13 +11,13 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static com.me.coresmodule.CoresModule.mc;
 
 
 public class ScreenshotUtils {
-
     public static void takeScreenshot() {
         MinecraftClient client = MinecraftClient.getInstance();
         if (client.player == null) return;
@@ -65,39 +65,40 @@ public class ScreenshotUtils {
 
 
 
-    public static BufferedImage takeScreenshotWithReturn() {
+    public static CompletableFuture<BufferedImage> takeScreenshotWithReturn() {
+        CompletableFuture<BufferedImage> future = new CompletableFuture<>();
+
         if (mc.player == null) {
-            return null;
+            future.complete(null);
+            return future;
         }
 
         Framebuffer framebuffer = mc.getFramebuffer();
-        AtomicReference<BufferedImage> bufferedImage = new AtomicReference<>();
 
         MinecraftClient.getInstance().execute(() -> {
             ScreenshotRecorder.takeScreenshot(framebuffer, nativeImage -> {
                 try {
-                    bufferedImage.set(new BufferedImage(
+                    BufferedImage image = new BufferedImage(
                             nativeImage.getWidth(), nativeImage.getHeight(), BufferedImage.TYPE_INT_ARGB
-                    ));
+                    );
 
                     for (int y = 0; y < nativeImage.getHeight(); y++) {
                         for (int x = 0; x < nativeImage.getWidth(); x++) {
-                            bufferedImage.get().setRGB(x, y, nativeImage.getColorArgb(x, y));
+                            image.setRGB(x, y, nativeImage.getColorArgb(x, y));
                         }
                     }
-
-
-
+                    // Successfully complete the future with the image
+                    future.complete(image);
                 } catch (Exception e) {
-                    bufferedImage.set(null);
                     e.printStackTrace();
+                    future.completeExceptionally(e);
                 } finally {
                     nativeImage.close();
                 }
             });
         });
 
-        return bufferedImage.get();
+        return future;
     }
 
     private static String saveToFile(BufferedImage image) throws Exception {

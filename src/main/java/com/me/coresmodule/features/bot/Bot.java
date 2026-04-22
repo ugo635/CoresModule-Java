@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.Text;
@@ -35,6 +36,8 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 import java.util.logging.FileHandler;
@@ -44,7 +47,7 @@ public class Bot extends ListenerAdapter {
     public static Thread thread;
     public static List<CommandData> commands;
     public static Bot instance = null;
-    public static HashMap<String, Boolean> trackedMessages;
+    public static HashMap<String, Boolean> trackedMessages = new HashMap<>();
     public String uuid;
 
     static {
@@ -65,7 +68,13 @@ public class Bot extends ListenerAdapter {
 
         commands.add(
                 Commands.slash("startmessagetracking", "Sends all messages sent in the chat in this channel or specified one in the argument.")
-                    .addOption(OptionType.BOOLEAN, "pretty-display", "Display the messages as an image with formatting.", true)
+                    .addOptions(
+                            new OptionData(OptionType.STRING, "display", "How to display the message?", true)
+                                    .addChoice("Default", "Default")
+                                    .addChoice("Updated", "Updated")
+                                    .addChoice("Image", "Image")
+                                    .addChoice("Embed", "Embed")
+                    )
                     .addOption(OptionType.CHANNEL, "channel", "The channel to send the messages in.", false)
         );
 
@@ -74,11 +83,9 @@ public class Bot extends ListenerAdapter {
         );
     }
 
-    public Bot() throws IOException {
+    public Bot(String token) throws IOException {
         this.uuid = UUID.randomUUID().toString();
         instance = this;
-        String token = FilesHandler.getContent("bot/token.txt").trim();
-        if (token.isEmpty()) return;
 
         thread = new Thread(() -> {
             try {
@@ -87,9 +94,6 @@ public class Bot extends ListenerAdapter {
                         .build()
                         .awaitReady();
 
-                jda.updateCommands()
-                        .addCommands(commands)
-                        .queue();
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
@@ -108,27 +112,33 @@ public class Bot extends ListenerAdapter {
 
         switch (command.getName()) {
             case "disconnect" -> this.disconnect(command);
-            case "takeScreenshot" -> this.takeScreenshot(command);
-            case "say" -> say( command.getOption("message").getAsString());
-            case "command" -> command( command.getOption("command").getAsString());
-            case "startMessageTracking" -> startMessageTracking(
+            case "say" -> say(command, command.getOption("message").getAsString());
+            case "command" -> command(command, command.getOption("command").getAsString());
+            case "takescreenshot" -> this.takeScreenshot(command);
+            case "stopmessagetracking" -> stopMessageTracking(command);
+            case "startmessagetracking" -> startMessageTracking(
                 command,
                 command.getOption("channel", channel.asTextChannel(), option -> option.getAsChannel().asTextChannel()),
-                command.getOption("pretty-display", false, OptionMapping::getAsBoolean)
+                command.getOption("display", "Default", OptionMapping::getAsString)
             );
+
+
         }
     }
 
     @Override
     public void onReady(ReadyEvent event) {
         System.out.println("Bot is ready!");
+        print("Bot is ready!");
 
         try {
-            event.getJDA().updateCommands().queue(commands -> {
+            event.getJDA().updateCommands().addCommands(commands).queue(commands -> {
                 System.out.println("Synced " + commands.size() + " commands:");
+                print("Synced " + commands.size() + " commands:");
 
                 for (Command cmd : commands) {
-                    System.out.println("    -" + cmd.getName());
+                    System.out.println("    - " + cmd.getName());
+                    print("    - " + cmd.getName());
                 }
             });
         } catch (Exception e) {
@@ -138,14 +148,22 @@ public class Bot extends ListenerAdapter {
 
     public void disconnect(SlashCommandInteractionEvent interaction) {
         interaction.reply("Disconnecting...").queue();
-        thread.interrupt();
+
+        jda.shutdown();
         instance = null;
+        jda = null;
+
     }
 
     public void takeScreenshot(SlashCommandInteractionEvent interaction) {
         long timeBefore = System.currentTimeMillis();
-        BufferedImage screenshot = ScreenshotUtils.takeScreenshotWithReturn();
-        double time = (System.currentTimeMillis() - timeBefore) * 1000;
+
+        ScreenshotUtils.takeScreenshotWithReturn().thenAccept(image -> this.sendScreenshot(interaction, image, timeBefore));
+
+    }
+
+    public void sendScreenshot(SlashCommandInteractionEvent interaction, BufferedImage screenshot, double timeStart) {
+        double time = (System.currentTimeMillis() - timeStart) / 1000;
 
         if (screenshot == null) {
             interaction.reply("Failled to take screenshot").queue();
@@ -166,33 +184,49 @@ public class Bot extends ListenerAdapter {
         } catch (IOException e) {
             print(e.getMessage());
         }
-
     }
 
-    public void say(String message) {
+    public void say(SlashCommandInteraction interaction, String message) {
         Chat.say(message);
+        interaction.reply("Sent the message successfully!").queue();
     }
 
-    public void command(String command) {
+    public void command(SlashCommandInteraction interaction, String command) {
         Chat.command(command);
+        interaction.reply("Executed the command successfully!").queue();
     }
 
-    public void startMessageTracking(SlashCommandInteractionEvent interaction, TextChannel channel, boolean pretty) {
+    public void startMessageTracking(SlashCommandInteractionEvent interaction, TextChannel channel, String display) {
         interaction.reply("Started tracking messages").queue();
-        trackedMessages.replace(uuid, true);
+        trackedMessages.put(uuid, true);
 
-        if (!pretty) {
-            // TODO: Add this.
-        } else {
-            Register.onChatMessage(message -> {
-                if (isTrackingMessages()) channel.sendMessage(TextHelper.getUnFormattedString(message)).queue();
-            });
-        }
+        // TODO: Finish this
+        Register.onChatMessage(message -> {
+            if (!isTrackingMessages()) return;
+
+            String msg = TextHelper.getUnFormattedString(message);
+            if (msg.isBlank() || msg.contains("❈") || msg.contains("✎") || msg.contains("ʬ")) {
+                return;
+            }
+
+            switch (display) {
+                case "Default" -> channel.sendMessage(msg).queue();
+                case "Image" -> {
+                    // TODO: Implement your image generation/send logic here
+                }
+                case "Embed" -> {
+                    // TODO: Implement your embed logic here
+                }
+                case "Updated" -> {
+                    // TODO: Implement logic to edit a previous message
+                }
+            }
+        });
     }
 
     public void stopMessageTracking(SlashCommandInteractionEvent interaction) {
         interaction.reply("Stopped tracking messages").queue();
-        trackedMessages.replace(uuid, true);
+        trackedMessages.put(uuid, false);
     }
 
     public static void register() {
@@ -219,7 +253,15 @@ public class Bot extends ListenerAdapter {
 
         Register.command("connectToBot", args -> {
             try {
-                instance = new Bot();
+                FilesHandler.clearFile("bot/bot.log");
+
+                String token = FilesHandler.getContent("bot/token.txt").trim();
+                if (token.isEmpty()) {
+                    Chat.chat("§c[Cm] Bot token is empty! Please set it using /setBotToken <token> command.");
+                    return;
+                }
+
+                instance = new Bot(token);
                 Chat.chat("§a[Cm] Connected to bot successfully!");
             } catch (IOException e) {
                 Chat.chat("§c[Cm] Failed to connect to bot!");
@@ -232,8 +274,9 @@ public class Bot extends ListenerAdapter {
                 return;
             }
 
-            thread.interrupt();
+            jda.shutdown();
             instance = null;
+            jda = null;
             Chat.chat("§a[Cm] Disconnected from bot.");
         });
 
