@@ -4,6 +4,7 @@ import com.me.coresmodule.utils.events.Register;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWKeyCallbackI;
@@ -18,7 +19,7 @@ public class HoldDirection {
 
     public static void register() {
         toggleKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                "key.coresmodule.holdkey",
+                Text.translatable("key.coresmodule.holdkey").getString(),
                 InputUtil.Type.KEYSYM,
                 GLFW.GLFW_KEY_END,
                 new KeyBinding.Category(Identifier.of("coresmodule", "farming"))
