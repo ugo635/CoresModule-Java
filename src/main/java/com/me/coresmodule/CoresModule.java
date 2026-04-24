@@ -77,6 +77,7 @@ public class CoresModule implements ModInitializer {
 		GUIs.register();
 		HoldDirection.register();
 		Orientation.register();
+		TabList.register();
 
 		configurator.register(Settings.class);
 		configurator.saveConfig(Settings.class);

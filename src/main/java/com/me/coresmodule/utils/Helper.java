@@ -128,6 +128,7 @@ public class Helper {
 
     public static boolean isInGarden() {
         String area = TabList.findInfo("Area: ");
-        return (area == null ? "None" : area).equals("Garden");
+        System.out.println(area);
+        return (area == null ? "None" : area).contains("Garden");
     }
 }

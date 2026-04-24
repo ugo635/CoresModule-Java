@@ -19,7 +19,7 @@ public class TabList {
 	private static List<String> cachedTabLines = Collections.emptyList();
 
 	/** Registers a task to update the cache each tick. */
-	public static void init() {
+	public static void register() {
 		// Register.onTick expects a Consumer<String[]> according to project Register class
 		Register.onTick(1, ignored -> updateCache());
 	}
