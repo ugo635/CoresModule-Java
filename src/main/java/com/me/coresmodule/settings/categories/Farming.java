@@ -9,6 +9,9 @@ public class Farming {
     @ConfigEntry(id = "Coordonate overlay", translation = "Turn on the coordonate helper overlay")
     public static Observable<Boolean> activeOverlay = Observable.of(false);
 
+    @ConfigEntry(id = "Garden Only", translation = "If off, the overlay will appear outside of the garden")
+    public static Observable<Boolean> gardenOnly = Observable.of(true);
+
     @ConfigEntry(id = "X or Z", translation = "Choose which coordonate moves when farming")
     public static Observable<Orientation> orientation = Observable.of(Orientation.X);
 

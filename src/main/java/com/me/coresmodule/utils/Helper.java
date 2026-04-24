@@ -125,4 +125,9 @@ public class Helper {
     public static <T> T getField(Class<?> clazz, String fieldName) {
         return (T) getField(clazz, fieldName, null);
     }
+
+    public static boolean isInGarden() {
+        String area = TabList.findInfo("Area: ");
+        return (area == null ? "None" : area).equals("Garden");
+    }
 }
