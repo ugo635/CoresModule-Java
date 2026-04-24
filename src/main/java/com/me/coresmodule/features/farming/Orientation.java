@@ -18,7 +18,9 @@ public class Orientation {
         overlay.addLine(overlayText);
 
         Register.onTick(1, args -> {
-            overlayText.text = "§6%s: §b%.0f§6/§b%.0f §6(§b%.2f%%§6)".formatted(Farming.orientation.get(), Farming.start.get(), Farming.end.get(), Farming.start.get() / Farming.end.get());
+            double start = Farming.start.get();
+            double end = Farming.end.get();
+            overlayText.text = "§6%s: §b%.0f§6/§b%.0f §6(§b%.2f%%§6)".formatted(Farming.orientation.get(), end - start, end, Farming.start.get() / Farming.end.get());
         });
     }
 }
