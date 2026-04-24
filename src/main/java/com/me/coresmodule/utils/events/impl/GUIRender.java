@@ -3,6 +3,9 @@ package com.me.coresmodule.utils.events.impl;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 
+/**
+ * Emmited when a GUI renders, ex if the screen is the Inventory, then when the inventory will open, GUIRender will be emmited.
+ */
 public class GUIRender extends Event {
     public DrawContext drawContext;
     public Screen screen;

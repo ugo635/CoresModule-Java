@@ -1,5 +1,6 @@
 package com.me.coresmodule.utils.events.EventBus;
 
+import com.me.coresmodule.utils.Helper;
 import com.me.coresmodule.utils.events.impl.AfterHudRenderer;
 import com.me.coresmodule.utils.events.impl.Event;
 
@@ -18,7 +19,7 @@ public class EventBus {
 
     public static void on(String eventName, Consumer<Event> callback) {
         listeners
-                .computeIfAbsent(eventName.toLowerCase(), key -> new CopyOnWriteArrayList<>())
+                .computeIfAbsent(eventName, key -> new CopyOnWriteArrayList<>())
                 .add(callback);
     }
 
@@ -32,7 +33,7 @@ public class EventBus {
     }
 
     public void clear(String eventName) {
-        listeners.remove(eventName.toLowerCase());
+        listeners.remove(eventName);
     }
 
     public void clearAll() {

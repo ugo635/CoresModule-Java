@@ -11,7 +11,6 @@ import java.util.function.Supplier;
 import static com.me.coresmodule.CoresModule.mc;
 
 public class Overlay {
-
     String name;
     float x;
     float y;
@@ -56,9 +55,8 @@ public class Overlay {
         OverlayManager.overlays.add(this);
     }
 
-    public Overlay setCondition(Supplier<Boolean> condition) {
+    public void setCondition(Supplier<Boolean> condition) {
         this.condition = condition;
-        return this;
     }
 
     public boolean checkCondition() {

@@ -8,8 +8,10 @@ import com.me.coresmodule.utils.render.overlay.Overlay;
 import com.me.coresmodule.utils.render.overlay.OverlayTextLine;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 
@@ -39,27 +41,11 @@ public class DianaFeatures {
         });
 
         UseItemCallback.EVENT.register((player, world, hand) -> {
-			if (ffTimerOn || remaining >= 0) return ActionResult.PASS;
-            ItemStack item = player.getMainHandStack();
-            if (ItemHelper.getItemName(item).contains("Fire Freeze Staff")) {
-                ffTimerOn = true;
-                startTime = System.currentTimeMillis();
-                endTime = startTime + 10000;
-            }
-
-            return ActionResult.PASS;
+            return updateTimer(player);
         });
 
         UseBlockCallback.EVENT.register((player, world, hand, blockHitResult) -> {
-			if (ffTimerOn || remaining >= 0) return ActionResult.PASS;
-            ItemStack item = player.getMainHandStack();
-            if (ItemHelper.getItemName(item).contains("Fire Freeze Staff")) {
-                ffTimerOn = true;
-                startTime = System.currentTimeMillis();
-                endTime = startTime + 10000;
-            }
-
-            return ActionResult.PASS;
+            return updateTimer(player);
         });
 
         Register.onTick(1, args -> {
@@ -78,5 +64,18 @@ public class DianaFeatures {
 
             overlayText.text = "%s%.2fs".formatted(remaining <= 0 ? "§c" : "§a", remaining);
         });
+    }
+
+    @NonNull
+    private static ActionResult updateTimer(PlayerEntity player) {
+        if (ffTimerOn || remaining >= 0) return ActionResult.PASS;
+        ItemStack item = player.getMainHandStack();
+        if (ItemHelper.getItemName(item).contains("Fire Freeze Staff")) {
+            ffTimerOn = true;
+            startTime = System.currentTimeMillis();
+            endTime = startTime + 10000;
+        }
+
+        return ActionResult.PASS;
     }
 }

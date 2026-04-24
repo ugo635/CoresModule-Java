@@ -11,6 +11,7 @@ import com.me.coresmodule.settings.categories.*;
                 General.class,
                 Credits.class,
                 Diana.class,
+                Farming.class,
                 Space.class,
                 Tracker.class
 

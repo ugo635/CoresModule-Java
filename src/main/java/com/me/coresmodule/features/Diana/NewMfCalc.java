@@ -24,6 +24,7 @@ public class NewMfCalc {
     public static double kcBuff = 0;
     public static double defaultMf = 0;
     public static String profileId = "";
+
     public static void register() {
 
         // Create overlay
@@ -59,6 +60,7 @@ public class NewMfCalc {
 
             // additionalMf = TODO: Do The Math; TODO: Be Mf; TODO: Overlay
             // For Be, do List.forEach and do Pattern.compile("minos_hunter_\d+") Matcher.getMessage() to grab keys and do the sum of all values
+            // Use Be GUI instead of API stuff (if I ever finish this)
         });
 
         Register.command("allStats", args -> {

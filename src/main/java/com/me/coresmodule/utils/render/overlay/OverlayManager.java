@@ -5,8 +5,6 @@ import com.me.coresmodule.utils.events.annotations.CmEvent;
 import com.me.coresmodule.utils.events.impl.AfterHudRenderer;
 import com.me.coresmodule.utils.events.impl.GUIMouseClick;
 import com.me.coresmodule.utils.events.impl.GUIRender;
-import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
-import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 
@@ -18,9 +16,6 @@ import static com.me.coresmodule.CoresModule.mc;
 public final class OverlayManager {
 
     public static final List<Overlay> overlays = new ArrayList<>();
-
-    private OverlayManager() {
-    }
 
     public static void register() {
         Register.command("cmguis", args -> {
@@ -44,7 +39,7 @@ public final class OverlayManager {
         render(drawContext, "");
     }
 
-    public static void postRender(DrawContext drawContext, Screen renderScreen) {
+    public static void postRenderGUI(DrawContext drawContext, Screen renderScreen) {
         double scaleFactor = mc.getWindow().getScaleFactor();
         double mouseX = mc.mouse.getX() / scaleFactor;
         double mouseY = mc.mouse.getY() / scaleFactor;
@@ -59,7 +54,7 @@ public final class OverlayManager {
     @CmEvent
     public static void registerRenderer(GUIRender event) {
         if (!(event.screen instanceof OverlayEditScreen)) {
-            postRender(event.drawContext, event.screen);
+            postRenderGUI(event.drawContext, event.screen);
         }
     }
 

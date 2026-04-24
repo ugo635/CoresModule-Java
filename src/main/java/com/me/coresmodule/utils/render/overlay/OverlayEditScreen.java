@@ -31,7 +31,8 @@ public class OverlayEditScreen extends Screen {
         double mouseY = click.y();
         int button = click.button();
         if (button == 0) {
-            selectedOverlay = OverlayManager.overlays.stream()
+            selectedOverlay = OverlayManager.overlays
+                    .stream()
                     .filter(o -> o.isOverOverlay(mouseX, mouseY))
                     .findFirst()
                     .orElse(null);
