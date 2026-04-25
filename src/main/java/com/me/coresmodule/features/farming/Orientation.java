@@ -25,7 +25,7 @@ public class Orientation {
             double length = end - start;
             double currentXorZ = Farming.orientation.get() == Farming.Orientation.X ? mc.player.getX() : mc.player.getZ();
             double XorZ = currentXorZ - start;
-            overlayText.text = "§6%s: §b%.0f§6/§b%.0f §6(§b%.2f%%§6)".formatted(Farming.orientation.get(), XorZ, length, XorZ / end * 100);
+            overlayText.text = "§6%s: §b%.0f§6/§b%.0f §6(§b%.2f%%§6)".formatted(Farming.orientation.get(), XorZ, length, XorZ / length * 100);
         });
     }
 
