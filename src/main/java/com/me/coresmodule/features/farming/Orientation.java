@@ -6,8 +6,6 @@ import com.me.coresmodule.utils.events.Register;
 import com.me.coresmodule.utils.render.overlay.Overlay;
 import com.me.coresmodule.utils.render.overlay.OverlayTextLine;
 
-import java.util.List;
-
 import static com.me.coresmodule.CoresModule.mc;
 
 public class Orientation {
@@ -24,8 +22,11 @@ public class Orientation {
             if (mc.player == null) return;
             double start = Farming.start.get();
             double end = Farming.end.get();
+            double length = end - start;
             double currentXorZ = Farming.orientation.get() == Farming.Orientation.X ? mc.player.getX() : mc.player.getZ();
-            overlayText.text = "§6%s: §b%.0f§6/§b%.0f §6(§b%.2f%%§6)".formatted(Farming.orientation.get(), end - currentXorZ, end, currentXorZ / end * 100);
+            double XorZ = currentXorZ - start;
+            overlayText.text = "§6%s: §b%.0f§6/§b%.0f §6(§b%.2f%%§6)".formatted(Farming.orientation.get(), XorZ, length, XorZ / end * 100);
         });
     }
+
 }
