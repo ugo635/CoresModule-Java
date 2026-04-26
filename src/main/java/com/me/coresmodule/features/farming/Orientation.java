@@ -10,7 +10,7 @@ import static com.me.coresmodule.CoresModule.mc;
 
 public class Orientation {
     public static Overlay overlay = new Overlay("Coordonate Helper:", 10f, 10f);;
-    public static OverlayTextLine overlayText = new OverlayTextLine(""); // Needed cuz we register the overlay with overlayText added that isn't initialized yet.;
+    public static OverlayTextLine overlayText = new OverlayTextLine(""); // Needed cuz we register the overlay with overlayText added that isn't initialized yet.
 
     public static void register() {
         overlay.register();
