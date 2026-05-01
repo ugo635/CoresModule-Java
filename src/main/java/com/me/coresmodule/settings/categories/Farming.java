@@ -21,6 +21,9 @@ public class Farming {
     @ConfigEntry(id = "End", translation = "The X/Z coordonate of the end of the field")
     public static Observable<Double> end = Observable.of((double) 0);
 
+    @ConfigEntry(id = "Pest Cooldown", translation = "Warn when close to pest cooldown almost ready")
+    public static Observable<Boolean> pestCooldown = Observable.of(true);
+
     public enum Orientation {
         X,
         Z;

@@ -1,0 +1,38 @@
+package com.me.coresmodule.features.farming;
+
+import com.me.coresmodule.settings.categories.Farming;
+import com.me.coresmodule.utils.Helper;
+import com.me.coresmodule.utils.SoundHandler;
+import com.me.coresmodule.utils.TabList;
+import com.me.coresmodule.utils.events.Register;
+
+public class PestCooldown {
+    public static boolean warned5s = false;
+    public static boolean warnedReady = false;
+
+    public static void register() {
+        Register.onTick(20, args -> {
+            if (!Helper.isInGarden() || !Farming.pestCooldown.get()) return;
+            int time = getTime();
+
+            if (time <= 5 && time > 0 && !warned5s) Helper.showTitle("§cPest Cooldown Ready", "§c In 5s", 0, 25, 35);
+
+            if (time == 0 && !warnedReady) {
+                Helper.showTitle("§cPest Cooldown Ready", "", 0, 25, 15);
+                SoundHandler.playCustomSound("ding");
+                warned5s = true;
+                warnedReady = true;
+            }
+        });
+    }
+
+    private static int getTime() {
+        String timeString = TabList.findInfo("Cooldown: ");
+
+        if (timeString == null) return -1;
+        if (timeString.contains("m")) return 60; // Case X minutes Y seconds, we just don't care abt the value
+        timeString = timeString.replace("s", "").trim();
+
+        return timeString.equals("READY") ? 0 : Integer.parseInt(timeString);
+    }
+}

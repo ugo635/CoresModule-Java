@@ -20,7 +20,6 @@ public class TabList {
 
 	/** Registers a task to update the cache each tick. */
 	public static void register() {
-		// Register.onTick expects a Consumer<String[]> according to project Register class
 		Register.onTick(1, ignored -> updateCache());
 	}
 
@@ -68,6 +67,12 @@ public class TabList {
 		}
 
 		return null;
+	}
+
+	public static void printAll() {
+		for (String line : cachedTabLines) {
+			System.out.println(line);
+		}
 	}
 
 	/** Returns the cached tab. */

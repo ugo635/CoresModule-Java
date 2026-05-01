@@ -6,6 +6,7 @@ import com.me.coresmodule.features.Party;
 import com.me.coresmodule.features.bot.Bot;
 import com.me.coresmodule.features.farming.HoldDirection;
 import com.me.coresmodule.features.farming.Orientation;
+import com.me.coresmodule.features.farming.PestCooldown;
 import com.me.coresmodule.features.priv.MainPrivate;
 import com.me.coresmodule.settings.Settings;
 import com.me.coresmodule.utils.*;
@@ -78,6 +79,7 @@ public class CoresModule implements ModInitializer {
 		HoldDirection.register();
 		Orientation.register();
 		TabList.register();
+		PestCooldown.register();
 
 		configurator.register(Settings.class);
 		configurator.saveConfig(Settings.class);
