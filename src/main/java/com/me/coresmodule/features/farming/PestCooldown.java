@@ -27,7 +27,8 @@ public class PestCooldown {
             int time = getTime();
 
             if (time <= 5 && time > 0 && !warned5s) {
-                Helper.showTitle("§cPest Cooldown Ready", "§c In 5s", 0, 25, 35);
+                Helper.showTitle("§cPest Cooldown Ready", "§c In 5s", 0, 25, 15);
+                SoundHandler.playCustomSound("ding");
                 warned5s = true;
             }
 
@@ -42,10 +43,11 @@ public class PestCooldown {
     private static int getTime() {
         String timeString = TabList.findInfo("Cooldown: ");
 
-        if (timeString == null) return -1;
+        if (timeString == null || timeString.contains("MAX PESTS")) return -1;
         if (timeString.contains("m")) return 60; // Case X minutes Y seconds, we just don't care abt the value
         timeString = timeString.replace("s", "").trim();
 
+        System.out.println("timeString: " + timeString);
         return timeString.equals("READY") ? 0 : Integer.parseInt(timeString);
     }
 }
