@@ -4,6 +4,7 @@ import com.me.coresmodule.settings.categories.Farming;
 import com.me.coresmodule.utils.Helper;
 import com.me.coresmodule.utils.SoundHandler;
 import com.me.coresmodule.utils.TabList;
+import com.me.coresmodule.utils.TextHelper;
 import com.me.coresmodule.utils.events.Register;
 
 public class PestCooldown {
@@ -11,16 +12,28 @@ public class PestCooldown {
     public static boolean warnedReady = false;
 
     public static void register() {
+        Register.onChatMessage(message -> {
+            String msg = TextHelper.getUnFormattedString(message);
+            if (msg.contains("ൠ Pest have spawned in Plot -")) {
+                Helper.sleep(5000, () -> {
+                    warned5s = false;
+                    warnedReady = false;
+                });
+            }
+        });
+
         Register.onTick(20, args -> {
             if (!Helper.isInGarden() || !Farming.pestCooldown.get()) return;
             int time = getTime();
 
-            if (time <= 5 && time > 0 && !warned5s) Helper.showTitle("§cPest Cooldown Ready", "§c In 5s", 0, 25, 35);
+            if (time <= 5 && time > 0 && !warned5s) {
+                Helper.showTitle("§cPest Cooldown Ready", "§c In 5s", 0, 25, 35);
+                warned5s = true;
+            }
 
             if (time == 0 && !warnedReady) {
                 Helper.showTitle("§cPest Cooldown Ready", "", 0, 25, 15);
                 SoundHandler.playCustomSound("ding");
-                warned5s = true;
                 warnedReady = true;
             }
         });
