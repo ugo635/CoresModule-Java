@@ -22,10 +22,10 @@ import com.me.coresmodule.utils.render.WaypointManager;
 import com.me.coresmodule.utils.render.gui.GUIs;
 import com.me.coresmodule.utils.render.overlay.OverlayData;
 import com.me.coresmodule.utils.render.overlay.OverlayManager;
+import com.mojang.authlib.minecraft.client.MinecraftClient;
 import com.teamresourceful.resourcefulconfig.api.loader.Configurator;
 import net.fabricmc.api.ModInitializer;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.item.ItemStack;
+import net.minecraft.client.Minecraft;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,10 +34,9 @@ import java.util.*;
 
 
 public class CoresModule implements ModInitializer {
-	public static String player = MinecraftClient.getInstance().getSession().getUsername();
-	public static MinecraftClient mc = MinecraftClient.getInstance();
+	public static String player = Minecraft.getInstance().getSession().getUsername();
+	public static Minecraft mc = Minecraft.getInstance();
 	public static final String MOD_ID = "coresmodule";
-	public static HashMap<String, Quadruple<ItemStack, ItemStack, Boolean, String>> overrides = new HashMap<>();
 
 	// This logger is used to write text to the console and the log file.
 	// It is considered best practice to use your mod id as the logger's name.
@@ -86,13 +85,7 @@ public class CoresModule implements ModInitializer {
 
 
 		Register.command("copyNbt", args -> {
-			mc.keyboard.setClipboard(new JSONObject(ItemHelper.toMap(ItemHelper.getHeldItem())).toString(4));
-			Chat.chat("§aCopied NBT HashCode to clipboard");
-			Chat.chat("§aUUID: §c" + ItemHelper.getUUID(ItemHelper.getHeldItem()));
-		});
-
-		Register.command("getHand", args -> {
-			Chat.chat(ItemHelper.isSkull() == null ? "null" : ItemHelper.isSkull());
+			mc.keyboard.setClipboard("");
 		});
 
 
