@@ -4,7 +4,7 @@ package com.me.coresmodule.features;
 import com.me.coresmodule.utils.Helper;
 import com.me.coresmodule.utils.chat.Chat;
 import com.me.coresmodule.utils.events.Register;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.MutableText;
@@ -121,7 +121,7 @@ public class Party {
                         msgComp.append(components.get(i));
                         if (i != components.size() - 1) msgComp.append(Text.literal(" §c|§r "));
                     }
-                    MinecraftClient.getInstance().player.sendMessage(msgComp, false);
+                    Minecraft.getInstance().player.sendMessage(msgComp, false);
                     Chat.chat(Chat.getChatBreak());
                 }
 

@@ -5,7 +5,7 @@ import com.me.coresmodule.utils.events.EventBus.EventBus;
 import com.me.coresmodule.utils.events.Register;
 import com.me.coresmodule.utils.math.CmVectors;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
@@ -47,7 +47,7 @@ public class MfCalcHelper {
         return t -> seen.add(keyExtractor.apply(t));
     }
 
-    private static int getPlayerPing(MinecraftClient mc, UUID uuid) {
+    private static int getPlayerPing(Minecraft mc, UUID uuid) {
         if (
                 mc.getNetworkHandler() == null ||
                 mc.getNetworkHandler().getPlayerListEntry(uuid) == null
@@ -134,7 +134,7 @@ public class MfCalcHelper {
         });
 
         Register.onTick(1, entity -> {
-            ClientWorld world = MinecraftClient.getInstance().world;
+            ClientWorld world = Minecraft.getInstance().world;
             Iterator<Map.Entry<Integer, ArmorStandEntity>> iterator = trackedEntities.entrySet().iterator();
             while (iterator.hasNext()) {
                 Map.Entry<Integer, ArmorStandEntity> entry = iterator.next();
