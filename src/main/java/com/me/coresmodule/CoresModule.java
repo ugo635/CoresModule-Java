@@ -22,7 +22,7 @@ import com.me.coresmodule.utils.render.WaypointManager;
 import com.me.coresmodule.utils.render.gui.GUIs;
 import com.me.coresmodule.utils.render.overlay.OverlayData;
 import com.me.coresmodule.utils.render.overlay.OverlayManager;
-import com.mojang.authlib.minecraft.client.Minecraft;
+import com.mojang.authlib.minecraft.client.MinecraftClient;
 import com.teamresourceful.resourcefulconfig.api.loader.Configurator;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.client.Minecraft;
@@ -34,7 +34,7 @@ import java.util.*;
 
 
 public class CoresModule implements ModInitializer {
-	public static String player = Minecraft.getInstance().getUser().getName();
+	public static String player = Minecraft.getInstance().getSession().getUsername();
 	public static Minecraft mc = Minecraft.getInstance();
 	public static final String MOD_ID = "coresmodule";
 
@@ -84,8 +84,8 @@ public class CoresModule implements ModInitializer {
 		configurator.saveConfig(Settings.class);
 
 
-		Register.command("copyStuffToClipboard", args -> {
-			mc.keyboardHandler.setClipboard("");
+		Register.command("copyNbt", args -> {
+			mc.keyboard.setClipboard("");
 		});
 
 

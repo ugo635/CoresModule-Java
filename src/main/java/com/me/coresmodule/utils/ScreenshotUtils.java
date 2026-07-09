@@ -1,9 +1,9 @@
 package com.me.coresmodule.utils;
 
 import com.me.coresmodule.utils.chat.Chat;
-import net.minecraft.client.Minecraft;
-import com.mojang.blaze3d.pipeline.RenderTarget;
-import net.minecraft.client.Screenshot;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.Framebuffer;
+import net.minecraft.client.util.ScreenshotRecorder;
 
 import java.awt.*;
 import java.awt.datatransfer.*;
@@ -19,19 +19,19 @@ import static com.me.coresmodule.CoresModule.mc;
 
 public class ScreenshotUtils {
     public static void takeScreenshot() {
-        Minecraft client = Minecraft.getInstance();
+        MinecraftClient client = MinecraftClient.getInstance();
         if (client.player == null) return;
 
-        RenderTarget framebuffer = client.getMainRenderTarget();
+        Framebuffer framebuffer = client.getFramebuffer();
 
-        Screenshot.takeScreenshot(framebuffer, nativeImage -> {
+        ScreenshotRecorder.takeScreenshot(framebuffer, nativeImage -> {
             try {
                 BufferedImage bufferedImage = new BufferedImage(
                         nativeImage.getWidth(), nativeImage.getHeight(), BufferedImage.TYPE_INT_ARGB
                 );
                 for (int y = 0; y < nativeImage.getHeight(); y++) {
                     for (int x = 0; x < nativeImage.getWidth(); x++) {
-                        bufferedImage.setRGB(x, y, nativeImage.getPixel(x, y));
+                        bufferedImage.setRGB(x, y, nativeImage.getColorArgb(x, y));
                     }
                 }
                     try {
@@ -73,10 +73,10 @@ public class ScreenshotUtils {
             return future;
         }
 
-        RenderTarget framebuffer = mc.getMainRenderTarget();
+        Framebuffer framebuffer = mc.getFramebuffer();
 
-        Minecraft.getInstance().execute(() -> {
-            Screenshot.takeScreenshot(framebuffer, nativeImage -> {
+        MinecraftClient.getInstance().execute(() -> {
+            ScreenshotRecorder.takeScreenshot(framebuffer, nativeImage -> {
                 try {
                     BufferedImage image = new BufferedImage(
                             nativeImage.getWidth(), nativeImage.getHeight(), BufferedImage.TYPE_INT_ARGB
@@ -84,7 +84,7 @@ public class ScreenshotUtils {
 
                     for (int y = 0; y < nativeImage.getHeight(); y++) {
                         for (int x = 0; x < nativeImage.getWidth(); x++) {
-                            image.setRGB(x, y, nativeImage.getPixel(x, y));
+                            image.setRGB(x, y, nativeImage.getColorArgb(x, y));
                         }
                     }
                     // Successfully complete the future with the image
@@ -102,8 +102,8 @@ public class ScreenshotUtils {
     }
 
     private static String saveToFile(BufferedImage image) throws Exception {
-        Minecraft client = Minecraft.getInstance();
-        File screenshotDir = new File("screenshots");
+        MinecraftClient client = MinecraftClient.getInstance();
+        File screenshotDir = new File(client.runDirectory, "screenshots");
         if (!screenshotDir.exists()) screenshotDir.mkdirs();
 
         String timestamp = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date());
@@ -114,8 +114,8 @@ public class ScreenshotUtils {
     }
 
     private static String saveToFileWithName(BufferedImage image) throws Exception {
-        Minecraft client = Minecraft.getInstance();
-        File screenshotDir = new File("screenshots");
+        MinecraftClient client = MinecraftClient.getInstance();
+        File screenshotDir = new File(client.runDirectory, "screenshots");
         if (!screenshotDir.exists()) screenshotDir.mkdirs();
 
         String timestamp = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date());

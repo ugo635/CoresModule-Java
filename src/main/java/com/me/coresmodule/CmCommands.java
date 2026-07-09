@@ -3,7 +3,7 @@ package com.me.coresmodule;
 import com.me.coresmodule.utils.chat.Chat;
 import com.me.coresmodule.utils.events.Register;
 import com.teamresourceful.resourcefulconfig.api.client.ResourcefulConfigScreen;
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 
 import java.net.URISyntaxException;

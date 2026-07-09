@@ -1,7 +1,7 @@
 package com.me.coresmodule.utils;
 
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
@@ -164,7 +164,7 @@ public class ItemHelper {
     }
 
     private static RegistryWrapper.WrapperLookup registryAccess() {
-        ClientWorld world = Minecraft.getInstance().world;
+        ClientWorld world = MinecraftClient.getInstance().world;
         if (world == null) {
             throw new IllegalStateException("World not available");
         } else {
