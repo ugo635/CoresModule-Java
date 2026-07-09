@@ -34,7 +34,7 @@ import java.util.*;
 
 
 public class CoresModule implements ModInitializer {
-	public static String player = Minecraft.getInstance().getSession().getUsername();
+	public static String player = Minecraft.getInstance().getUser().getName();
 	public static Minecraft mc = Minecraft.getInstance();
 	public static final String MOD_ID = "coresmodule";
 
@@ -85,7 +85,7 @@ public class CoresModule implements ModInitializer {
 
 
 		Register.command("copyNbt", args -> {
-			mc.keyboard.setClipboard("");
+			mc.keyboardHandler.setClipboard("");
 		});
 
 

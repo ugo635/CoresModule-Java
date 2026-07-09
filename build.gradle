@@ -1,6 +1,7 @@
 plugins {
 	id 'net.fabricmc.fabric-loom' version "${loom_version}"
 	id 'maven-publish'
+	id 'dev.deftu.gradle.tools.bloom' version '2.73.0'
 }
 
 version = project.mod_version
@@ -34,6 +35,57 @@ repositories {
 	maven {
 		url = "https://repo.essential.gg/repository/maven-public"
 	}
+}
+
+bloom {
+    // KeyBinding --> KeyMapping
+    replacement("net.fabricmc.fabric.api.client.keybinding", "net.fabricmc.fabric.api.client.keymapping")
+    replacement("KeyBindingHelper", "KeyMappingHelper")
+    replacement("registerKeyBinding", "registerKeyMapping")
+
+    // ClientCommandManager --> ClientCommands
+    replacement("ClientCommandManager", "ClientCommands")
+
+    // World --> Level
+    replacement("net.fabricmc.fabric.api.client.rendering.v1.world", "net.fabricmc.fabric.api.client.rendering.v1.level")
+    replacement("ClientWorldEvents", "ClientLevelEvents")
+    replacement("WorldRenderEvents", "LevelRenderEvents")
+    replacement("WorldRenderContext", "LevelRenderContext")
+    replacement("AFTER_CLIENT_WORLD_CHANGE", "AFTER_CLIENT_LEVEL_CHANGE")
+
+    // Render --> Extract
+    replacement("ScreenEvents.afterRender", "ScreenEvents.afterExtract")
+    replacement("override fun render(", "override fun extractRenderState(")
+    replacement("super.render(", "super.extractRenderState(")
+    replacement("this.renderMenuBackground", "this.extractMenuBackground")
+    replacement("drawContext.renderTooltip(", "drawContext.tooltip(")
+
+    // Render --> Extract (Hacky way to fix Mixins, too lazy for versioned Mixins)
+    replacement("@Inject(method = \"render\", at = @At(\"HEAD\"))", "@Inject(method = \"extractRenderState\", at = @At(\"HEAD\"))")
+    replacement("Lnet/minecraft/client/gui/Gui;render(", "Lnet/minecraft/client/gui/Gui;extractRenderState(")
+    replacement("@Inject(method = \"render\", at = @At(value = \"INVOKE\", target = ", "@Inject(method = \"extractGui\", at = @At(value = \"INVOKE\", target = ")
+    replacement("private void afterHudRender(@NonNull final DeltaTracker tickCounter, final boolean tick, ", "private void afterHudRender(@NonNull final DeltaTracker tickCounter, final boolean tick, final boolean resourcesLoaded, ")
+
+    // drawString --> text
+    replacement("drawContext.drawString(", "drawContext.text(")
+
+    // renderOutline --> outline
+    replacement("drawContext.renderOutline(", "drawContext.outline(")
+
+    // consumers --> bufferSource
+    replacement("context.consumers", "context.bufferSource")
+    replacement("ctx.consumers", "ctx.bufferSource")
+
+    // matrices --> poseStack
+    replacement("matrices()", "poseStack()")
+
+    // BEFORE_TRANSLUCENT --> BEFORE_TRANSLUCENT_TERRAIN
+    replacement("BEFORE_TRANSLUCENT", "BEFORE_TRANSLUCENT_TERRAIN")
+    replacement("BeforeTranslucent", "BeforeTranslucentTerrain")
+    replacement("override fun beforeTranslucent(", "override fun beforeTranslucentTerrain(")
+
+    // addMessage --> addClientSystemMessage
+    replacement("chat.addMessage(", "chat.addClientSystemMessage(")
 }
 
 fabricApi {

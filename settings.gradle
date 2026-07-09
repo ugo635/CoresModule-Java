@@ -1,8 +1,28 @@
 pluginManagement {
 	repositories {
 		maven {
+			name = 'Deftu Releases'
+			url = 'https://maven.deftu.dev/releases'
+		}
+		maven {
+			name = 'Deftu Snapshots'
+			url = 'https://maven.deftu.dev/snapshots'
+		}
+		maven {
 			name = 'Fabric'
 			url = 'https://maven.fabricmc.net/'
+		}
+		maven {
+			name = 'Architectury'
+			url = 'https://maven.architectury.dev/'
+		}
+		maven {
+			name = 'Essential'
+			url = 'https://repo.essential.gg/repository/maven-public'
+		}
+		maven {
+			name = 'MinecraftForge'
+			url = 'https://maven.minecraftforge.net/'
 		}
 		mavenCentral()
 		gradlePluginPortal()
