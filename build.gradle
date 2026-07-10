@@ -38,6 +38,21 @@ repositories {
 }
 
 bloom {
+    // Screen -> Gui
+    replacement("net.minecraft.client.gui.screen.Screen", "net.minecraft.client.gui.Gui")
+    replacement("net.minecraft.client.gui.screen.ScreenHandler", "net.minecraft.client.gui.GuiHandler")
+    replacement("net.minecraft.client.gui.screen.ScreenHandlerContext", "net.minecraft.client.gui.GuiHandlerContext")
+    replacement("net.minecraft.client.gui.screen.ScreenHandlerFactory", "net.minecraft.client.gui.GuiHandlerFactory")
+
+    // Component -> Text
+    replacement("net.minecraft.text.Text", "net.minecraft.network.chat.Component")
+    replacement("net.minecraft.text.MutableText", "net.minecraft.network.chat.MutableComponent")
+    replacement("LiteralText", "Component")
+    replacement("TranslatableText", "Component")
+    replacement("Text.literal(", "Component.literal(")
+    replacement("Text ", "Component ")
+    replacement("Text.", "Component.")
+
     // KeyBinding --> KeyMapping
     replacement("net.fabricmc.fabric.api.client.keybinding", "net.fabricmc.fabric.api.client.keymapping")
     replacement("KeyBindingHelper", "KeyMappingHelper")
