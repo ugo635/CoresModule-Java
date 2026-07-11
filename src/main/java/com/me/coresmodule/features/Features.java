@@ -131,7 +131,8 @@ public class Features {
         });
 
         Register.onChatMessage(msg -> {
-            if (!TextHelper.getFormattedString(msg).contains("&lYUM! &eYou've eaten as much cake as you can for &9now&e! You can eat more in")) return;
+            if (!TextHelper.getFormattedString(msg).contains("§lYUM! §r§eYou've eaten as much cake as you can for §9now§e! You can eat more in")
+            && !TextHelper.getFormattedString(msg).contains("§lYUM! §eYou've eaten as much cake as you can for §9now§e! You can eat more in")) return;
             Helper.showTitle("§d§lMax Cake Eaten!", "", 0, 25, 35);
         });
 

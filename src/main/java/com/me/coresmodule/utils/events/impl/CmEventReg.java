@@ -6,6 +6,7 @@ import com.me.coresmodule.utils.render.overlay.OverlayEditScreen;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents;
+import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 
 public class CmEventReg {
     public static void register() {
@@ -25,6 +26,10 @@ public class CmEventReg {
 
         ClientPlayConnectionEvents.DISCONNECT.register((handler, mc) -> {
             EventBus.emit(new OnDisconnect(handler, mc));
+        });
+
+        ServerPlayerEvents.JOIN.register((player) -> {
+            EventBus.emit(new OnWorldJoin(player));
         });
     }
 }
