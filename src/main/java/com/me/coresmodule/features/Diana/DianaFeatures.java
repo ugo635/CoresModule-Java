@@ -8,8 +8,10 @@ import com.me.coresmodule.utils.render.overlay.Overlay;
 import com.me.coresmodule.utils.render.overlay.OverlayTextLine;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ActionResult;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 
@@ -21,45 +23,17 @@ public class DianaFeatures {
 
     public static void register() {
         Overlay overlay = new Overlay("Fire Freeze Timer", 10.0f, 10.0f, 2.0f, List.of("Chat screen"));
-        OverlayTextLine overlayText = new OverlayTextLine("");
+        OverlayTextLine overlayComponent = new OverlayTextLine("");
         overlay.register();
         overlay.setCondition(() -> ffTimerOn);
-        overlay.addLine(overlayText);
-
-        Register.command("kingWarning", args -> {
-            Helper.sleep(200, () -> {
-                Chat.command("pc ⚠ Do NOT use Ranged/Magic damage on Kings // No Flaming Flay / No Term / No Crimson Stacks (Dominus) // Switch to Sorrow/Mythos armor and do the hit phase with melee only ⚠");
-            });
-        });
-
-        Register.command("kingSpawn", args -> {
-            Helper.sleep(200, () -> {
-                Chat.command("pc Hi old man, give me your wool or I’m selling your brother’s soul to the devil—and yours too if I manage to grab it >:)");
-            });
-        });
+        overlay.addLine(overlayComponent);
 
         UseItemCallback.EVENT.register((player, world, hand) -> {
-			if (ffTimerOn || remaining >= 0) return ActionResult.PASS;
-            ItemStack item = player.getMainHandStack();
-            if (ItemHelper.getItemName(item).contains("Fire Freeze Staff")) {
-                ffTimerOn = true;
-                startTime = System.currentTimeMillis();
-                endTime = startTime + 10000;
-            }
-
-            return ActionResult.PASS;
+            return updateTimer(player);
         });
 
         UseBlockCallback.EVENT.register((player, world, hand, blockHitResult) -> {
-			if (ffTimerOn || remaining >= 0) return ActionResult.PASS;
-            ItemStack item = player.getMainHandStack();
-            if (ItemHelper.getItemName(item).contains("Fire Freeze Staff")) {
-                ffTimerOn = true;
-                startTime = System.currentTimeMillis();
-                endTime = startTime + 10000;
-            }
-
-            return ActionResult.PASS;
+            return updateTimer(player);
         });
 
         Register.onTick(1, args -> {
@@ -76,7 +50,20 @@ public class DianaFeatures {
                 return;
             }
 
-            overlayText.text = "%s%.2fs".formatted(remaining <= 0 ? "§c" : "§a", remaining);
+            overlayComponent.text = "%s%.2fs".formatted(remaining <= 0 ? "§c" : "§a", remaining);
         });
+    }
+
+    @NonNull
+    private static InteractionResult updateTimer(Player player) {
+        if (ffTimerOn || remaining >= 0) return InteractionResult.PASS;
+        ItemStack item = ItemHelper.getHeldItem();
+        if (ItemHelper.getItemName(item).contains("Fire Freeze Staff")) {
+            ffTimerOn = true;
+            startTime = System.currentTimeMillis();
+            endTime = startTime + 10000;
+        }
+
+        return InteractionResult.PASS;
     }
 }

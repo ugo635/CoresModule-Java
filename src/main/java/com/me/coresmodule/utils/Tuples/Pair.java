@@ -1,8 +1,5 @@
 package com.me.coresmodule.utils.Tuples;
 
-import com.me.coresmodule.utils.ItemHelper;
-import net.minecraft.item.ItemStack;
-
 import java.util.HashMap;
 
 public class Pair<T, S> {
@@ -28,10 +25,4 @@ public class Pair<T, S> {
         return new Pair<>(first, second);
     }
 
-    public HashMap<String, Object> toMapItemStack() {
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("first", ItemHelper.toMap((ItemStack) first));
-        map.put("second", ItemHelper.toMap((ItemStack) second));
-        return map;
-    }
 }

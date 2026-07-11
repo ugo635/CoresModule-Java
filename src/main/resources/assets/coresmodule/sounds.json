@@ -1,8 +1,15 @@
 {
-  "emergencymeeting": {
-    "subtitle": "sound.coresmodule.emergencymeeting",
-    "sounds": [
-      "coresmodule:emergencymeeting"
-    ]
-  }
+    "emergencymeeting": {
+        "subtitle": "sound.coresmodule.emergencymeeting",
+        "sounds": [
+            "coresmodule:emergencymeeting"
+        ]
+    },
+
+    "ding": {
+        "subtitle": "sound.coresmodule.ding",
+        "sounds": [
+            "coresmodule:ding"
+        ]
+    }
 }

@@ -1,10 +1,11 @@
 package com.me.coresmodule.utils;
 
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.resources.Identifier;
 
 import static com.me.coresmodule.CoresModule.MOD_ID;
 import static com.me.coresmodule.CoresModule.mc;
@@ -12,17 +13,34 @@ import static com.me.coresmodule.CoresModule.mc;
 public class SoundHandler {
     public static void register() {
         registerSound("emergencymeeting");
+        registerSound("ding");
     }
 
     public static void registerSound(String path) {
-        Registry.register(Registries.SOUND_EVENT, Identifier.of(MOD_ID, path),
-                SoundEvent.of(Identifier.of(MOD_ID, path)));
+        Registry.register(
+                BuiltInRegistries.SOUND_EVENT,
+                Identifier.fromNamespaceAndPath(MOD_ID, path),
+                SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(MOD_ID, path))
+        );
     }
 
-    public static void playSound(String path) {
-        SoundEvent sound = SoundEvent.of(Identifier.of(MOD_ID, path));
-        if (mc.world != null) {
-            mc.world.playSound(mc.player, mc.player.getBlockPos(), sound, SoundCategory.MASTER, 1.0f, 1.0f);
+    /**
+     * Custom sounds only
+     */
+    public static void playCustomSound(String path) {
+        SoundEvent sound = SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(MOD_ID, path));
+        if (mc.level != null && mc.player != null) {
+            mc.level.playSound(mc.player, mc.player.blockPosition(), sound, SoundSource.MASTER, 1.0f, 1.0f);
+        }
+    }
+
+    /**
+     * Minecraft sounds only
+     */
+    public static void playMinecraftSound(String path) {
+        SoundEvent sound = SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath("minecraft", path));
+        if (mc.level != null && mc.player != null) {
+            mc.level.playSound(mc.player, mc.player.blockPosition(), sound, SoundSource.MASTER, 1.0f, 1.0f);
         }
     }
 }

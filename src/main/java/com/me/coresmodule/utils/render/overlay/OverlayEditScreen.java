@@ -1,10 +1,10 @@
 package com.me.coresmodule.utils.render.overlay;
 
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.input.KeyInput;
-import net.minecraft.text.Text;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.network.chat.Component;
 import org.lwjgl.glfw.GLFW;
 
 public class OverlayEditScreen extends Screen {
@@ -15,23 +15,25 @@ public class OverlayEditScreen extends Screen {
     private double lastMouseY = 0.0;
 
     public OverlayEditScreen() {
-        super(Text.literal("CM_Overlay_Editor"));
+        super(Component.literal("CM_Overlay_Editor"));
     }
 
     @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        super.render(context, mouseX, mouseY, delta);
-        this.renderDarkening(context);
+    public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
+        super.extractRenderState(context, mouseX, mouseY, delta);
+        this.extractMenuBackground(context);
+        // not sure for ^ used to be this.renderDarkening(context);
         OverlayManager.render(context);
     }
 
     @Override
-    public boolean mouseClicked(Click click, boolean doubled) {
+    public boolean mouseClicked(MouseButtonEvent click, boolean doubled) {
         double mouseX = click.x();
         double mouseY = click.y();
         int button = click.button();
         if (button == 0) {
-            selectedOverlay = OverlayManager.overlays.stream()
+            selectedOverlay = OverlayManager.overlays
+                    .stream()
                     .filter(o -> o.isOverOverlay(mouseX, mouseY))
                     .findFirst()
                     .orElse(null);
@@ -55,7 +57,7 @@ public class OverlayEditScreen extends Screen {
     }
 
     @Override
-    public boolean mouseDragged(Click click, double deltaX, double deltaY) {
+    public boolean mouseDragged(MouseButtonEvent click, double deltaX, double deltaY) {
         double mouseX = click.x();
         double mouseY = click.y();
         int button = click.button();
@@ -70,7 +72,7 @@ public class OverlayEditScreen extends Screen {
     }
 
     @Override
-    public boolean mouseReleased(Click click) {
+    public boolean mouseReleased(MouseButtonEvent click) {
         int button = click.button();
         if (button == 0) {
             isDragging = false;
@@ -93,8 +95,8 @@ public class OverlayEditScreen extends Screen {
     }
 
     @Override
-    public boolean keyPressed(KeyInput input) {
-        int keyCode = input.getKeycode();
+    public boolean keyPressed(KeyEvent input) {
+        int keyCode = input.key();
         if (selectedOverlay != null) {
             float step = 1f;
             if (keyCode == GLFW.GLFW_KEY_UP) {

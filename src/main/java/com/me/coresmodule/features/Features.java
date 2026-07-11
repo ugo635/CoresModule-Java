@@ -66,11 +66,12 @@ public class Features {
         });
 
         Register.command("clear", ignore -> {
-            mc.inGameHud.getChatHud().clear(true);
+            mc.gui.getChat().clearMessages(true);
         });
 
         Register.onChatMessage(message -> {
-            if (General.pickaceAbility.get() && TextHelper.formattedString(message).contains("§aYou used your §6Maniac Miner §aPickaxe Ability!")) { // TODO make it compatible with other pickaxe abilities
+            if (General.pickaceAbility.get() && TextHelper.formattedString(message).contains("§aYou used your §6Maniac Miner §aPickaxe Ability!")) {
+                // TODO make it compatible with other pickaxe abilities
                 Helper.exactSleep(103000, () -> {
                     Chat.chat("§6§l[Cm] Pickaxe Ability Ready!");
                     Helper.showTitle("§6§lPickaxe Ability", "§aReady!", 0, 25, 35);
@@ -81,11 +82,13 @@ public class Features {
         Register.command("ftax", player -> {
             if (player.length > 0) {
                 if (player.length == 1) {
+                    // Kick if we just wanna kick a player
                     Chat.command("pc Sry bud, friend tax!");
                     Helper.sleep(1000, () -> {
                         Chat.command("p kick " + player[0]);
                     });
                 } else if (player.length == 2) {
+                    // Kick the first player and invites the second
                     Chat.command("pc Sry bud, friend tax!");
                     Helper.sleep(1000, () -> {
                         Chat.command("p kick " + player[0]);
@@ -115,7 +118,7 @@ public class Features {
         Register.onChatMessage(Pattern.compile("^(?<channel>.*> )?(?<playerName>.+?)[§&]f: (?:[§&]r)?x: (?<x>[^ ,]+),? y: (?<y>[^ ,]+),? z: (?<z>[^ ,]+)(?<trailing>.*)$"),false, (msg, result) -> {
             if (!General.coordSound.get()) return;
             Chat.chat("§c[CoresModule] Coords Delected");
-            SoundHandler.playSound("emergencymeeting");
+            SoundHandler.playCustomSound("emergencymeeting");
         });
 
         // ?<name> is to give name to groups to be used as Matcher.group("name")
@@ -125,6 +128,11 @@ public class Features {
                 Chat.command("p " + toInv.getFirst());
                 toInv.removeFirst();
             }
+        });
+
+        Register.onChatMessage(msg -> {
+            if (!TextHelper.getFormattedString(msg).contains("&lYUM! &eYou've eaten as much cake as you can for &9now&e! You can eat more in")) return;
+            Helper.showTitle("§d§lMax Cake Eaten!", "", 0, 25, 35);
         });
 
         Register.command("inviteOnLeave", args -> {
@@ -151,7 +159,32 @@ public class Features {
                     List.of("e", 0xFF1E40AF)
             );
 
-            Chat.chat(TextHelper.listToText(gradient));
+            Chat.chat(TextHelper.gradient(gradient));
         });
+
+        Register.onChatMessage(text -> {
+            String msg = TextHelper.getUnFormattedString(text);
+
+            if (!msg.contains("BRRR!")) return;
+
+            int coldInt = 0;
+
+            if (msg.contains("It's getting really cold in here! But you've got to keep moving...")) {
+                coldInt = 25;
+            } else if (msg.contains("It's so cold that you can barely feel your fingers. Moving is getting difficult...")) {
+                coldInt = 50;
+            } else if (msg.contains("Your movement slows to a crawl as the cold threatens to take over. Time to get out of here...")) {
+                coldInt = 75;
+            } else if (msg.contains("You're freezing! All you can think about is getting out of here to a warm campfire...")) {
+                coldInt = 90;
+            } else {
+                return;
+            }
+
+            String cold = "§b" + (coldInt) + "❄";
+
+            Helper.showTitle(cold, "", 0, 25, 35);
+        });
+
     }
 }

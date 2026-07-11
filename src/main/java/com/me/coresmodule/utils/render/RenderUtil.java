@@ -2,17 +2,19 @@ package com.me.coresmodule.utils.render;
 
 import com.me.coresmodule.mixin.BeaconBlockEntityRendererInvoker;
 import com.me.coresmodule.utils.math.CmVectors;
-import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.VertexRendering;
-import net.minecraft.client.render.command.OrderedRenderCommandQueue;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.util.math.RotationAxis;
-import net.minecraft.util.math.Vec3d;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Axis;
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext;
+import net.minecraft.client.Camera;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.*;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.gizmos.Gizmos;
+import net.minecraft.gizmos.GizmoStyle;
 
 import java.awt.*;
 
@@ -20,8 +22,9 @@ import static com.me.coresmodule.CoresModule.mc;
 import static java.lang.Math.max;
 
 public class RenderUtil {
+
     public static void renderWaypoint(
-            WorldRenderContext context,
+            LevelRenderContext context,
             String text,
             CmVectors pos,
             float[] colorComponents,
@@ -50,7 +53,7 @@ public class RenderUtil {
     }
 
     public static void drawFilledBox(
-            WorldRenderContext context,
+            LevelRenderContext context,
             CmVectors pos,
             double width,
             double height,
@@ -59,92 +62,28 @@ public class RenderUtil {
             float alpha,
             boolean throughWalls
     ) {
-        MatrixStack matrices = context.matrices();
-        Vec3d cameraPos = getCamera().getPos();
+        int r = (int) (Math.clamp(colorComponents[0], 0f, 1f) * 255);
+        int g = (int) (Math.clamp(colorComponents[1], 0f, 1f) * 255);
+        int b = (int) (Math.clamp(colorComponents[2], 0f, 1f) * 255);
+        int a = (int) (Math.clamp(alpha, 0f, 1f) * 255);
 
-        matrices.push();
-        matrices.translate(pos.x + 0.5 - cameraPos.x, pos.y - cameraPos.y, pos.z + 0.5 - cameraPos.z);
+        int argbColor = (a << 24) | (r << 16) | (g << 8) | b;
 
-        VertexConsumer buffer = context.consumers().getBuffer(
-                throughWalls ? CmRenderLayers.FILLED_BOX_THROUGH_WALLS : CmRenderLayers.FILLED_BOX
+        BlockPos bPos = new BlockPos((int) pos.x, (int) pos.y, (int) pos.z);
+
+        Gizmos.cuboid(
+                AABB.ofSize(
+                        Vec3.atCenterOf(bPos),
+                        width,
+                        height,
+                        depth
+                ),
+                GizmoStyle.fill(argbColor)
         );
-
-        float minX = (float)(-width / 2.0);
-        float minY = 0f;
-        float minZ = (float)(-depth / 2.0);
-        float maxX = (float)(width / 2.0);
-        float maxY = (float)height;
-        float maxZ = (float)(depth / 2.0);
-
-        VertexRendering.drawFilledBox(
-                matrices, buffer,
-                minX, minY, minZ,
-                maxX, maxY, maxZ,
-                colorComponents[0], colorComponents[1], colorComponents[2], alpha
-        );
-
-        matrices.pop();
     }
-
-    /*
-    public static void drawFilledBox(
-            MatrixStack matrices,
-            VertexConsumer buffer,
-            float minX, float minY, float minZ,
-            float maxX, float maxY, float maxZ,
-            float red, float green, float blue, float alpha
-    ) {
-        Matrix4f mat = matrices.peek().getPositionMatrix();
-
-        // Helper to reduce repetition
-        BiConsumer<float[], float[]> v = (p, n) -> {
-            buffer.vertex(mat, p[0], p[1], p[2])
-                    .color(red, green, blue, alpha)
-                    .normal(n[0], n[1], n[2]);
-        };
-
-        // NORTH (0,0,-1)
-        v.accept(new float[]{minX, minY, minZ}, new float[]{0,0,-1});
-        v.accept(new float[]{maxX, minY, minZ}, new float[]{0,0,-1});
-        v.accept(new float[]{maxX, maxY, minZ}, new float[]{0,0,-1});
-        v.accept(new float[]{minX, maxY, minZ}, new float[]{0,0,-1});
-
-        // SOUTH (0,0,1)
-        v.accept(new float[]{minX, minY, maxZ}, new float[]{0,0,1});
-        v.accept(new float[]{minX, maxY, maxZ}, new float[]{0,0,1});
-        v.accept(new float[]{maxX, maxY, maxZ}, new float[]{0,0,1});
-        v.accept(new float[]{maxX, minY, maxZ}, new float[]{0,0,1});
-
-        // WEST (-1,0,0)
-        v.accept(new float[]{minX, minY, minZ}, new float[]{-1,0,0});
-        v.accept(new float[]{minX, maxY, minZ}, new float[]{-1,0,0});
-        v.accept(new float[]{minX, maxY, maxZ}, new float[]{-1,0,0});
-        v.accept(new float[]{minX, minY, maxZ}, new float[]{-1,0,0});
-
-        // EAST (1,0,0)
-        v.accept(new float[]{maxX, minY, minZ}, new float[]{1,0,0});
-        v.accept(new float[]{maxX, minY, maxZ}, new float[]{1,0,0});
-        v.accept(new float[]{maxX, maxY, maxZ}, new float[]{1,0,0});
-        v.accept(new float[]{maxX, maxY, minZ}, new float[]{1,0,0});
-
-        // UP (0,1,0)
-        v.accept(new float[]{minX, maxY, minZ}, new float[]{0,1,0});
-        v.accept(new float[]{maxX, maxY, minZ}, new float[]{0,1,0});
-        v.accept(new float[]{maxX, maxY, maxZ}, new float[]{0,1,0});
-        v.accept(new float[]{minX, maxY, maxZ}, new float[]{0,1,0});
-
-        // DOWN (0,-1,0)
-        v.accept(new float[]{minX, minY, minZ}, new float[]{0,-1,0});
-        v.accept(new float[]{minX, minY, maxZ}, new float[]{0,-1,0});
-        v.accept(new float[]{maxX, minY, maxZ}, new float[]{0,-1,0});
-        v.accept(new float[]{maxX, minY, minZ}, new float[]{0,-1,0});
-    }
-    */
-
-
 
     public static void drawString(
-            WorldRenderContext context,
+            LevelRenderContext context,
             CmVectors pos,
             double yOffset,
             String text,
@@ -153,66 +92,97 @@ public class RenderUtil {
             double scale,
             boolean throughWalls
     ) {
-        MatrixStack matrices = context.matrices();
-        Vec3d cameraPos = getCamera().getPos();
-        float cameraYaw = getCamera().getYaw();
-        float cameraPitch = getCamera().getPitch();
-        TextRenderer textRenderer = mc.textRenderer;
+        PoseStack matrices = context.poseStack();
 
-        matrices.push();
+        Camera camera = getCamera();
+        Vec3 cameraPos = camera.position();
 
-        Vec3d textWorldPos = new Vec3d(pos.x + 0.5, pos.y + 0.5, pos.z + 0.5);
+        float cameraYaw = camera.yRot();
+        float cameraPitch = camera.xRot();
+
+        Font textRenderer = mc.font;
+
+        matrices.pushPose();
+
+        Vec3 textWorldPos = new Vec3(
+                pos.x + 0.5,
+                pos.y + 0.5,
+                pos.z + 0.5
+        );
+
         double distance = cameraPos.distanceTo(textWorldPos);
         double dynamicScale = max(distance, 2.5) * scale;
 
-        matrices.translate(pos.x + 0.5 - cameraPos.x, pos.y + yOffset - cameraPos.y, pos.z + 0.5 - cameraPos.z);
+        matrices.translate(
+                pos.x + 0.5 - cameraPos.x,
+                pos.y + yOffset - cameraPos.y,
+                pos.z + 0.5 - cameraPos.z
+        );
 
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-cameraYaw));
-        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(cameraPitch));
+        matrices.mulPose(Axis.YP.rotationDegrees(-cameraYaw));
+        matrices.mulPose(Axis.XP.rotationDegrees(cameraPitch));
 
-        matrices.scale((float)-dynamicScale, (float)-dynamicScale, (float)dynamicScale);
+        matrices.scale(
+                (float) -dynamicScale,
+                (float) -dynamicScale,
+                (float) dynamicScale
+        );
 
-        int textWidth = textRenderer.getWidth(text);
+        int textWidth = textRenderer.width(text);
         float xOffset = -textWidth / 2f;
 
-        TextRenderer.TextLayerType layerType = throughWalls ? TextRenderer.TextLayerType.SEE_THROUGH : TextRenderer.TextLayerType.NORMAL;
+        Font.DisplayMode displayMode = throughWalls
+                ? Font.DisplayMode.SEE_THROUGH
+                : Font.DisplayMode.NORMAL;
 
-        textRenderer.draw(
+        textRenderer.drawInBatch(
                 text,
                 xOffset,
                 0f,
                 color,
                 shadow,
-                matrices.peek().getPositionMatrix(),
-                context.consumers(),
-                layerType,
+                matrices.last().pose(),
+                context.bufferSource(),
+                displayMode,
                 0,
                 0xF000F0
         );
 
-        matrices.pop();
+        matrices.popPose();
     }
 
     public static void renderBeaconBeam(
-            WorldRenderContext context,
+            LevelRenderContext context,
             CmVectors pos,
             int yOffset,
             float[] colorComponents
     ) {
-        MatrixStack matrices = context.matrices();
-        Vec3d cameraPos = getCamera().getPos();
-        ClientWorld world = mc.world;
+        PoseStack matrices = context.poseStack();
 
-        matrices.push();
-        matrices.translate(pos.x - cameraPos.x, pos.y - cameraPos.y, pos.z - cameraPos.z);
+        Vec3 cameraPos = getCamera().position();
+        ClientLevel world = mc.level;
 
-        VertexConsumerProvider consumers = context.consumers();
-        float partialTicks = mc.getRenderTickCounter().getTickProgress(true);
+        matrices.pushPose();
 
+        matrices.translate(
+                pos.x - cameraPos.x,
+                pos.y - cameraPos.y,
+                pos.z - cameraPos.z
+        );
+
+        float partialTicks = mc.getDeltaTracker().getGameTimeDeltaPartialTick(true);
+
+        if (world == null) return;
         int beamHeight = world.getHeight();
-        float[] beamColor = new float[] {colorComponents[0], colorComponents[1], colorComponents[2], 1.0f};
 
-        OrderedRenderCommandQueue queue = context.gameRenderer().getEntityRenderCommandQueue();
+        float[] beamColor = {
+                colorComponents[0],
+                colorComponents[1],
+                colorComponents[2],
+                1.0f
+        };
+
+        SubmitNodeCollector queue = context.gameRenderer().getSubmitNodeStorage();
 
         BeaconBlockEntityRendererInvoker.renderBeam(
                 matrices,
@@ -221,59 +191,106 @@ public class RenderUtil {
                 1.0f,
                 yOffset,
                 beamHeight,
-                new Color(beamColor[0], beamColor[1], beamColor[2]).getRGB()
+                new Color(
+                        beamColor[0],
+                        beamColor[1],
+                        beamColor[2]
+                ).getRGB()
         );
 
-
-        // TODO: Add through walls option
-        matrices.pop();
+        matrices.popPose();
     }
 
     public static void drawLineFromCursor(
-            WorldRenderContext context,
+            LevelRenderContext context,
             CmVectors target,
             float[] color,
             float lineWidth,
             boolean throughWalls,
             float alpha
     ) {
-        if (alpha == 0) alpha = 0.5f;
+        if (alpha == 0) {
+            alpha = 0.5f;
+        }
 
-        var camera = getCamera();
-        var cameraPos = camera.getPos();
-        var matrices = context.matrices();
+        Camera camera = getCamera();
 
-        matrices.push();
-        matrices.translate(-cameraPos.x, -cameraPos.y, -cameraPos.z);
+        Vec3 cameraPos = camera.position();
 
-        VertexConsumer buffer = context.consumers().getBuffer(CmRenderLayers.getLines(lineWidth, throughWalls));
-        Vec3d startPos = cameraPos.add(Vec3d.fromPolar(camera.getPitch(), camera.getYaw()));
-        Vec3d endPos = target.center().toVec3d().add(0.0, 0.5, 0.0);
+        PoseStack matrices = context.poseStack();
 
-        Vec3d lineDir = endPos.subtract(startPos);
-        Vec3d viewDir = startPos.subtract(cameraPos);
-        Vec3d sideVec = lineDir.crossProduct(viewDir).normalize();
-        Vec3d upVec = sideVec.crossProduct(lineDir).normalize();
+        matrices.pushPose();
+
+        matrices.translate(
+                -cameraPos.x,
+                -cameraPos.y,
+                -cameraPos.z
+        );
+
+        VertexConsumer buffer =
+                context.bufferSource()
+                        .getBuffer(
+                                CmRenderLayers.getLines(
+                                        lineWidth,
+                                        throughWalls
+                                )
+                        );
+
+        Vec3 startPos = cameraPos.add(
+                Vec3.directionFromRotation(
+                        camera.yRot(),
+                        camera.xRot()
+                )
+        );
+
+        Vec3 endPos = target.center()
+                .toVec3()
+                .add(0.0, 0.5, 0.0);
+
+        Vec3 lineDir = endPos.subtract(startPos);
+        Vec3 viewDir = startPos.subtract(cameraPos);
+
+        Vec3 sideVec = lineDir.cross(viewDir).normalize();
+        Vec3 upVec = sideVec.cross(lineDir).normalize();
 
         float nx = (float) upVec.x;
         float ny = (float) upVec.y;
         float nz = (float) upVec.z;
 
-        MatrixStack.Entry entry = matrices.peek();
+        PoseStack.Pose entry = matrices.last();
 
-        buffer.vertex(entry.getPositionMatrix(), (float) startPos.x, (float) startPos.y, (float) startPos.z)
-                .normal(entry, nx, ny, nz)
-                .color(color[0], color[1], color[2], alpha);
+        buffer.addVertex(
+                        entry,
+                        (float) startPos.x,
+                        (float) startPos.y,
+                        (float) startPos.z
+                )
+                .setNormal(entry, nx, ny, nz)
+                .setColor(
+                        color[0],
+                        color[1],
+                        color[2],
+                        alpha
+                );
 
-        buffer.vertex(entry.getPositionMatrix(), (float) endPos.x, (float) endPos.y, (float) endPos.z)
-                .normal(entry, nx, ny, nz)
-                .color(color[0], color[1], color[2], alpha);
+        buffer.addVertex(
+                        entry,
+                        (float) endPos.x,
+                        (float) endPos.y,
+                        (float) endPos.z
+                )
+                .setNormal(entry, nx, ny, nz)
+                .setColor(
+                        color[0],
+                        color[1],
+                        color[2],
+                        alpha
+                );
 
-        matrices.pop();
+        matrices.popPose();
     }
 
     private static Camera getCamera() {
-        return mc.gameRenderer.getCamera();
+        return mc.gameRenderer.getMainCamera();
     }
-
 }

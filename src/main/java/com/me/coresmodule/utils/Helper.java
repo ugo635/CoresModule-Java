@@ -1,8 +1,7 @@
 package com.me.coresmodule.utils;
 
-import com.me.coresmodule.utils.chat.Chat;
-
 import java.awt.image.BufferedImage;
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
@@ -43,16 +42,14 @@ public class Helper {
      * @param fadeOut How long for the text to fade out (In ticks)
      */
     public static void showTitle(String title, String subtitle, int fadeIn, int time, int fadeOut) {
-        if (mc.inGameHud != null) {
-            mc.inGameHud.setTitleTicks(fadeIn, time, fadeOut);
+        mc.gui.setTimes(fadeIn, time, fadeOut);
 
-            if (title != null) {
-                mc.inGameHud.setTitle(net.minecraft.text.Text.of(title));
-            }
+        if (title != null) {
+            mc.gui.setTitle(net.minecraft.network.chat.Component.literal(title));
+        }
 
-            if (subtitle != null) {
-                mc.inGameHud.setSubtitle(net.minecraft.text.Text.of(subtitle));
-            }
+        if (subtitle != null) {
+            mc.gui.setSubtitle(net.minecraft.network.chat.Component.literal(subtitle));
         }
 
     }
@@ -97,14 +94,36 @@ public class Helper {
     }
 
     public static String getGuiName() {
-        return mc.currentScreen == null ? "" : mc.currentScreen.getTitle().getString();
+        return mc.screen != null ? mc.screen.getTitle().getString() : "";
     }
 
     public static void copyToClipboard(String s) {
-        mc.keyboard.setClipboard(s);
+        mc.keyboardHandler.setClipboard(s);
     }
 
     public static void copyToClipboard(BufferedImage image) {
         ScreenshotUtils.copyImageToClipboard(image);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> T getField(Class<?> clazz, String fieldName, Object instance) {
+        try {
+            Field f = clazz.getDeclaredField(fieldName);
+            f.setAccessible(true);
+            return (T) f.get(instance);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> T getField(Class<?> clazz, String fieldName) {
+        return (T) getField(clazz, fieldName, null);
+    }
+
+    public static boolean isInGarden() {
+        String area = TabList.findInfo("Area: ");
+        return (area == null ? "None" : area).contains("Garden");
     }
 }

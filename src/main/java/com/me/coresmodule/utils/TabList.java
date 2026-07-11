@@ -1,0 +1,80 @@
+package com.me.coresmodule.utils;
+
+import com.me.coresmodule.utils.events.Register;
+import net.minecraft.client.multiplayer.PlayerInfo;
+import net.minecraft.network.chat.Component;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
+import static com.me.coresmodule.CoresModule.mc;
+
+public class TabList {
+
+	/** Holds cached tab lines updated each tick. */
+	private static List<String> cachedTabLines = Collections.emptyList();
+
+	/** Registers a task to update the cache each tick. */
+	public static void register() {
+		Register.onTick(1, ignored -> updateCache());
+	}
+
+	/** Updates tab list cache by fetching, filtering and mapping the tab list. */
+	private static void updateCache() {
+		List<String> tabLines = new ArrayList<>();
+
+		for (PlayerInfo entry : getTabEntries()) {
+			if (entry == null) continue;
+
+			Component displayName = entry.getTabListDisplayName();
+
+			Component profileName = null;
+            profileName = Component.literal(entry.getProfile().toString());
+
+            Component text = displayName != null ? displayName : profileName;
+
+            tabLines.add(text.getString().trim());
+		}
+
+		cachedTabLines = tabLines;
+	}
+
+	/**
+	 * Returns a list of all PlayerInfo objects from the current tab list.
+	 */
+	public static Collection<PlayerInfo> getTabEntries() {
+		if (mc.player == null) return Collections.emptyList();
+
+		return mc.player.connection.getOnlinePlayers();
+	}
+
+	/**
+	 * Finds the value associated with a specific key in the tab list entries.
+	 * The key should be a prefix that appears at the start of the line in the tab list.
+	 */
+	public static String findInfo(String key) {
+		for (String line : cachedTabLines) {
+			if (line.startsWith(key)) {
+				return line.substring(key.length()).trim();
+			}
+		}
+
+		return null;
+	}
+
+	public static void printAll() {
+		for (String line : cachedTabLines) {
+			System.out.println(line);
+		}
+	}
+
+	/** Returns the cached tab. */
+	public static List<String> getCachedTabLines() {
+		return Collections.unmodifiableList(cachedTabLines);
+	}
+
+}

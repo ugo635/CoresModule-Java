@@ -3,13 +3,13 @@ package com.me.coresmodule.utils.chat;
 import static com.me.coresmodule.CoresModule.mc;
 import static java.lang.Integer.parseInt;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.text.ClickEvent;
-import net.minecraft.text.HoverEvent;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.components.ChatComponent;
+import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.core.component.DataComponentHolder;
+import net.minecraft.network.chat.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -22,15 +22,15 @@ public class Chat {
      * @param s The message to display in the chat.
      */
     public static void chat(String s) {
-        mc.inGameHud.getChatHud().addMessage(Text.of(s.replaceAll("&", "§")));
+        mc.gui.getChat().addClientSystemMessage(Component.literal(s.replaceAll("&", "§")));
     }
 
     /**
      * Shows a local chat message only visible to the player.
-     * @param t The Text to display in the chat.
+     * @param t The Component to display in the chat.
      */
-    public static void chat(Text t) {
-        mc.inGameHud.getChatHud().addMessage(t);
+    public static void chat(Component t) {
+        mc.gui.getChat().addClientSystemMessage(t);
     }
 
     /**
@@ -39,12 +39,11 @@ public class Chat {
      * @param command The command to send, without the leading slash.
      */
     public static void command(String command) {
-        MinecraftClient mc = MinecraftClient.getInstance();
-        if (mc.player == null || mc.player.networkHandler == null) return;
+        if (mc.player == null) return;
         if (!command.startsWith("/")) {
-            mc.player.networkHandler.sendChatMessage("/" + command);
+            mc.player.connection.sendChat("/" + command);
         } else {
-            mc.player.networkHandler.sendChatMessage(command);
+            mc.player.connection.sendChat(command);
         }
     }
 
@@ -59,18 +58,18 @@ public class Chat {
     public static void clickableChat(String message, String hover, Runnable onClick) {
         UUID actionId = ClickActionManager.registerAction(onClick);
 
-        Text hoverText = Text.literal(hover).formatted(Formatting.YELLOW);
+        Component hoverComponent = Component.literal(hover).withStyle(Style.EMPTY.withColor(ChatFormatting.YELLOW));
         ClickEvent clickEvent = new ClickEvent.RunCommand("__cm_run_clickable_action");
-        HoverEvent hoverEvent = new HoverEvent.ShowText(hoverText);
+        HoverEvent hoverEvent = new HoverEvent.ShowText(hoverComponent);
 
-        Text styledText = Text.literal(message).setStyle(
+        Component styledComponent = Component.literal(message).setStyle(
                 Style.EMPTY
                         .withClickEvent(clickEvent)
                         .withHoverEvent(hoverEvent)
         );
 
         if (mc.player != null) {
-            mc.inGameHud.getChatHud().addMessage(styledText);
+            chat(styledComponent);
         }
     }
 
@@ -83,7 +82,6 @@ public class Chat {
      * @param typeC The type of ClickEvent by default ClickEvent.RunCommand
      */
     public static void clickableChat(String message, String hover, String command, String typeC) throws URISyntaxException {
-        Text hoverText = Text.literal(hover).formatted(Formatting.YELLOW);
         ClickEvent clickEvent;
         HoverEvent hoverEvent;
 
@@ -96,16 +94,16 @@ public class Chat {
             default -> new ClickEvent.RunCommand(command);
         };
 
-        hoverEvent = new HoverEvent.ShowText(Text.literal(hover));
+        hoverEvent = new HoverEvent.ShowText(Component.literal(hover));
 
-        Text styledText = Text.literal(message).setStyle(
+        Component styledComponent = Component.literal(message).setStyle(
                 Style.EMPTY
                         .withClickEvent(clickEvent)
                         .withHoverEvent(hoverEvent)
         );
 
         if (mc.player != null) {
-            mc.inGameHud.getChatHud().addMessage(styledText);
+            chat(styledComponent);
         }
     }
 
@@ -117,18 +115,18 @@ public class Chat {
      * @param command The command to execute when clicked.
      */
     public static void clickableChat(String message, String hover, String command) {
-        Text hoverText = Text.literal(hover);
+        Component hoverComponent = Component.literal(hover);
         ClickEvent clickEvent = new ClickEvent.RunCommand(command);
-        HoverEvent hoverEvent = new HoverEvent.ShowText(hoverText);
+        HoverEvent hoverEvent = new HoverEvent.ShowText(hoverComponent);
 
-        Text styledText = Text.literal(message).setStyle(
+        Component styledComponent = Component.literal(message).setStyle(
                 Style.EMPTY
                         .withClickEvent(clickEvent)
                         .withHoverEvent(hoverEvent)
         );
 
         if (mc.player != null) {
-            mc.inGameHud.getChatHud().addMessage(styledText);
+            chat(styledComponent);
         }
     }
 
@@ -144,9 +142,9 @@ public class Chat {
             return "";
         }
 
-        TextRenderer textRenderer = mc.textRenderer;
-        int chatWidth = mc.inGameHud.getChatHud().getWidth();
-        int separatorWidth = textRenderer.getWidth(separator);
+        Font font = mc.font;
+        int chatWidth = mc.gui.getChat().getWidth();
+        int separatorWidth = font.width(separator);
 
         if (separatorWidth <= 0) {
             return "";
@@ -168,8 +166,8 @@ public class Chat {
      * @param message The message to send.
      */
     public static void say(String message) {
-        if (mc.player != null && mc.player.networkHandler != null) {
-            mc.player.networkHandler.sendChatMessage(message);
+        if (mc.player != null) {
+            mc.player.connection.sendChat(message);
         }
     }
 }

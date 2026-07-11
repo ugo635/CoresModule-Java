@@ -2,13 +2,15 @@ package com.me.coresmodule.utils.render;
 
 import com.mojang.blaze3d.pipeline.BlendFunction;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
-import com.mojang.blaze3d.platform.DepthTestFunction;
-import com.mojang.blaze3d.vertex.VertexFormat.DrawMode;
-import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.RenderPhase;
-import net.minecraft.client.render.VertexFormats;
-import net.minecraft.util.Identifier;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.VertexFormat;
+import gg.essential.universal.UGraphics;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.LayeringTransform;
+import net.minecraft.client.renderer.rendertype.RenderSetup;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import net.minecraft.resources.Identifier;
 
 import java.util.OptionalDouble;
 
@@ -16,52 +18,36 @@ import static com.me.coresmodule.CoresModule.MOD_ID;
 
 public class CmRenderLayers {
 
-    public static final RenderLayer.MultiPhase FILLED_BOX = RenderLayer.of(
+    public static final RenderType FILLED_BOX = RenderType.create(
             "filled_box",
-            RenderLayer.DEFAULT_BUFFER_SIZE,
-            false,
-            true,
-            RenderPipelines.DEBUG_FILLED_BOX,
-            RenderLayer.MultiPhaseParameters.builder()
-                    .layering(RenderPhase.VIEW_OFFSET_Z_LAYERING)
-                    .build(false)
+            RenderSetup.builder(RenderPipelines.DEBUG_FILLED_BOX)
+                     .setLayeringTransform(LayeringTransform.VIEW_OFFSET_Z_LAYERING)
+                     .sortOnUpload()
+                     .createRenderSetup()
     );
 
-    public static final RenderLayer.MultiPhase FILLED_BOX_THROUGH_WALLS = RenderLayer.of(
+    public static final RenderType FILLED_BOX_THROUGH_WALLS = RenderType.create(
             "filled_box_through_walls",
-            RenderLayer.DEFAULT_BUFFER_SIZE,
-            false,
-            true,
-            CmRenderPipelines.FILLED_BOX_THROUGH_WALLS,
-            RenderLayer.MultiPhaseParameters.builder()
-                    .layering(RenderPhase.VIEW_OFFSET_Z_LAYERING)
-                    .build(false)
+            RenderSetup.builder(CmRenderPipelines.FILLED_BOX_THROUGH_WALLS)
+                    .setLayeringTransform(LayeringTransform.VIEW_OFFSET_Z_LAYERING)
+                    .sortOnUpload()
+                    .createRenderSetup()
     );
 
-    public static RenderLayer getLines(double lineWidth, boolean throughWalls) {
+    public static RenderType getLines(double lineWidth, boolean throughWalls) {
         if (throughWalls) {
-            return RenderLayer.of(
+            return RenderType.create(
                     "lines_through_walls",
-                    RenderLayer.DEFAULT_BUFFER_SIZE,
-                    false,
-                    true,
-                    CmRenderPipelines.LINES_THROUGH_WALLS,
-                    RenderLayer.MultiPhaseParameters.builder()
-                            .layering(RenderPhase.VIEW_OFFSET_Z_LAYERING)
-                            .lineWidth(new RenderPhase.LineWidth(OptionalDouble.of(lineWidth)))
-                            .build(false)
+                    RenderSetup.builder(CmRenderPipelines.LINES)
+                             .sortOnUpload()
+                             .createRenderSetup()
             );
         } else {
-            return RenderLayer.of(
+            return RenderType.create(
                     "lines",
-                    RenderLayer.DEFAULT_BUFFER_SIZE,
-                    false,
-                    true,
-                    CmRenderPipelines.LINES,
-                    RenderLayer.MultiPhaseParameters.builder()
-                            .layering(RenderPhase.VIEW_OFFSET_Z_LAYERING)
-                            .lineWidth(new RenderPhase.LineWidth(OptionalDouble.of(lineWidth)))
-                            .build(false)
+                    RenderSetup.builder(CmRenderPipelines.LINES_THROUGH_WALLS)
+                            .sortOnUpload()
+                            .createRenderSetup()
             );
         }
     }
@@ -70,33 +56,26 @@ public class CmRenderLayers {
 class CmRenderPipelines {
 
     public static final RenderPipeline FILLED_BOX_THROUGH_WALLS = RenderPipelines.register(
-            RenderPipeline.builder(RenderPipelines.POSITION_COLOR_SNIPPET)
-                    .withLocation(Identifier.of(MOD_ID, "pipeline/debug_filled_box_through_walls"))
-                    .withVertexFormat(VertexFormats.POSITION_COLOR, DrawMode.TRIANGLE_STRIP)
-                    .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
+            RenderPipeline.builder(RenderPipelines.DEBUG_FILLED_SNIPPET)
+                    .withLocation(Identifier.fromNamespaceAndPath(MOD_ID, "pipeline/debug_filled_box_through_walls"))
+                    .withVertexFormat(DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.TRIANGLE_STRIP)
                     .build()
     );
 
     public static final RenderPipeline LINES = RenderPipelines.register(
-            RenderPipeline.builder(RenderPipelines.RENDERTYPE_LINES_SNIPPET)
-                    .withLocation(Identifier.of(MOD_ID, "pipeline/line_strip"))
-                    .withVertexFormat(VertexFormats.POSITION_COLOR_NORMAL, DrawMode.LINES)
+            RenderPipeline.builder(RenderPipelines.LINES_SNIPPET)
+                    .withLocation(Identifier.fromNamespaceAndPath(MOD_ID, "pipeline/line_strip"))
+                    .withVertexFormat(DefaultVertexFormat.POSITION_COLOR_NORMAL, VertexFormat.Mode.LINES)
                     .withCull(false)
-                    .withBlend(BlendFunction.TRANSLUCENT)
-                    .withDepthWrite(true)
-                    .withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST)
                     .build()
     );
 
     public static final RenderPipeline LINES_THROUGH_WALLS = RenderPipelines.register(
-            RenderPipeline.builder(RenderPipelines.RENDERTYPE_LINES_SNIPPET)
-                    .withLocation(Identifier.of(MOD_ID, "pipeline/line_through_walls"))
+            RenderPipeline.builder(RenderPipelines.LINES_SNIPPET)
+                    .withLocation(Identifier.fromNamespaceAndPath(MOD_ID, "pipeline/line_through_walls"))
                     .withShaderDefine("shad")
-                    .withVertexFormat(VertexFormats.POSITION_COLOR_NORMAL, DrawMode.LINES)
+                    .withVertexFormat(DefaultVertexFormat.POSITION_COLOR_NORMAL, VertexFormat.Mode.LINES)
                     .withCull(false)
-                    .withBlend(BlendFunction.TRANSLUCENT)
-                    .withDepthWrite(false)
-                    .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
                     .build()
     );
 }

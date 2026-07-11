@@ -1,9 +1,9 @@
 package com.me.coresmodule.utils;
 
 import com.me.coresmodule.utils.chat.Chat;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.Framebuffer;
-import net.minecraft.client.util.ScreenshotRecorder;
+import net.minecraft.client.Minecraft;
+import com.mojang.blaze3d.pipeline.RenderTarget;
+import net.minecraft.client.Screenshot;
 
 import java.awt.*;
 import java.awt.datatransfer.*;
@@ -11,25 +11,27 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.function.Consumer;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicReference;
+
+import static com.me.coresmodule.CoresModule.mc;
 
 
 public class ScreenshotUtils {
-
     public static void takeScreenshot() {
-        MinecraftClient client = MinecraftClient.getInstance();
+        Minecraft client = Minecraft.getInstance();
         if (client.player == null) return;
 
-        Framebuffer framebuffer = client.getFramebuffer();
+        RenderTarget framebuffer = client.getMainRenderTarget();
 
-        ScreenshotRecorder.takeScreenshot(framebuffer, nativeImage -> {
+        Screenshot.takeScreenshot(framebuffer, nativeImage -> {
             try {
                 BufferedImage bufferedImage = new BufferedImage(
                         nativeImage.getWidth(), nativeImage.getHeight(), BufferedImage.TYPE_INT_ARGB
                 );
                 for (int y = 0; y < nativeImage.getHeight(); y++) {
                     for (int x = 0; x < nativeImage.getWidth(); x++) {
-                        bufferedImage.setRGB(x, y, nativeImage.getColorArgb(x, y));
+                        bufferedImage.setRGB(x, y, nativeImage.getPixel(x, y));
                     }
                 }
                     try {
@@ -63,44 +65,45 @@ public class ScreenshotUtils {
 
 
 
-    public static void takeScreenshotAsync(Consumer<String> callback) {
-        MinecraftClient client = MinecraftClient.getInstance();
-        if (client.player == null) {
-            callback.accept("");
-            return;
+    public static CompletableFuture<BufferedImage> takeScreenshotWithReturn() {
+        CompletableFuture<BufferedImage> future = new CompletableFuture<>();
+
+        if (mc.player == null) {
+            future.complete(null);
+            return future;
         }
 
-        Framebuffer framebuffer = client.getFramebuffer();
+        RenderTarget framebuffer = mc.getMainRenderTarget();
 
-        MinecraftClient.getInstance().execute(() -> {
-            ScreenshotRecorder.takeScreenshot(framebuffer, nativeImage -> {
+        Minecraft.getInstance().execute(() -> {
+            Screenshot.takeScreenshot(framebuffer, nativeImage -> {
                 try {
-                    BufferedImage bufferedImage = new BufferedImage(
+                    BufferedImage image = new BufferedImage(
                             nativeImage.getWidth(), nativeImage.getHeight(), BufferedImage.TYPE_INT_ARGB
                     );
+
                     for (int y = 0; y < nativeImage.getHeight(); y++) {
                         for (int x = 0; x < nativeImage.getWidth(); x++) {
-                            bufferedImage.setRGB(x, y, nativeImage.getColorArgb(x, y));
+                            image.setRGB(x, y, nativeImage.getPixel(x, y));
                         }
                     }
-
-                    String savedPath = "";
-                    savedPath = saveToFileWithName(bufferedImage);
-                    callback.accept(savedPath);
-
+                    // Successfully complete the future with the image
+                    future.complete(image);
                 } catch (Exception e) {
                     e.printStackTrace();
-                    callback.accept("");
+                    future.completeExceptionally(e);
                 } finally {
                     nativeImage.close();
                 }
             });
         });
+
+        return future;
     }
 
     private static String saveToFile(BufferedImage image) throws Exception {
-        MinecraftClient client = MinecraftClient.getInstance();
-        File screenshotDir = new File(client.runDirectory, "screenshots");
+        Minecraft client = Minecraft.getInstance();
+        File screenshotDir = new File("screenshots");
         if (!screenshotDir.exists()) screenshotDir.mkdirs();
 
         String timestamp = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date());
@@ -111,8 +114,8 @@ public class ScreenshotUtils {
     }
 
     private static String saveToFileWithName(BufferedImage image) throws Exception {
-        MinecraftClient client = MinecraftClient.getInstance();
-        File screenshotDir = new File(client.runDirectory, "screenshots");
+        Minecraft client = Minecraft.getInstance();
+        File screenshotDir = new File("screenshots");
         if (!screenshotDir.exists()) screenshotDir.mkdirs();
 
         String timestamp = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date());
@@ -158,7 +161,7 @@ public class ScreenshotUtils {
         }
 
         public DataFlavor[] getTransferDataFlavors() {
-            return new DataFlavor[]{DataFlavor.imageFlavor};
+            return new DataFlavor[] {DataFlavor.imageFlavor};
         }
 
         public boolean isDataFlavorSupported(DataFlavor flavor) {
