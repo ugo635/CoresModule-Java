@@ -2,11 +2,11 @@ package com.me.coresmodule.features.farming;
 
 import com.me.coresmodule.utils.events.Register;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWKeyCallbackI;
 import org.lwjgl.glfw.GLFWMouseButtonCallbackI;
@@ -23,8 +23,8 @@ public class HoldDirection {
     private static GLFWMouseButtonCallbackI previousMouseCallback;
 
     public static void register() {
-        toggleKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                Text.translatable("key.coresmodule.holdkey").getString(),
+        toggleKey = KeyMappingHelper.registerKeyMapping(new KeyBinding(
+                Component.translatable("key.coresmodule.holdkey").getString(),
                 InputUtil.Type.KEYSYM,
                 GLFW.GLFW_KEY_END,
                 new KeyBinding.Category(Identifier.of("coresmodule", "farming"))

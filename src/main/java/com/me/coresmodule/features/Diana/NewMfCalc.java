@@ -29,10 +29,10 @@ public class NewMfCalc {
 
         // Create overlay
         Overlay overlay = new Overlay("MfOverlay", 10.0f, 10.0f, 1.0f, List.of("Chat screen", "Crafting"));
-        OverlayTextLine overlayText = new OverlayTextLine("");
+        OverlayTextLine overlayComponent = new OverlayTextLine("");
         overlay.register();
         overlay.setCondition(() -> MfOverlay.get());
-        overlay.addLine(overlayText);
+        overlay.addLine(overlayComponent);
 
 
         try {
@@ -43,7 +43,7 @@ public class NewMfCalc {
         }
 
         Register.onTick(10,args -> {
-            if (mc.player == null || mc.world == null) return;
+            if (mc.player == null || mc.level == null) return;
             armorMf = MfCalcHelper.mfFromArmor();
             heldItemMf = MfCalcHelper.mfFromHand();
             legion = MfCalcHelper.playersInLegion();
@@ -56,7 +56,7 @@ public class NewMfCalc {
                     * (1 + 0.05 * (shuriken ? 1 : 0))
                     * (1 + (0.01 * kcBuff));
 
-            overlayText.text = "§bAdditional Magic Find: §d%.2f".formatted((float) totalMf);
+            overlayComponent.text = "§bAdditional Magic Find: §d%.2f".formatted((float) totalMf);
 
             // additionalMf = TODO: Do The Math; TODO: Be Mf; TODO: Overlay
             // For Be, do List.forEach and do Pattern.compile("minos_hunter_\d+") Matcher.getMessage() to grab keys and do the sum of all values

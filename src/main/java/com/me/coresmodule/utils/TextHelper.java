@@ -1,7 +1,7 @@
 package com.me.coresmodule.utils;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.text.*;
+import net.minecraft.network.chat.*;
+import net.minecraft.world.item.ItemStack;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -12,29 +12,29 @@ import static java.lang.Integer.parseInt;
 public class TextHelper {
 
 
-    public static Text stringToText(String s, ClickEvent click, HoverEvent hover) {
-        return Text.literal(s).setStyle(
+    public static Component stringToComponent(String s, ClickEvent click, HoverEvent hover) {
+        return Component.literal(s).setStyle(
                 Style.EMPTY
                         .withClickEvent(click)
                         .withHoverEvent(hover)
         );
     }
 
-    public static Text siblingsToText(List<Text> parts) {
-        MutableText result = Text.empty();
-        for (Text t : parts) {
+    public static Component siblingsToComponent(List<Component> parts) {
+        MutableComponent result = Component.empty();
+        for (Component t : parts) {
             result.append(t);
         }
         return result;
     }
 
-    public static Text addToText(Text t, Text t2) {
-        return Text.empty().append(t).append(t2);
+    public static Component addToComponent(Component t, Component t2) {
+        return Component.empty().append(t).append(t2);
     }
 
-    public static Text addToText(ArrayList<Text> texts) {
-        MutableText result = Text.empty();
-        for (Text t : texts) {
+    public static Component addToComponent(ArrayList<Component> texts) {
+        MutableComponent result = Component.empty();
+        for (Component t : texts) {
             result = result.append(t);
         }
         return result;
@@ -42,31 +42,31 @@ public class TextHelper {
 
 
     /**
-     * Get full ClickEvent from Text
+     * Get full ClickEvent from Component
      * @param t
      * @return ClickEvent
      */
-    public static ClickEvent getFullClickEvent(Text t) {
+    public static ClickEvent getFullClickEvent(Component t) {
         if (getClickEvent(t) == null) return null;
         else return stringToClickEvent(getClickEvent(t).get("action"), getClickEvent(t).get("value"));
     }
 
     /**
-     * Get full HoverEvent from Text
+     * Get full HoverEvent from Component
      * @param t
      * @return HoverEvent
      */
-    public static HoverEvent getFullHoverEvent(Text t) {
+    public static HoverEvent getFullHoverEvent(Component t) {
         if (getHoverEvent(t) == null) return null;
         else return stringToHoverEvent(getHoverEvent(t).get("value"));
     }
 
     /**
-     * Get ClickEvent details from Text
+     * Get ClickEvent details from Component
      * @param message
      * @return Map<String, String>
      */
-    public static Map<String, String> getClickEvent(Text message) {
+    public static Map<String, String> getClickEvent(Component message) {
         ClickEvent click = message.getStyle().getClickEvent();
         if (click == null) return null;
 
@@ -107,11 +107,11 @@ public class TextHelper {
     }
 
     /**
-     * Get HoverEvent details from Text
+     * Get HoverEvent details from Component
      * @param message
      * @return Map<String, String>
      */
-    public static Map<String, String> getHoverEvent(Text message) {
+    public static Map<String, String> getHoverEvent(Component message) {
         HoverEvent hover = message.getStyle().getHoverEvent();
         if (hover == null) return null;
 
@@ -119,22 +119,25 @@ public class TextHelper {
 
         switch (hover) {
             case HoverEvent.ShowText showText -> {
-                Text text = showText.value();
+                Component text = showText.value();
                 result.put("action", "show_text");
                 result.put("value", getFormattedString(text));
             }
+
             case HoverEvent.ShowItem showItem -> {
-                ItemStack itemStack = showItem.item();
+                ItemStack itemStack = showItem.item().create();
                 result.put("action", "show_item");
-                result.put("value", itemStack.getName().getString());
+                result.put("value", itemStack.getDisplayName().getString());
             }
+
             case HoverEvent.ShowEntity showEntity -> {
-                HoverEvent.EntityContent entity = showEntity.entity();
+                HoverEvent.EntityTooltipInfo entity = showEntity.entity();
                 String name = String.valueOf(entity.name);
                 String entityName = name != null ? name : "Unnamed entity";
                 result.put("action", "show_entity");
                 result.put("value", entityName);
             }
+
             default -> {
                 result.put("action", "unknown");
                 result.put("value", hover.getClass().getSimpleName());
@@ -183,24 +186,24 @@ public class TextHelper {
      * @return HoverEvent
      */
     public static HoverEvent stringToHoverEvent(String hover) {
-        return new HoverEvent.ShowText(Text.of(hover));
+        return new HoverEvent.ShowText(Component.literal(hover));
     }
 
     /**
-     * Check if Text has no ClickEvent and no HoverEvent
+     * Check if Component has no ClickEvent and no HoverEvent
      * @param t
      * @return boolean
      */
-    public static boolean noActions(Text t) {
+    public static boolean noActions(Component t) {
         return (getClickEvent(t) == null && getHoverEvent(t) == null);
     }
 
     /**
-     * Check if Text has no ClickEvent, no HoverEvent, and doesn't start with formatting code
+     * Check if Component has no ClickEvent, no HoverEvent, and doesn't start with formatting code
      * @param t
      * @return boolean
      */
-    public static boolean noActionsAndDontStartWithStyle(Text t) {
+    public static boolean noActionsAndDontStartWithStyle(Component t) {
         return (getClickEvent(t) == null && getHoverEvent(t) == null && getFormattedString(t).startsWith("§"));
     }
 
@@ -214,14 +217,14 @@ public class TextHelper {
     }
 
     /**
-     * Get formatted string from Text
+     * Get formatted string from Component
      * @param text
      * @return String
      */
-    public static String getFormattedString(Text text) {
+    public static String getFormattedString(Component text) {
         StringBuilder sb = new StringBuilder();
         text.visit((style, string) -> {
-            String color = style.getColor() != null ? style.getColor().getName() : null;
+            String color = style.getColor() != null ? style.getColor().serialize() : null;
             if (color != null) {
                 sb.append("§").append(getColorCodeFromName(color));
             }
@@ -236,11 +239,11 @@ public class TextHelper {
         return sb.toString();
     }
 
-    public static String getUnFormattedString(Text input) {
+    public static String getUnFormattedString(Component input) {
         return getFormattedString(input).replaceAll("§.", "");
     }
 
-    public static String unFormattedString(Text input) {
+    public static String unFormattedString(Component input) {
         return getFormattedString(input).replaceAll("§.", "");
     }
 
@@ -252,17 +255,17 @@ public class TextHelper {
         return input.replaceAll("§.", "");
     }
 
-    public static String formattedString(Text text) {
+    public static String formattedString(Component text) {
         return getFormattedString(text);
     }
 
-    public static Text listToText (List<List<Object>> list) {
-        MutableText base = Text.empty();
+    public static Component listToComponent (List<List<Object>> list) {
+        MutableComponent base = Component.empty();
         for (List l : list) {
             String character = (String) l.getFirst();
             int color = (int) l.get(1);
             base.append(
-                    Text.literal(character).withColor(color)
+                    Component.literal(character).withColor(color)
             );
         }
 

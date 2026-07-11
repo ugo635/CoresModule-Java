@@ -23,10 +23,10 @@ public class DianaFeatures {
 
     public static void register() {
         Overlay overlay = new Overlay("Fire Freeze Timer", 10.0f, 10.0f, 2.0f, List.of("Chat screen"));
-        OverlayTextLine overlayText = new OverlayTextLine("");
+        OverlayTextLine overlayComponent = new OverlayTextLine("");
         overlay.register();
         overlay.setCondition(() -> ffTimerOn);
-        overlay.addLine(overlayText);
+        overlay.addLine(overlayComponent);
 
         Register.command("kingWarning", args -> {
             Helper.sleep(200, () -> {
@@ -62,7 +62,7 @@ public class DianaFeatures {
                 return;
             }
 
-            overlayText.text = "%s%.2fs".formatted(remaining <= 0 ? "§c" : "§a", remaining);
+            overlayComponent.text = "%s%.2fs".formatted(remaining <= 0 ? "§c" : "§a", remaining);
         });
     }
 

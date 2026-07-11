@@ -6,13 +6,9 @@ import com.me.coresmodule.utils.ScreenshotUtils;
 import com.me.coresmodule.utils.TextHelper;
 import com.me.coresmodule.utils.chat.Chat;
 import com.me.coresmodule.utils.events.Register;
-import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
-import net.dv8tion.jda.api.entities.MessageActivity;
-import net.dv8tion.jda.api.entities.channel.Channel;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
-import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.ComponentChannel;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
@@ -25,22 +21,11 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.utils.FileUpload;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.text.Text;
-import org.json.JSONObject;
 
 import javax.imageio.ImageIO;
-import javax.security.auth.login.LoginException;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Supplier;
-import java.util.logging.FileHandler;
 
 public class Bot extends ListenerAdapter {
     private static JDA jda;
@@ -108,7 +93,7 @@ public class Bot extends ListenerAdapter {
     public void onSlashCommandInteraction(SlashCommandInteractionEvent command) {
 
         MessageChannelUnion channel = command.getInteraction().getChannel();
-        //command.getInteraction().getGuild().getTextChannelsByName("", true);
+        //command.getInteraction().getGuild().getComponentChannelsByName("", true);
 
         switch (command.getName()) {
             case "disconnect" -> this.disconnect(command);
@@ -118,7 +103,7 @@ public class Bot extends ListenerAdapter {
             case "stopmessagetracking" -> stopMessageTracking(command);
             case "startmessagetracking" -> startMessageTracking(
                 command,
-                command.getOption("channel", channel.asTextChannel(), option -> option.getAsChannel().asTextChannel()),
+                command.getOption("channel", channel.asComponentChannel(), option -> option.getAsChannel().asComponentChannel()),
                 command.getOption("display", "Default", OptionMapping::getAsString)
             );
 
@@ -196,7 +181,7 @@ public class Bot extends ListenerAdapter {
         interaction.reply("Executed the command successfully!").queue();
     }
 
-    public void startMessageTracking(SlashCommandInteractionEvent interaction, TextChannel channel, String display) {
+    public void startMessageTracking(SlashCommandInteractionEvent interaction, ComponentChannel channel, String display) {
         interaction.reply("Started tracking messages").queue();
         trackedMessages.put(uuid, true);
 

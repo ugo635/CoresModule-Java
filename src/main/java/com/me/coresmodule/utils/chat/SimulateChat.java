@@ -1,9 +1,9 @@
 package com.me.coresmodule.utils.chat;
 
 import com.me.coresmodule.utils.events.Register;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
 
 public class SimulateChat {
 
@@ -14,10 +14,10 @@ public class SimulateChat {
 
             String message = String.join(" ", args).replace("&", "§");
 
-            MinecraftClient client = MinecraftClient.getInstance();
+            Minecraft client = Minecraft.getInstance();
             if (client.player == null || client.player.networkHandler == null) return;
 
-            GameMessageS2CPacket packet = new GameMessageS2CPacket(Text.of(message), false);
+            GameMessageS2CPacket packet = new GameMessageS2CPacket(Component.of(message), false);
             client.player.networkHandler.onGameMessage(packet);
         });
 

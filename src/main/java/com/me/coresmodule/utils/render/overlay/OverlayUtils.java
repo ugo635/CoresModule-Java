@@ -1,12 +1,12 @@
 package com.me.coresmodule.utils.render.overlay;
 
-import net.minecraft.util.Formatting;
+import net.minecraft.network.chat.Style;
 
 public class OverlayUtils {
     public static class LootItemData {
         public final String id;
         public final String name;
-        public final Formatting color;
+        public final Style color;
         public final boolean combined;
         public final String dropMobId;
         public final String dropMobLsId;
@@ -15,7 +15,7 @@ public class OverlayUtils {
         public LootItemData(
                 String id,
                 String name,
-                Formatting color,
+                Style color,
                 boolean combined,
                 String dropMobId,
                 String dropMobLsId,
@@ -31,10 +31,10 @@ public class OverlayUtils {
         }
     }
 
-    public static OverlayTextLine createClickableTextLine(
+    public static OverlayTextLine createClickableComponentLine(
             String text,
-            String hoverText,
-            String defaultText,
+            String hoverComponent,
+            String defaultComponent,
             Runnable onClick,
             Runnable onMouseEnter,
             Runnable onMouseLeave,
@@ -45,11 +45,11 @@ public class OverlayUtils {
 
         Runnable enterAction = onMouseEnter != null
                 ? onMouseEnter
-                : () -> line.setText(hoverText != null ? hoverText : text + Formatting.UNDERLINE);
+                : () -> line.setComponent(hoverComponent != null ? hoverComponent : text + Style.EMPTY.withUnderlined(true));
 
         Runnable leaveAction = onMouseLeave != null
                 ? onMouseLeave
-                : () -> line.setText(defaultText != null ? defaultText : text);
+                : () -> line.setComponent(defaultComponent != null ? defaultComponent : text);
 
         line.onMouseEnter(enterAction);
         line.onMouseLeave(leaveAction);

@@ -1,7 +1,6 @@
 package com.me.coresmodule.utils.events.impl;
 
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screens.Screen;
 
 public class GUIMouseClick extends Event {
     public double mouseX;

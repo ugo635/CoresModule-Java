@@ -17,12 +17,10 @@ import com.me.coresmodule.utils.chat.SimulateChat;
 import com.me.coresmodule.utils.events.Register;
 import com.me.coresmodule.utils.events.impl.CmEventReg;
 import com.me.coresmodule.utils.events.processor.EventProcessor;
-import com.me.coresmodule.utils.render.CustomItem.CustomItemRender;
 import com.me.coresmodule.utils.render.WaypointManager;
 import com.me.coresmodule.utils.render.gui.GUIs;
 import com.me.coresmodule.utils.render.overlay.OverlayData;
 import com.me.coresmodule.utils.render.overlay.OverlayManager;
-import com.mojang.authlib.minecraft.client.MinecraftClient;
 import com.teamresourceful.resourcefulconfig.api.loader.Configurator;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.client.Minecraft;
@@ -72,7 +70,6 @@ public class CoresModule implements ModInitializer {
 		DianaFeatures.register();
 		EventProcessor.register();
 		CmCommands.register();
-		CustomItemRender.register();
 		CmEventReg.register();
 		GUIs.register();
 		HoldDirection.register();
@@ -84,14 +81,9 @@ public class CoresModule implements ModInitializer {
 		configurator.saveConfig(Settings.class);
 
 
-		Register.command("copyNbt", args -> {
-			mc.keyboardHandler.setClipboard("");
-		});
-
-
 		/*
 		Register.command("copyToClip", args -> {
-			mc.keyboard.setClipboard("Hii");
+			mc.keyboardHandler.setClipboard("");
 		});
 
 		Register.command("copyToClipImage", args -> {

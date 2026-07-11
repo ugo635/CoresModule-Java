@@ -4,11 +4,11 @@ package com.me.coresmodule.features;
 import com.me.coresmodule.utils.Helper;
 import com.me.coresmodule.utils.chat.Chat;
 import com.me.coresmodule.utils.events.Register;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,9 +23,9 @@ public class Party {
     private static final List<String> partyMembers = new ArrayList<>();
     private static final String playerOwner = player;
 
-    private static Text t1, t2, t3, t4, t5, t6, t7;
+    private static Component t1, t2, t3, t4, t5, t6, t7;
 
-    public static void onChatMessage(Text message) {
+    public static void onChatMessage(Component message) {
         String msg = message.getString();
         Matcher match = PARTY_PATTERN.matcher(msg);
         if (!match.find()) return;
@@ -88,9 +88,9 @@ public class Party {
                 for (int i = 0; i < partyMembers.size(); i++) {
                     String pMember = partyMembers.get(i);
                     if (!pMember.equals(playerOwner)) {
-                        MutableText comp = Text.literal("§a" + pMember)
+                        MutableComponent comp = Component.literal("§a" + pMember)
                                 .styled(style -> style
-                                        .withHoverEvent(new HoverEvent.ShowText(Text.literal("§eadd §c" + pMember)))
+                                        .withHoverEvent(new HoverEvent.ShowComponent(Component.literal("§eadd §c" + pMember)))
                                         .withClickEvent(new ClickEvent.RunCommand("/f add " + pMember))
                                 );
                         switch (i) {
@@ -105,7 +105,7 @@ public class Party {
                     }
                 }
 
-                List<Text> components = new ArrayList<>();
+                List<Component> components = new ArrayList<>();
                 if (t1 != null) components.add(t1);
                 if (t2 != null) components.add(t2);
                 if (t3 != null) components.add(t3);
@@ -116,12 +116,12 @@ public class Party {
 
                 if (!components.isEmpty()) {
                     Chat.chat(Chat.getChatBreak());
-                    MutableText msgComp = Text.literal("§e[CM] Click the user to add!\n");
+                    MutableComponent msgComp = Component.literal("§e[CM] Click the user to add!\n");
                     for (int i = 0; i < components.size(); i++) {
                         msgComp.append(components.get(i));
-                        if (i != components.size() - 1) msgComp.append(Text.literal(" §c|§r "));
+                        if (i != components.size() - 1) msgComp.append(Component.literal(" §c|§r "));
                     }
-                    MinecraftClient.getInstance().player.sendMessage(msgComp, false);
+                    Minecraft.getInstance().player.sendMessage(msgComp, false);
                     Chat.chat(Chat.getChatBreak());
                 }
 

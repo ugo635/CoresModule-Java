@@ -151,7 +151,7 @@ public class Features {
                     List.of("e", 0xFF1E40AF)
             );
 
-            Chat.chat(TextHelper.listToText(gradient));
+            Chat.chat(TextHelper.listToComponent(gradient));
         });
 
         Register.onChatMessage(text -> {

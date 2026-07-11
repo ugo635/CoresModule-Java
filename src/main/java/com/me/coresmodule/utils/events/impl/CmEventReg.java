@@ -17,8 +17,8 @@ public class CmEventReg {
                 return bool;
             });
 
-            ScreenEvents.afterRender(screen).register((s, drawContext, mouseX, mouseY, tickDelta) -> {
-                EventBus.emit(new GUIRender(drawContext, s, mouseX, mouseY, tickDelta));
+            ScreenEvents.afterExtract(screen).register((s, graphics, mouseX, mouseY, tickDelta) -> {
+                EventBus.emit(new GUIRender(graphics, s, mouseX, mouseY, tickDelta));
             });
         });
     }

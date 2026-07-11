@@ -8,7 +8,7 @@ import com.me.coresmodule.utils.events.Register;
 import com.me.coresmodule.utils.render.Waypoint;
 import com.me.coresmodule.utils.render.WaypointManager;
 import com.mojang.brigadier.arguments.StringArgumentType;
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommands;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.entity.Entity;
@@ -24,8 +24,8 @@ public class playerTracker {
 
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
             dispatcher.register(
-                ClientCommandManager.literal("trackPlayer")
-                        .then(ClientCommandManager.argument("player", StringArgumentType.word())
+                ClientCommands.literal("trackPlayer")
+                        .then(ClientCommands.argument("player", StringArgumentType.word())
                             .suggests((ctx, builder) -> {
                                 String typed = builder.getRemaining().toLowerCase();
 
@@ -118,7 +118,7 @@ public class playerTracker {
      * @return An ArrayList with all the Entities in the world
      */
     public static ArrayList<AbstractClientPlayerEntity> getAllPlayers() {
-        return mc.world != null ? (ArrayList<AbstractClientPlayerEntity>) mc.world.getPlayers() : new ArrayList<net.minecraft.client.network.AbstractClientPlayerEntity>();
+        return mc.level != null ? (ArrayList<AbstractClientPlayerEntity>) mc.level.getPlayers() : new ArrayList<net.minecraft.client.network.AbstractClientPlayerEntity>();
     }
 
     /**

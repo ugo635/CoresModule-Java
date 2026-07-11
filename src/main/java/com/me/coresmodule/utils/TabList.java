@@ -1,8 +1,8 @@
 package com.me.coresmodule.utils;
 
 import com.me.coresmodule.utils.events.Register;
-import net.minecraft.client.network.PlayerListEntry;
-import net.minecraft.text.Text;
+import net.minecraft.client.multiplayer.PlayerInfo;
+import net.minecraft.network.chat.Component;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -27,32 +27,29 @@ public class TabList {
 	private static void updateCache() {
 		List<String> tabLines = new ArrayList<>();
 
-		for (PlayerListEntry entry : getTabEntries()) {
+		for (PlayerInfo entry : getTabEntries()) {
 			if (entry == null) continue;
 
-			Text displayName = entry.getDisplayName();
+			Component displayName = entry.getTabListDisplayName();
 
-			Text profileName = null;
-			if (entry.getProfile() != null) {
-				profileName = Text.literal(entry.getProfile().toString());
-			}
+			Component profileName = null;
+            profileName = Component.literal(entry.getProfile().toString());
 
-			Text text = displayName != null ? displayName : profileName;
-			if (text == null) continue;
+            Component text = displayName != null ? displayName : profileName;
 
-			tabLines.add(text.getString().trim());
+            tabLines.add(text.getString().trim());
 		}
 
 		cachedTabLines = tabLines;
 	}
 
 	/**
-	 * Returns a list of all PlayerListEntry objects from the current tab list.
+	 * Returns a list of all PlayerInfo objects from the current tab list.
 	 */
-	public static Collection<PlayerListEntry> getTabEntries() {
-		if (mc.player == null || mc.player.networkHandler == null) return Collections.emptyList();
+	public static Collection<PlayerInfo> getTabEntries() {
+		if (mc.player == null) return Collections.emptyList();
 
-		return mc.player.networkHandler.getPlayerList();
+		return mc.player.connection.getOnlinePlayers();
 	}
 
 	/**

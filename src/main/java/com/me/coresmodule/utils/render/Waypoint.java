@@ -1,8 +1,8 @@
 package com.me.coresmodule.utils.render;
 
 import com.me.coresmodule.utils.math.CmVectors;
-import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext;
-import net.minecraft.util.math.BlockPos;
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext;
+import net.minecraft.core.BlockPos;
 
 import java.awt.*;
 import java.util.HashMap;
@@ -35,8 +35,8 @@ public class Waypoint {
     public long creation = System.currentTimeMillis();
     public boolean formatted = false;
     public double distanceRaw = 0.0;
-    public String distanceText = "";
-    public String formattedText = "";
+    public String distanceComponent = "";
+    public String formattedComponent = "";
     public String warp = null;
 
     /**
@@ -101,19 +101,19 @@ public class Waypoint {
     }
 
     public double distanceToPlayer() {
-        BlockPos playerPos = mc.player.getBlockPos();
+        BlockPos playerPos = mc.player.blockPosition();
         return Math.sqrt(Math.pow(playerPos.getX() - this.x, 2) +
                         Math.pow(playerPos.getY() - this.y, 2) +
                         Math.pow(playerPos.getZ() - this.z, 2));
 
     }
 
-    public void setText(String s) {
+    public void setComponent(String s) {
         this.text = s;
     }
 
     public void format(Object... formatters) {
-        this.formattedText = String.format(this.text, formatters);
+        this.formattedComponent = String.format(this.text, formatters);
         this.formatted = true;
     }
 
@@ -125,11 +125,11 @@ public class Waypoint {
         this.hidden = false;
     }
 
-    public void render(WorldRenderContext context) {
+    public void render(LevelRenderContext context) {
         if (this.hidden) return;
         RenderUtil.renderWaypoint(
                 context,
-                this.formattedText,
+                this.formattedComponent,
                 this.pos,
                 new float[] {this.r, this.g, this.b},
                 this.hexCode,

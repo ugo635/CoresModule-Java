@@ -1,7 +1,7 @@
 package com.me.coresmodule.utils.render;
 
 import com.me.coresmodule.settings.categories.Tracker;
-import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents;
 
 import java.util.HashMap;
 import java.util.List;
@@ -21,17 +21,17 @@ public class WaypointManager {
     )*/);
 
     public static void register() {
-        WorldRenderEvents.BEFORE_TRANSLUCENT.register(context -> {
+        LevelRenderEvents.BEFORE_TRANSLUCENT_TERRAIN.register(context -> {
             for (Waypoint waypoint : waypoints) {
                 switch (waypoint.type) {
                     case "" -> {
                         // No use yet
-                        waypoint.setText("§aDistance:§b %.2f");
+                        waypoint.setComponent("§aDistance:§b %.2f");
                         waypoint.format(waypoint.distanceToPlayer());
                         waypoint.render(context);
                     }
                     default -> {
-                        waypoint.setText("§aDistance:§b %.2f");
+                        waypoint.setComponent("§aDistance:§b %.2f");
                         waypoint.format(waypoint.distanceToPlayer());
                         waypoint.render(context);
                     }

@@ -1,7 +1,8 @@
 package com.me.coresmodule.utils.render.overlay;
 
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+
 import java.awt.Color;
 
 public class OverlayTextLine {
@@ -21,7 +22,7 @@ public class OverlayTextLine {
     private Condition condition = () -> true;
 
     public interface HoverAction {
-        void run(DrawContext drawContext, TextRenderer textRenderer);
+        void run(GuiGraphicsExtractor drawContext, Font font);
     }
 
     public interface Condition {
@@ -32,8 +33,8 @@ public class OverlayTextLine {
         this.text = text;
     }
 
-    public void setText(String newText) {
-        this.text = newText;
+    public void setComponent(String newComponent) {
+        this.text = newComponent;
     }
 
     public OverlayTextLine(String text, boolean shadow, boolean linebreak) {
@@ -79,29 +80,29 @@ public class OverlayTextLine {
         if (mouseLeaveAction != null) mouseLeaveAction.run();
     }
 
-    private void hover(DrawContext drawContext, TextRenderer textRenderer) {
-        if (isHovered && hoverAction != null) hoverAction.run(drawContext, textRenderer);
+    private void hover(GuiGraphicsExtractor graphics, Font font) {
+        if (isHovered && hoverAction != null) hoverAction.run(graphics, font);
     }
 
-    public void lineClicked(double mouseX, double mouseY, float x, float y, TextRenderer textRenderer, float scale) {
+    public void lineClicked(double mouseX, double mouseY, float x, float y, Font font, float scale) {
         if (text.isEmpty() || clickAction == null) return;
-        if (isMouseOver(mouseX, mouseY, x, y, textRenderer, scale)) {
+        if (isMouseOver(mouseX, mouseY, x, y, font, scale)) {
             clickAction.run();
         }
     }
 
-    private boolean isMouseOver(double mouseX, double mouseY, float x, float y, TextRenderer textRenderer, float scale) {
-        float textWidth = textRenderer.getWidth(text) * scale;
-        float textHeight = (textRenderer.fontHeight + 1) * scale - 1;
+    private boolean isMouseOver(double mouseX, double mouseY, float x, float y, Font font, float scale) {
+        float textWidth = font.width(text) * scale;
+        float textHeight = (font.lineHeight + 1) * scale - 1;
         return mouseX >= x && mouseX <= x + textWidth && mouseY >= y && mouseY <= y + textHeight;
     }
 
-    public void updateMouseInteraction(double mouseX, double mouseY, float x, float y, TextRenderer textRenderer, float scale, DrawContext drawContext) {
+    public void updateMouseInteraction(double mouseX, double mouseY, float x, float y, Font font, float scale, GuiGraphicsExtractor graphics) {
         if (text.isEmpty()) return;
         if (mouseEnterAction == null && mouseLeaveAction == null && hoverAction == null) return;
 
         boolean wasHovered = isHovered;
-        boolean isNowHovered = isMouseOver(mouseX, mouseY, x, y, textRenderer, scale);
+        boolean isNowHovered = isMouseOver(mouseX, mouseY, x, y, font, scale);
         isHovered = isNowHovered;
 
         if (isNowHovered && !wasHovered) {
@@ -111,22 +112,22 @@ public class OverlayTextLine {
         }
 
         if (isNowHovered) {
-            hover(drawContext, textRenderer);
+            hover(graphics, font);
         }
     }
 
-    public void draw(DrawContext drawContext, int x, int y, TextRenderer textRenderer) {
+    public void draw(GuiGraphicsExtractor graphics, int x, int y, Font font) {
         if (text.isEmpty()) return;
 
         this.x = x;
         this.y = y;
-        this.width = textRenderer.getWidth(text);
-        this.height = textRenderer.fontHeight;
+        this.width = font.width(text);
+        this.height = font.lineHeight;
 
         if (renderDebugBox) {
-            drawContext.fill(x, y, x + width, y + height + 1, new Color(128, 128, 128, 130).getRGB());
+            graphics.fill(x, y, x + width, y + height + 1, new Color(128, 128, 128, 130).getRGB());
         }
 
-        drawContext.drawText(textRenderer, text, x, y, -1, shadow);
+        graphics.text(font, text, x, y, -1, shadow);
     }
 }
