@@ -56,7 +56,6 @@ public class CoresModule implements ModInitializer {
 		Features.register();
 		Party.register();
 		SoundHandler.register();
-		MainPrivate.register();
 		WaypointManager.register();
 		OverlayData.register();
 		OverlayManager.register();

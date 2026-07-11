@@ -21,7 +21,9 @@ import static com.me.coresmodule.CoresModule.mc;
 public class playerTracker {
     public static boolean stop = false;
 
+
     public static void register() {
+        System.out.println("Private feature registered!");
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
             dispatcher.register(
                 ClientCommands.literal("trackPlayer")

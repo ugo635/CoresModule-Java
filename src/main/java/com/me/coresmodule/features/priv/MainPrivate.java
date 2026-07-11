@@ -1,16 +1,20 @@
 package com.me.coresmodule.features.priv;
 
+import com.me.coresmodule.utils.TextHelper;
+import com.me.coresmodule.utils.events.annotations.CmEvent;
+import com.me.coresmodule.utils.events.impl.OnWorldJoin;
+
 import static com.me.coresmodule.CoresModule.mc;
 
 public class MainPrivate {
-    public static void register() {
-        System.out.println("Registering private features...");
-        if (mc.player == null) {
-            System.out.println("Player is null");
-            return;
-        }
-        System.out.println("Player UUID: " + mc.player.getStringUUID());
-        if (mc.player == null || !mc.player.getStringUUID().equals("eec82c33-ea9d-4628-b2e1-bf1a6b770095")) return;
+    public static boolean isRegistered = false;
+
+    @CmEvent
+    public static void onWorldJoin(OnWorldJoin event) {
+        if (mc.player == null || isRegistered) return;
+        isRegistered = true;
+
+        if (!TextHelper.getUnFormattedString(mc.player.getName()).equals("JudgementCorePls")) return;
         playerTracker.register();
     }
 }
