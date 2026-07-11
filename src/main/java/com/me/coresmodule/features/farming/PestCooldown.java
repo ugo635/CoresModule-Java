@@ -26,15 +26,15 @@ public class PestCooldown {
             if (!Helper.isInGarden() || !Farming.pestCooldown.get()) return;
             int time = getTime();
 
-            if (time <= 5 && time > 0 && !warned5s) {
+            if (time <= 5 && time > 0 && !warned5s && Helper.isInGarden()) {
                 Helper.showTitle("§cPest Cooldown Ready", "§c In 5s", 0, 25, 15);
-                SoundHandler.playCustomSound("ding");
+                if (Farming.soundPestCooldown.get()) SoundHandler.playCustomSound("ding");
                 warned5s = true;
             }
 
-            if (time == 0 && !warnedReady) {
+            if (time == 0 && !warnedReady && Helper.isInGarden()) {
                 Helper.showTitle("§cPest Cooldown Ready", "", 0, 25, 15);
-                SoundHandler.playCustomSound("ding");
+                if (Farming.soundPestCooldown.get()) SoundHandler.playCustomSound("ding");
                 warnedReady = true;
             }
         });

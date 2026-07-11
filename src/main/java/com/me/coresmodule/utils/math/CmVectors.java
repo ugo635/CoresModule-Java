@@ -1,6 +1,6 @@
 package com.me.coresmodule.utils.math;
 
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.phys.Vec3;
 
 public class CmVectors {
 
@@ -56,8 +56,8 @@ public class CmVectors {
         );
     }
 
-    public Vec3d toVec3d() {
-        return new Vec3d(this.x, this.y, this.z);
+    public Vec3 toVec3() {
+        return new Vec3(this.x, this.y, this.z);
     }
 
     public CmVectors center() {

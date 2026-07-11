@@ -1,7 +1,8 @@
 package com.me.coresmodule.utils.render.overlay;
 
 import com.me.coresmodule.utils.Helper;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -92,7 +93,7 @@ public class Overlay {
     }
 
     public List<OverlayTextLine> getLines() {
-        if (lines.isEmpty() && !exampleView.isEmpty() && mc.currentScreen instanceof OverlayEditScreen) {
+        if (lines.isEmpty() && !exampleView.isEmpty() && mc.screen instanceof OverlayEditScreen) {
             return exampleView;
         }
         return lines;
@@ -100,49 +101,46 @@ public class Overlay {
 
     public void overlayClicked(double mouseX, double mouseY) {
         if (!allowedGuis.contains(Helper.getGuiName())) return;
-        var textRenderer = mc.textRenderer;
-        if (textRenderer == null) return;
         if (!isOverOverlay(mouseX, mouseY)) return;
 
+        Font font = mc.font;
         float currentY = y / scale;
         float currentX = x / scale;
 
         for (OverlayTextLine line : getLines()) {
             if (!line.checkCondition()) continue;
 
-            line.lineClicked(mouseX, mouseY, currentX * scale, currentY * scale, textRenderer, scale);
+            line.lineClicked(mouseX, mouseY, currentX * scale, currentY * scale, font, scale);
 
             if (line.linebreak) {
-                currentY += textRenderer.fontHeight + 1;
+                currentY += font.lineHeight + 1;
                 currentX = x / scale;
             } else {
-                currentX += textRenderer.getWidth(line.text) / scale;
+                currentX += font.width(line.text) / scale;
             }
         }
     }
 
     public int getTotalHeight() {
-        var textRenderer = mc.textRenderer;
-        if (textRenderer == null) return 0;
+        Font font = mc.font;
 
         int totalHeight = 0;
         for (OverlayTextLine line : getLines()) {
             if (line.linebreak && line.checkCondition()) {
-                totalHeight += textRenderer.fontHeight + 1;
+                totalHeight += font.lineHeight + 1;
             }
         }
         return totalHeight;
     }
 
     public int getTotalWidth() {
-        var textRenderer = mc.textRenderer;
-        if (textRenderer == null) return 0;
+        var font = mc.font;
 
         int maxWidth = 0;
         int currentWidth = 0;
 
         for (OverlayTextLine line : getLines()) {
-            currentWidth += textRenderer.getWidth(line.text);
+            currentWidth += font.width(line.text);
             if (line.linebreak) {
                 if (currentWidth > maxWidth) maxWidth = currentWidth;
                 currentWidth = 0;
@@ -161,13 +159,12 @@ public class Overlay {
         return mouseX >= x && mouseX <= x + totalWidth && mouseY >= y && mouseY <= y + totalHeight;
     }
 
-    public void render(DrawContext drawContext, double mouseX, double mouseY) {
+    public void render(GuiGraphicsExtractor graphics, double mouseX, double mouseY) {
         if (!condition.get()) return;
-        var textRenderer = mc.textRenderer;
-        if (textRenderer == null) return;
+        Font font = mc.font;
 
-        drawContext.getMatrices().pushMatrix();
-        drawContext.getMatrices().scale(scale, scale);
+        graphics.pose().pushMatrix();
+        graphics.pose().scale(scale, scale);
 
         float currentY = y / scale;
         float currentX = x / scale;
@@ -176,35 +173,35 @@ public class Overlay {
         int totalHeight = getTotalHeight();
 
         if (selected) {
-            drawDebugBox(drawContext, (int) currentX, (int) currentY, totalWidth, totalHeight);
-            drawContext.drawText(textRenderer, "X: " + (int) x + " Y: " + (int) y + " Scale: " + String.format("%.1f", scale), (int) currentX, (int) (currentY - textRenderer.fontHeight - 1), new Color(255, 255, 255, 200).getRGB(), true);
+            drawDebugBox(graphics, (int) currentX, (int) currentY, totalWidth, totalHeight);
+            graphics.text(font, "X: " + (int) x + " Y: " + (int) y + " Scale: " + String.format("%.1f", scale), (int) currentX, (int) (currentY - font.lineHeight - 1), new Color(255, 255, 255, 200).getRGB(), true);
         }
 
-        if (isOverOverlay(mouseX, mouseY) && mc.currentScreen instanceof OverlayEditScreen) {
-            drawContext.fill((int) currentX, (int) currentY, (int) (currentX + totalWidth), (int) (currentY + totalHeight), new Color(0, 0, 0, 100).getRGB());
+        if (isOverOverlay(mouseX, mouseY) && mc.screen instanceof OverlayEditScreen) {
+            graphics.fill((int) currentX, (int) currentY, (int) (currentX + totalWidth), (int) (currentY + totalHeight), new Color(0, 0, 0, 100).getRGB());
         }
 
         for (OverlayTextLine line : getLines()) {
             if (!line.checkCondition()) continue;
 
             if (allowedGuis.contains(Helper.getGuiName())) {
-                line.updateMouseInteraction(mouseX, mouseY, currentX * scale, currentY * scale, textRenderer, scale, drawContext);
+                line.updateMouseInteraction(mouseX, mouseY, currentX * scale, currentY * scale, font, scale, graphics);
             }
 
-            line.draw(drawContext, (int) currentX, (int) currentY, textRenderer);
+            line.draw(graphics, (int) currentX, (int) currentY, font);
 
             if (line.linebreak) {
-                currentY += textRenderer.fontHeight + 1;
+                currentY += font.lineHeight + 1;
                 currentX = x / scale;
             } else {
-                currentX += textRenderer.getWidth(line.text);
+                currentX += font.width(line.text);
             }
         }
 
-        drawContext.getMatrices().popMatrix();
+        graphics.pose().popMatrix();
     }
 
-    private void drawDebugBox(DrawContext drawContext, int x, int y, int width, int height) {
-        drawContext.drawStrokedRectangle(x, y, width, height, new Color(255, 0, 0, 170).getRGB());
+    private void drawDebugBox(GuiGraphicsExtractor graphics, int x, int y, int width, int height) {
+        graphics.outline(x, y, width, height, new Color(255, 0, 0, 170).getRGB());
     }
 }

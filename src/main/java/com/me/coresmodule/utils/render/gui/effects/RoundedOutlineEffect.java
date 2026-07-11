@@ -1,4 +1,4 @@
-package com.me.coresmodule.utils.render.gui.guis.ItemCustomizer;
+package com.me.coresmodule.utils.render.gui.effects;
 
 import gg.essential.elementa.components.UIBlock;
 import gg.essential.elementa.effects.Effect;

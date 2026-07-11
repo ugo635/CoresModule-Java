@@ -1,11 +1,11 @@
 package com.me.coresmodule.utils.events.impl;
 
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 public class AfterHudRenderer extends Event {
-    public DrawContext drawContext;
+    public GuiGraphicsExtractor graphics;
 
-    public AfterHudRenderer(DrawContext drawContext) {
-        this.drawContext = drawContext;
+    public AfterHudRenderer(GuiGraphicsExtractor graphics) {
+        this.graphics = graphics;
     }
 }

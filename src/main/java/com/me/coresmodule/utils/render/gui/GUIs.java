@@ -1,9 +1,6 @@
 package com.me.coresmodule.utils.render.gui;
 
-import com.me.coresmodule.utils.events.Register;
-import com.me.coresmodule.utils.render.gui.guis.ItemCustomizer.AnimatedItemComponent;
-import com.me.coresmodule.utils.render.gui.guis.ItemCustomizer.ItemCustomization;
-import com.me.coresmodule.utils.render.gui.guis.ItemCustomizer.RoundedOutlineEffect;
+import com.me.coresmodule.utils.render.gui.effects.RoundedOutlineEffect;
 import gg.essential.elementa.UIComponent;
 import gg.essential.elementa.UIConstraints;
 import gg.essential.elementa.components.*;
@@ -11,13 +8,10 @@ import gg.essential.elementa.constraints.*;
 import gg.essential.elementa.effects.Effect;
 import gg.essential.elementa.effects.OutlineEffect;
 import gg.essential.elementa.effects.ScissorEffect;
-import gg.essential.universal.UScreen;
 
 import java.awt.*;
 import java.lang.reflect.Field;
 import java.util.EnumSet;
-
-import static com.me.coresmodule.CoresModule.mc;
 
 public class GUIs {
     public static void register() {
@@ -25,11 +19,13 @@ public class GUIs {
     }
 
     private static void createCommand() {
+        /*
         Register.command("ItemCustomGUI", args -> {
-            mc.send(() -> {
+            mc.execute(() -> {
                 UScreen.displayScreen(new ItemCustomization());
             });
         });
+         */
     }
 
     public static void addRoundedBorder(UIComponent ui, float thickness, Color color, EnumSet<RoundedOutlineEffect.Side> sides, boolean drawInside , Color gradientStart, Color gradientEnd) {
@@ -183,13 +179,4 @@ public class GUIs {
         newChild.setParent(parent);
     }
 
-    /**
-     * Creates an animated item texture component that shows the currently held item.
-     * The component will automatically animate enchantment glints if the item has them.
-     *
-     * @return AnimatedItemComponent instance that can be refreshed
-     */
-    public static AnimatedItemComponent createItemTextureComponent() {
-        return new AnimatedItemComponent();
-    }
 }

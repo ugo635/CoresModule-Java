@@ -24,6 +24,9 @@ public class Farming {
     @ConfigEntry(id = "Pest Cooldown", translation = "Warn when close to pest cooldown almost ready")
     public static Observable<Boolean> pestCooldown = Observable.of(true);
 
+    @ConfigEntry(id = "Sound Pest Cooldown", translation = "Add sounds when the cooldown is ready")
+    public static Observable<Boolean> soundPestCooldown = Observable.of(true);
+
     public enum Orientation {
         X,
         Z;

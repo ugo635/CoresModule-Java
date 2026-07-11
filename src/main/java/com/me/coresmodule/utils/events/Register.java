@@ -1,17 +1,16 @@
 package com.me.coresmodule.utils.events;
 
-import com.me.coresmodule.features.farming.HoldDirection;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommands;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.text.Text;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
 
 import java.util.Arrays;
 import java.util.function.BiConsumer;
@@ -45,9 +44,9 @@ public class Register {
     }
 
     public static LiteralArgumentBuilder<FabricClientCommandSource> createLiteral(String name, Consumer<String[]> action) {
-        return ClientCommandManager.literal(name)
+        return ClientCommands.literal(name)
                 .executes(context -> { action.accept(new String[0]); return 1; })
-                .then(ClientCommandManager.argument("args", StringArgumentType.greedyString())
+                .then(ClientCommands.argument("args", StringArgumentType.greedyString())
                         .executes(context -> {
                             String argsString = StringArgumentType.getString(context, "args");
                             String[] args = Arrays.stream(argsString.split(" "))
@@ -69,9 +68,9 @@ public class Register {
 
     /**
      * Registers an event that listens for chat messages.
-     * The action receives the message as a `Text` object.
+     * The action receives the message as a `Component` object.
      */
-    public static void onChatMessage(Consumer<Text> action) {
+    public static void onChatMessage(Consumer<Component> action) {
         ClientReceiveMessageEvents.GAME.register((message, signed) -> action.accept(message));
     }
 
@@ -87,7 +86,7 @@ public class Register {
      * @param noFormating Remove the text formatting
      * @param action The action to execute. It receives the message and the `MatchResult`.
      */
-    public static void onChatMessage(Pattern regex, boolean noFormating, BiConsumer<Text, MatchResult> action) {
+    public static void onChatMessage(Pattern regex, boolean noFormating, BiConsumer<Component, MatchResult> action) {
         ClientReceiveMessageEvents.GAME.register((message, signed) -> {
             String text = formattedString(message);
             if (noFormating) text = removeFormatting(text);
@@ -96,7 +95,7 @@ public class Register {
         });
     }
 
-    public static void onChatMessage(Pattern regex, BiConsumer<Text, MatchResult> action) {
+    public static void onChatMessage(Pattern regex, BiConsumer<Component, MatchResult> action) {
         onChatMessage(regex, false, action);
     }
 
@@ -111,10 +110,10 @@ public class Register {
      *
      * Example usage:
      * Register.onChatMessageCancelable(message -> {
-     *     return TextHelper.formattedString(message).contains("some spammy text"); // true => hide
+     *     return ComponentHelper.formattedString(message).contains("some spammy text"); // true => hide
      * });
      */
-    public static void onChatMessageCancelable(Function<Text, Boolean> action) {
+    public static void onChatMessageCancelable(Function<Component, Boolean> action) {
         ClientReceiveMessageEvents.ALLOW_GAME.register((message, signed) -> {
             try {
                 Boolean cancel = action.apply(message);
@@ -138,7 +137,7 @@ public class Register {
      *     return true;
      * });
      */
-    public static void onChatMessageCancelable(Pattern regex, boolean noFormating, BiFunction<Text, MatchResult, Boolean> action) {
+    public static void onChatMessageCancelable(Pattern regex, boolean noFormating, BiFunction<Component, MatchResult, Boolean> action) {
         ClientReceiveMessageEvents.ALLOW_GAME.register((message, signed) -> {
             String text = formattedString(message);
             if (noFormating) text = removeFormatting(text);
@@ -156,7 +155,7 @@ public class Register {
         });
     }
 
-    public static void  onChatMessageCancelable(Pattern regex, BiFunction<Text, MatchResult, Boolean> action) {
+    public static void  onChatMessageCancelable(Pattern regex, BiFunction<Component, MatchResult, Boolean> action) {
         onChatMessageCancelable(regex, false, action);
     }
 
