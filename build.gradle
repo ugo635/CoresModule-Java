@@ -68,7 +68,7 @@ dependencies {
 	implementation "gg.essential:universalcraft-26.1-fabric:$uc_version"
 
 	// Jetbrains annotations
-	implementation "org.jetbrains.kotlin:kotlin-stdlib:1.9.22"
+	implementation "org.jetbrains.kotlin:kotlin-stdlib:2.4.0"
 	implementation(include("org.json:json:$json_version"))
 
 	// ClassGraph - for preprocessor scanning.
