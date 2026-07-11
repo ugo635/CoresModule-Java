@@ -172,6 +172,7 @@ public class RenderUtil {
 
         float partialTicks = mc.getDeltaTracker().getGameTimeDeltaPartialTick(true);
 
+        if (world == null) return;
         int beamHeight = world.getHeight();
 
         float[] beamColor = {

@@ -66,11 +66,12 @@ public class Features {
         });
 
         Register.command("clear", ignore -> {
-            mc.inGameHud.getChatHud().clear(true);
+            mc.gui.getChat().clearMessages(true);
         });
 
         Register.onChatMessage(message -> {
-            if (General.pickaceAbility.get() && TextHelper.formattedString(message).contains("§aYou used your §6Maniac Miner §aPickaxe Ability!")) { // TODO make it compatible with other pickaxe abilities
+            if (General.pickaceAbility.get() && TextHelper.formattedString(message).contains("§aYou used your §6Maniac Miner §aPickaxe Ability!")) {
+                // TODO make it compatible with other pickaxe abilities
                 Helper.exactSleep(103000, () -> {
                     Chat.chat("§6§l[Cm] Pickaxe Ability Ready!");
                     Helper.showTitle("§6§lPickaxe Ability", "§aReady!", 0, 25, 35);
@@ -81,11 +82,13 @@ public class Features {
         Register.command("ftax", player -> {
             if (player.length > 0) {
                 if (player.length == 1) {
+                    // Kick if we just wanna kick a player
                     Chat.command("pc Sry bud, friend tax!");
                     Helper.sleep(1000, () -> {
                         Chat.command("p kick " + player[0]);
                     });
                 } else if (player.length == 2) {
+                    // Kick the first player and invites the second
                     Chat.command("pc Sry bud, friend tax!");
                     Helper.sleep(1000, () -> {
                         Chat.command("p kick " + player[0]);
@@ -127,6 +130,11 @@ public class Features {
             }
         });
 
+        Register.onChatMessage(msg -> {
+            if (!TextHelper.getFormattedString(msg).contains("&lYUM! &eYou've eaten as much cake as you can for &9now&e! You can eat more in")) return;
+            Helper.showTitle("§d§lMax Cake Eaten!", "", 0, 25, 35);
+        });
+
         Register.command("inviteOnLeave", args -> {
             toInv.add(args[0]);
             Chat.chat("§6[Cm] Will invite when someone leaves party: §e" + args[0]);
@@ -151,7 +159,7 @@ public class Features {
                     List.of("e", 0xFF1E40AF)
             );
 
-            Chat.chat(TextHelper.listToComponent(gradient));
+            Chat.chat(TextHelper.gradient(gradient));
         });
 
         Register.onChatMessage(text -> {

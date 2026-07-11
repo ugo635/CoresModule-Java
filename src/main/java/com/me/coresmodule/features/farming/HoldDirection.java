@@ -1,33 +1,31 @@
 package com.me.coresmodule.features.farming;
 
 import com.me.coresmodule.utils.events.Register;
+import com.mojang.blaze3d.platform.InputConstants;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
-import net.minecraft.client.option.KeyBinding;
-import net.minecraft.client.util.InputUtil;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWKeyCallbackI;
 import org.lwjgl.glfw.GLFWMouseButtonCallbackI;
 
-import java.util.List;
-
 import static com.me.coresmodule.CoresModule.mc;
 
 public class HoldDirection {
     private static boolean isHolding = false;
     private static Direction activeDirection = null;
-    private static KeyBinding toggleKey;
+    private static KeyMapping toggleKey;
     private static GLFWKeyCallbackI previousKeyCallback;
     private static GLFWMouseButtonCallbackI previousMouseCallback;
 
     public static void register() {
-        toggleKey = KeyMappingHelper.registerKeyMapping(new KeyBinding(
+        toggleKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 Component.translatable("key.coresmodule.holdkey").getString(),
-                InputUtil.Type.KEYSYM,
+                InputConstants.Type.KEYSYM,
                 GLFW.GLFW_KEY_END,
-                new KeyBinding.Category(Identifier.of("coresmodule", "farming"))
+                new KeyMapping.Category(Identifier.fromNamespaceAndPath("coresmodule", "farming"))
         ));
 
         Register.onClientStart(args -> HoldDirection.main());
@@ -35,10 +33,10 @@ public class HoldDirection {
 
     public static void main() {
         // Keyboard Input Hook
-        previousKeyCallback = GLFW.glfwSetKeyCallback(mc.getWindow().getHandle(), (window, key, scancode, action, mods) -> {
-            if (mc.currentScreen == null && action == GLFW.GLFW_PRESS) {
-                int toggleKeyCode = InputUtil.fromTranslationKey(toggleKey.getBoundKeyTranslationKey()).getCode();
-                int attackKeyCode = InputUtil.fromTranslationKey(mc.options.attackKey.getBoundKeyTranslationKey()).getCode();
+        previousKeyCallback = GLFW.glfwSetKeyCallback(mc.getWindow().handle(), (window, key, scancode, action, mods) -> {
+            if (mc.screen == null && action == GLFW.GLFW_PRESS) {
+                int toggleKeyCode = InputConstants.getKey(toggleKey.saveString()).getValue();
+                int attackKeyCode = InputConstants.getKey(mc.options.keyAttack.saveString()).getValue();
 
                 // Activation Logic & Canceling Logic
                 if (key == toggleKeyCode && !isHolding) {
@@ -57,9 +55,9 @@ public class HoldDirection {
         });
 
         // Mouse Input Hook
-        previousMouseCallback = GLFW.glfwSetMouseButtonCallback(mc.getWindow().getHandle(), (window, button, action, mods) -> {
-            if (mc.currentScreen == null && isHolding && action == GLFW.GLFW_PRESS) {
-                int attackButtonCode = InputUtil.fromTranslationKey(mc.options.attackKey.getBoundKeyTranslationKey()).getCode();
+        previousMouseCallback = GLFW.glfwSetMouseButtonCallback(mc.getWindow().handle(), (window, button, action, mods) -> {
+            if (mc.screen == null && isHolding && action == GLFW.GLFW_PRESS) {
+                int attackButtonCode = InputConstants.getKey(mc.options.keyAttack.saveString()).getValue();
                 if (button == attackButtonCode) { // If physical click on the mouse
                     cancelHold(false);
                 }
@@ -69,15 +67,15 @@ public class HoldDirection {
 
         ClientTickEvents.START_CLIENT_TICK.register(client -> {
             // Cancel if in a menu
-            if (mc.currentScreen != null) {
+            if (mc.screen != null) {
                 if (isHolding) cancelHold(true);
                 return;
             }
 
             // Hold
             if (isHolding && activeDirection != null) {
-                activeDirection.getKey().setPressed(true);
-                mc.options.attackKey.setPressed(true);
+                activeDirection.getKey().setDown(true);
+                mc.options.keyAttack.setDown(true);
             }
         });
     }
@@ -85,11 +83,11 @@ public class HoldDirection {
     private static void cancelHold(boolean removeMouseHold) {
         isHolding = false;
         if (activeDirection != null) {
-            activeDirection.getKey().setPressed(false); // Movement key
+            activeDirection.getKey().setDown(false); // Movement key
             activeDirection = null;
         }
         // Attack key
-        if (removeMouseHold) mc.options.attackKey.setPressed(false);
+        if (removeMouseHold) mc.options.keyAttack.setDown(false);
     }
 
     private static boolean isDirection(int keyCode) {
@@ -103,21 +101,21 @@ public class HoldDirection {
     private enum Direction {
         LEFT, RIGHT, FORWARD, BACKWARD;
 
-        public KeyBinding getKey() {
+        public KeyMapping getKey() {
             return switch (this) {
-                case LEFT -> mc.options.leftKey;
-                case RIGHT -> mc.options.rightKey;
-                case FORWARD -> mc.options.forwardKey;
-                case BACKWARD -> mc.options.backKey;
+                case LEFT -> mc.options.keyLeft;
+                case RIGHT -> mc.options.keyRight;
+                case FORWARD -> mc.options.keyUp;
+                case BACKWARD -> mc.options.keyDown;
             };
         }
 
         public int getKeyboardKeyCode() {
-            return InputUtil.fromTranslationKey(getKey().getBoundKeyTranslationKey()).getCode();
+            return InputConstants.getKey(getKey().saveString()).getValue();
         }
 
         public boolean isPhysicalKeyPressed() {
-            return InputUtil.isKeyPressed(mc.getWindow(), getKeyboardKeyCode());
+            return InputConstants.isKeyDown(mc.getWindow(), getKeyboardKeyCode());
         }
     }
 }

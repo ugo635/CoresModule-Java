@@ -10,11 +10,8 @@ import com.me.coresmodule.features.farming.PestCooldown;
 import com.me.coresmodule.features.priv.MainPrivate;
 import com.me.coresmodule.settings.Settings;
 import com.me.coresmodule.utils.*;
-import com.me.coresmodule.utils.Tuples.Quadruple;
-import com.me.coresmodule.utils.chat.Chat;
 import com.me.coresmodule.utils.chat.ClickActionManager;
 import com.me.coresmodule.utils.chat.SimulateChat;
-import com.me.coresmodule.utils.events.Register;
 import com.me.coresmodule.utils.events.impl.CmEventReg;
 import com.me.coresmodule.utils.events.processor.EventProcessor;
 import com.me.coresmodule.utils.render.WaypointManager;
@@ -24,7 +21,6 @@ import com.me.coresmodule.utils.render.overlay.OverlayManager;
 import com.teamresourceful.resourcefulconfig.api.loader.Configurator;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.client.Minecraft;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,11 +47,10 @@ public class CoresModule implements ModInitializer {
 		// However, some things (like resources) may still be uninitialized.
 		// Proceed with mild caution.
 
-
 		LOGGER.info("Hello Fabric world!");
+
 		TryCatch.register();
 		Bot.register();
-		MfCalc.register();
 		SimulateChat.register();
 		ClickActionManager.register();
 		Features.register();
@@ -63,8 +58,6 @@ public class CoresModule implements ModInitializer {
 		SoundHandler.register();
 		MainPrivate.register();
 		WaypointManager.register();
-		NewMfCalc.register();
-		MfCalcHelper.register();
 		OverlayData.register();
 		OverlayManager.register();
 		DianaFeatures.register();

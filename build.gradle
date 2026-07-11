@@ -35,6 +35,10 @@ repositories {
 	maven {
 		url = "https://repo.essential.gg/repository/maven-public"
 	}
+
+	maven {
+	    url = "https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1"
+	}
 }
 
 bloom {
@@ -79,6 +83,9 @@ dependencies {
 	implementation(include("net.dv8tion:JDA:$JDA_v"))
 	implementation(include("org.slf4j:slf4j-simple:2.0.9"))
 	implementation(include("net.sf.trove4j:trove4j:3.0.3"))
+
+	// DevAuth
+	runtimeOnly("me.djtheredstoner:DevAuth-fabric:${property("devauth.version")}")
 }
 
 processResources {
@@ -127,4 +134,41 @@ publishing {
 		// The repositories here will be used for publishing your artifact, not for
 		// retrieving dependencies.
 	}
+}
+
+
+// Avoid StackOverflowError when running the mod. Bug that smh appeared since 26.1.2 version update
+configurations.all {
+    exclude group: 'org.slf4j', module: 'slf4j-simple'
+}
+
+tasks.register('TODOsChecker') {
+    group = 'verification'
+    description = 'Scans source files for TODO comments and prints warnings.'
+
+    def srcDir = file("src/main")
+
+    doLast {
+        if (!srcDir.exists()) return
+
+        int todoCount = 0
+
+        srcDir.eachFileRecurse { file ->
+            if (file.isFile() && (file.name.endsWith('.java') || file.name.endsWith('.groovy'))) {
+                file.eachLine { line, lineNumber ->
+                    if (line =~ /(?i)\bTODO\b/) {
+                        todoCount++
+                        def trimmedEnd = line.replaceAll(/\s+$/, '')
+                        int column = trimmedEnd.length() + 1 // 1-indexed: length == index of last char
+                        System.err.println("WARNING: file:${file.absolutePath}:${lineNumber}:${column}: ${line.trim()}")
+                    }
+                }
+            }
+        }
+    }
+}
+
+// Automatically run this scan whenever you compile or build the project
+tasks.named('compileJava') {
+    dependsOn 'TODOsChecker'
 }

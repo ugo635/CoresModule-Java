@@ -4,14 +4,7 @@
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "BeaconBlockEntityRendererInvoker",
-    "ExampleMixin",
-    "GameRenderMixin",
-    "ItemRendering.ItemThirdPersonRendererMixin",
-    "ItemRendering.ItemGuiRendererMixin",
-    "ItemRendering.ItemHotbarRendererMixin",
-    "ItemRendering.GlintMixin",
-    "ItemRendering.GlintMixin2",
-    "ItemRendering.DropItemMixin"
+    "GameRenderMixin"
   ],
   "injectors": {
     "defaultRequire": 1

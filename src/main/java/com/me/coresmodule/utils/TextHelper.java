@@ -259,7 +259,7 @@ public class TextHelper {
         return getFormattedString(text);
     }
 
-    public static Component listToComponent (List<List<Object>> list) {
+    public static Component gradient(List<List<Object>> list) {
         MutableComponent base = Component.empty();
         for (List l : list) {
             String character = (String) l.getFirst();

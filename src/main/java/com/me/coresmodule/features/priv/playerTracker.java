@@ -10,8 +10,8 @@ import com.me.coresmodule.utils.render.WaypointManager;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommands;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
-import net.minecraft.client.network.AbstractClientPlayerEntity;
-import net.minecraft.entity.Entity;
+import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.world.entity.Entity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,8 +20,8 @@ import static com.me.coresmodule.CoresModule.mc;
 
 public class playerTracker {
     public static boolean stop = false;
-    public static void register() {
 
+    public static void register() {
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
             dispatcher.register(
                 ClientCommands.literal("trackPlayer")
@@ -29,7 +29,7 @@ public class playerTracker {
                             .suggests((ctx, builder) -> {
                                 String typed = builder.getRemaining().toLowerCase();
 
-                                for (AbstractClientPlayerEntity p : getAllPlayers()) {
+                                for (AbstractClientPlayer p : getAllPlayers()) {
                                     String name = TextHelper.unFormattedString(p.getName());
 
                                     if (name.toLowerCase().startsWith(typed) && p.isAlive()) {
@@ -117,8 +117,8 @@ public class playerTracker {
     /**
      * @return An ArrayList with all the Entities in the world
      */
-    public static ArrayList<AbstractClientPlayerEntity> getAllPlayers() {
-        return mc.level != null ? (ArrayList<AbstractClientPlayerEntity>) mc.level.getPlayers() : new ArrayList<net.minecraft.client.network.AbstractClientPlayerEntity>();
+    public static ArrayList<AbstractClientPlayer> getAllPlayers() {
+        return mc.level != null ? (ArrayList<AbstractClientPlayer>) mc.level.players() : new ArrayList<>();
     }
 
     /**
@@ -126,7 +126,7 @@ public class playerTracker {
      * @param name The name the entity has to match to be returned
      * @return The entity that matches the name of {@code name}, if multiple occurences, it will be the first one.
      */
-    public static Entity getEntityByName(ArrayList<AbstractClientPlayerEntity> entities, String name) {
+    public static Entity getEntityByName(ArrayList<AbstractClientPlayer> entities, String name) {
         for (Entity entity : entities) {
             if (TextHelper.unFormattedString(entity.getName()).equalsIgnoreCase(name)) return entity;
         }

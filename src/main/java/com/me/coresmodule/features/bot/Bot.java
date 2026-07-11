@@ -8,7 +8,7 @@ import com.me.coresmodule.utils.chat.Chat;
 import com.me.coresmodule.utils.events.Register;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
-import net.dv8tion.jda.api.entities.channel.concrete.ComponentChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
@@ -103,7 +103,7 @@ public class Bot extends ListenerAdapter {
             case "stopmessagetracking" -> stopMessageTracking(command);
             case "startmessagetracking" -> startMessageTracking(
                 command,
-                command.getOption("channel", channel.asComponentChannel(), option -> option.getAsChannel().asComponentChannel()),
+                command.getOption("channel", channel.asTextChannel(), option -> option.getAsChannel().asTextChannel()),
                 command.getOption("display", "Default", OptionMapping::getAsString)
             );
 
@@ -181,7 +181,7 @@ public class Bot extends ListenerAdapter {
         interaction.reply("Executed the command successfully!").queue();
     }
 
-    public void startMessageTracking(SlashCommandInteractionEvent interaction, ComponentChannel channel, String display) {
+    public void startMessageTracking(SlashCommandInteractionEvent interaction, TextChannel channel, String display) {
         interaction.reply("Started tracking messages").queue();
         trackedMessages.put(uuid, true);
 
