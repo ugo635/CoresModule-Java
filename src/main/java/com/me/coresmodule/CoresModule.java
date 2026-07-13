@@ -1,7 +1,9 @@
 package com.me.coresmodule;
 
+import com.me.coresmodule.features.CenturyRaffle;
 import com.me.coresmodule.features.Diana.*;
 import com.me.coresmodule.features.Features;
+import com.me.coresmodule.features.Lowballing;
 import com.me.coresmodule.features.Party;
 import com.me.coresmodule.features.bot.Bot;
 import com.me.coresmodule.features.farming.HoldDirection;
@@ -68,6 +70,8 @@ public class CoresModule implements ModInitializer {
 		Orientation.register();
 		TabList.register();
 		PestCooldown.register();
+		CenturyRaffle.register();
+		Lowballing.register();
 
 		configurator.register(Settings.class);
 		configurator.saveConfig(Settings.class);

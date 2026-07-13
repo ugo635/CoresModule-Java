@@ -45,11 +45,11 @@ public class OverlayUtils {
 
         Runnable enterAction = onMouseEnter != null
                 ? onMouseEnter
-                : () -> line.setComponent(hoverComponent != null ? hoverComponent : text + Style.EMPTY.withUnderlined(true));
+                : () -> line.setText(hoverComponent != null ? hoverComponent : text + Style.EMPTY.withUnderlined(true));
 
         Runnable leaveAction = onMouseLeave != null
                 ? onMouseLeave
-                : () -> line.setComponent(defaultComponent != null ? defaultComponent : text);
+                : () -> line.setText(defaultComponent != null ? defaultComponent : text);
 
         line.onMouseEnter(enterAction);
         line.onMouseLeave(leaveAction);

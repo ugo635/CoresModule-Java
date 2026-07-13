@@ -2,9 +2,9 @@ package com.me.coresmodule.features.Diana;
 
 import com.me.coresmodule.settings.categories.Diana;
 import com.me.coresmodule.utils.FilesHandler;
-import com.me.coresmodule.utils.Helper;
+import com.me.coresmodule.utils.helpers.Helper;
 import com.me.coresmodule.utils.ScreenshotUtils;
-import com.me.coresmodule.utils.TextHelper;
+import com.me.coresmodule.utils.helpers.TextHelper;
 import com.me.coresmodule.utils.events.Register;
 
 import java.io.IOException;

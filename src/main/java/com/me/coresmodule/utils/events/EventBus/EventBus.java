@@ -1,7 +1,5 @@
 package com.me.coresmodule.utils.events.EventBus;
 
-import com.me.coresmodule.utils.Helper;
-import com.me.coresmodule.utils.events.impl.AfterHudRenderer;
 import com.me.coresmodule.utils.events.impl.Event;
 
 import java.util.List;

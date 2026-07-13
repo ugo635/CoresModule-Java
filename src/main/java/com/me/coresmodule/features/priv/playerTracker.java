@@ -1,8 +1,8 @@
 package com.me.coresmodule.features.priv;
 
 import com.me.coresmodule.settings.categories.Tracker;
-import com.me.coresmodule.utils.Helper;
-import com.me.coresmodule.utils.TextHelper;
+import com.me.coresmodule.utils.helpers.Helper;
+import com.me.coresmodule.utils.helpers.TextHelper;
 import com.me.coresmodule.utils.chat.Chat;
 import com.me.coresmodule.utils.events.Register;
 import com.me.coresmodule.utils.render.Waypoint;

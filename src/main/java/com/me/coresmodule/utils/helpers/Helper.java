@@ -1,4 +1,6 @@
-package com.me.coresmodule.utils;
+package com.me.coresmodule.utils.helpers;
+
+import com.me.coresmodule.utils.ScreenshotUtils;
 
 import java.awt.image.BufferedImage;
 import java.lang.reflect.Field;
@@ -122,8 +124,4 @@ public class Helper {
         return (T) getField(clazz, fieldName, null);
     }
 
-    public static boolean isInGarden() {
-        String area = TabList.findInfo("Area: ");
-        return (area == null ? "None" : area).contains("Garden");
-    }
 }

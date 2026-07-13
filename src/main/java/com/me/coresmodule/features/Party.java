@@ -1,10 +1,9 @@
 // Package and imports
 package com.me.coresmodule.features;
 
-import com.me.coresmodule.utils.Helper;
+import com.me.coresmodule.utils.helpers.Helper;
 import com.me.coresmodule.utils.chat.Chat;
 import com.me.coresmodule.utils.events.Register;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
@@ -15,7 +14,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.me.coresmodule.CoresModule.mc;
 import static com.me.coresmodule.CoresModule.player;
 
 public class Party {

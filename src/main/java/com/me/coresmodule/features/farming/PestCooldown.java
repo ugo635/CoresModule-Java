@@ -1,10 +1,11 @@
 package com.me.coresmodule.features.farming;
 
 import com.me.coresmodule.settings.categories.Farming;
-import com.me.coresmodule.utils.Helper;
+import com.me.coresmodule.utils.helpers.AreaHelper;
+import com.me.coresmodule.utils.helpers.Helper;
 import com.me.coresmodule.utils.SoundHandler;
 import com.me.coresmodule.utils.TabList;
-import com.me.coresmodule.utils.TextHelper;
+import com.me.coresmodule.utils.helpers.TextHelper;
 import com.me.coresmodule.utils.events.Register;
 
 public class PestCooldown {
@@ -23,16 +24,16 @@ public class PestCooldown {
         });
 
         Register.onTick(20, args -> {
-            if (!Helper.isInGarden() || !Farming.pestCooldown.get()) return;
+            if (!AreaHelper.isInGarden() || !Farming.pestCooldown.get()) return;
             int time = getTime();
 
-            if (time <= 5 && time > 0 && !warned5s && Helper.isInGarden()) {
+            if (time <= 5 && time > 0 && !warned5s && AreaHelper.isInGarden()) {
                 Helper.showTitle("§cPest Cooldown Ready", "§c In 5s", 0, 25, 15);
                 if (Farming.soundPestCooldown.get()) SoundHandler.playCustomSound("ding");
                 warned5s = true;
             }
 
-            if (time == 0 && !warnedReady && Helper.isInGarden()) {
+            if (time == 0 && !warnedReady && AreaHelper.isInGarden()) {
                 Helper.showTitle("§cPest Cooldown Ready", "", 0, 25, 15);
                 if (Farming.soundPestCooldown.get()) SoundHandler.playCustomSound("ding");
                 warnedReady = true;

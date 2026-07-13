@@ -33,7 +33,7 @@ public class OverlayTextLine {
         this.text = text;
     }
 
-    public void setComponent(String newComponent) {
+    public void setText(String newComponent) {
         this.text = newComponent;
     }
 

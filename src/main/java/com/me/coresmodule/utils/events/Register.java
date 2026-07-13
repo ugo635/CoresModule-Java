@@ -21,8 +21,8 @@ import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.me.coresmodule.utils.TextHelper.formattedString;
-import static com.me.coresmodule.utils.TextHelper.removeFormatting;
+import static com.me.coresmodule.utils.helpers.TextHelper.formattedString;
+import static com.me.coresmodule.utils.helpers.TextHelper.removeFormatting;
 import static com.me.coresmodule.utils.events.TickScheduler.ScheduledTask;
 import static com.me.coresmodule.utils.events.TickScheduler.tasks;
 

@@ -26,6 +26,11 @@ public class SoundHandler {
 
     /**
      * Custom sounds only
+     *
+     * <pre><code>
+     *      Ex:
+     *      SoundHandler.playCustomSound("ding");
+     * </code></pre>
      */
     public static void playCustomSound(String path) {
         SoundEvent sound = SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(MOD_ID, path));

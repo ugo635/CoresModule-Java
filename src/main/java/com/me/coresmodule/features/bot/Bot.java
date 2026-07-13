@@ -1,9 +1,9 @@
 package com.me.coresmodule.features.bot;
 
 import com.me.coresmodule.utils.FilesHandler;
-import com.me.coresmodule.utils.Helper;
+import com.me.coresmodule.utils.helpers.Helper;
 import com.me.coresmodule.utils.ScreenshotUtils;
-import com.me.coresmodule.utils.TextHelper;
+import com.me.coresmodule.utils.helpers.TextHelper;
 import com.me.coresmodule.utils.chat.Chat;
 import com.me.coresmodule.utils.events.Register;
 import net.dv8tion.jda.api.JDA;
