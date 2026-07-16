@@ -1,5 +1,6 @@
 package com.me.coresmodule.features;
 
+import com.me.coresmodule.settings.categories.General;
 import com.me.coresmodule.utils.helpers.AreaHelper;
 import com.me.coresmodule.utils.helpers.Helper;
 import com.me.coresmodule.utils.helpers.TextHelper;
@@ -15,7 +16,7 @@ public class CenturyRaffle {
     public static OverlayTextLine textLine = new OverlayTextLine("§d§lCake Eaten: §b0");
 
     public static void register() {
-        overlay.setCondition(() -> mc.player != null && AreaHelper.isInHub());
+        overlay.setCondition(() -> mc.player != null && AreaHelper.isInHub() && General.raffleSlices.get());
         overlay.addLine(textLine);
         overlay.register();
 

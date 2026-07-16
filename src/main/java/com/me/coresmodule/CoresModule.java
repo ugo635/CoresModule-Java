@@ -23,6 +23,7 @@ import com.me.coresmodule.utils.render.overlay.OverlayManager;
 import com.teamresourceful.resourcefulconfig.api.loader.Configurator;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.client.Minecraft;
+import org.apache.logging.log4j.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,6 +51,10 @@ public class CoresModule implements ModInitializer {
 		// Proceed with mild caution.
 
 		LOGGER.info("Hello Fabric world!");
+		org.apache.logging.log4j.core.config.Configurator.setLevel(
+				"com.mojang.authlib", Level.OFF);
+		((org.apache.logging.log4j.core.LoggerContext) org.apache.logging.log4j.LogManager.getContext(false))
+				.updateLoggers(); // Removes errors when joining hypixel
 
 		TryCatch.register();
 		Bot.register();
