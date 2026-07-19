@@ -1,18 +1,13 @@
 package com.me.coresmodule.utils.render;
 
-import com.mojang.blaze3d.pipeline.BlendFunction;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
-import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.VertexFormat;
-import gg.essential.universal.UGraphics;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.LayeringTransform;
 import net.minecraft.client.renderer.rendertype.RenderSetup;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import net.minecraft.resources.Identifier;
-
-import java.util.OptionalDouble;
 
 import static com.me.coresmodule.CoresModule.MOD_ID;
 
@@ -34,22 +29,22 @@ public class CmRenderLayers {
                     .createRenderSetup()
     );
 
-    public static RenderType getLines(double lineWidth, boolean throughWalls) {
-        if (throughWalls) {
-            return RenderType.create(
-                    "lines_through_walls",
-                    RenderSetup.builder(CmRenderPipelines.LINES)
-                             .sortOnUpload()
-                             .createRenderSetup()
-            );
-        } else {
-            return RenderType.create(
-                    "lines",
-                    RenderSetup.builder(CmRenderPipelines.LINES_THROUGH_WALLS)
-                            .sortOnUpload()
-                            .createRenderSetup()
-            );
-        }
+    public static final RenderType LINES = RenderType.create(
+            "lines",
+            RenderSetup.builder(CmRenderPipelines.LINES)
+                    .sortOnUpload()
+                    .createRenderSetup()
+    );
+
+    public static final RenderType LINES_THROUGH_WALLS = RenderType.create(
+            "lines_through_walls",
+            RenderSetup.builder(CmRenderPipelines.LINES_THROUGH_WALLS)
+                    .sortOnUpload()
+                    .createRenderSetup()
+    );
+
+    public static RenderType getLines(boolean throughWalls) {
+        return throughWalls ? LINES_THROUGH_WALLS : LINES;
     }
 }
 

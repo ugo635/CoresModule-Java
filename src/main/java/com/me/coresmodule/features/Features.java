@@ -155,7 +155,7 @@ public class Features {
             );
 
             Chat.chat(TextHelper.gradient(gradient));
-        });
+        }, "testGradient");
 
         Register.onChatMessage(text -> {
             String msg = TextHelper.getUnFormattedString(text);

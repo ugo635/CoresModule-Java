@@ -9,16 +9,16 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class WaypointManager {
 
-    public static List<Waypoint> waypoints = new CopyOnWriteArrayList<>(/*List.of(
+    public static List<Waypoint> waypoints = new CopyOnWriteArrayList<>(List.of(
             new Waypoint(
                     "Hellooo",
                     0.0, 100.0, 0.0,
                     1f, 1f, 1f,
                     0, "none", new HashMap<>(),
-                    Tracker.doWaypoint.get(), Tracker.doBeam.get(), true,
+                    Tracker.doLine.get(), Tracker.doBeam.get(), true,
                     Tracker.lineWidth.get(), 0
             )
-    )*/);
+    ));
 
     public static void register() {
         LevelRenderEvents.BEFORE_TRANSLUCENT_TERRAIN.register(context -> {
@@ -30,6 +30,7 @@ public class WaypointManager {
                         waypoint.format(waypoint.distanceToPlayer());
                         waypoint.render(context);
                     }
+
                     default -> {
                         waypoint.setComponent("§aDistance:§b %.2f");
                         waypoint.format(waypoint.distanceToPlayer());

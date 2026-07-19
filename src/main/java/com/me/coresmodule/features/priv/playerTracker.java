@@ -15,6 +15,7 @@ import net.minecraft.world.entity.Entity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 
 import static com.me.coresmodule.CoresModule.mc;
 
@@ -120,7 +121,12 @@ public class playerTracker {
      * @return An ArrayList with all the Entities in the world
      */
     public static ArrayList<AbstractClientPlayer> getAllPlayers() {
-        return mc.level != null ? (ArrayList<AbstractClientPlayer>) mc.level.players() : new ArrayList<>();
+        return mc.level != null
+                ? (ArrayList<AbstractClientPlayer>) mc.level.players()
+                        .stream()
+                        .filter(p -> p.getUUID().version() != 4)
+                        .toList()
+                : new ArrayList<>();
     }
 
     /**
