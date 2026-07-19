@@ -157,10 +157,11 @@ public class RenderUtil {
             int yOffset,
             float[] colorComponents
     ) {
-        PoseStack matrices = context.poseStack();
-
-        Vec3 cameraPos = getCamera().position();
         ClientLevel world = mc.level;
+        if (world == null) return;
+
+        PoseStack matrices = context.poseStack();
+        Vec3 cameraPos = getCamera().position();
 
         matrices.pushPose();
 
@@ -171,8 +172,9 @@ public class RenderUtil {
         );
 
         float partialTicks = mc.getDeltaTracker().getGameTimeDeltaPartialTick(true);
+        float animationTime = Math.floorMod(world.getGameTime(), 40) + partialTicks;
+        float beamRadiusScale = 1.0f;
 
-        if (world == null) return;
         int beamHeight = world.getHeight();
 
         float[] beamColor = {
@@ -187,8 +189,8 @@ public class RenderUtil {
         BeaconBlockEntityRendererInvoker.renderBeam(
                 matrices,
                 queue,
-                partialTicks,
-                1.0f,
+                beamRadiusScale,
+                animationTime,
                 yOffset,
                 beamHeight,
                 new Color(

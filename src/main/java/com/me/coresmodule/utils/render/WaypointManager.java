@@ -16,27 +16,28 @@ public class WaypointManager {
                     1f, 1f, 1f,
                     0, "none", new HashMap<>(),
                     Tracker.doLine.get(), Tracker.doBeam.get(), true,
-                    Tracker.lineWidth.get(), 0
+                    5f, 0
             )
     ));
 
     public static void register() {
         LevelRenderEvents.BEFORE_TRANSLUCENT_TERRAIN.register(context -> {
             for (Waypoint waypoint : waypoints) {
-                switch (waypoint.type) {
-                    case "" -> {
-                        // No use yet
-                        waypoint.setComponent("§aDistance:§b %.2f");
-                        waypoint.format(waypoint.distanceToPlayer());
-                        waypoint.render(context);
-                    }
+                waypoint.setComponent("§aDistance:§b %.2f");
+                waypoint.format(waypoint.distanceToPlayer());
+                waypoint.render(context); // box, line, text
+            }
+        });
 
-                    default -> {
-                        waypoint.setComponent("§aDistance:§b %.2f");
-                        waypoint.format(waypoint.distanceToPlayer());
-                        waypoint.render(context);
-                    }
-                }
+        LevelRenderEvents.COLLECT_SUBMITS.register(context -> {
+            for (Waypoint waypoint : waypoints) {
+                if (waypoint.hidden || !waypoint.beam) continue;
+                RenderUtil.renderBeaconBeam(
+                        context,
+                        waypoint.pos,
+                        1,
+                        new float[] { waypoint.r, waypoint.g, waypoint.b }
+                );
             }
         });
     }

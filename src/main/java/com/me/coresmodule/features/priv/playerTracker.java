@@ -64,7 +64,7 @@ public class playerTracker {
 
             Helper.sleep(100, () -> {
                 // Remove waypoint from the list
-                WaypointManager.waypoints.removeIf(wp -> "playerTracker".equals(wp.type));
+                WaypointManager.waypoints.removeIf(wp -> wp.type.equals("playerTracker"));
 
 
                 stop = false;
