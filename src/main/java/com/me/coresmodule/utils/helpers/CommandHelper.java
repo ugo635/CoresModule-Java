@@ -89,9 +89,7 @@ public class CommandHelper {
      *         {@code dispatcher.register(...)}.
      * @throws IllegalArgumentException if no literals are provided.
      */
-    public static LiteralArgumentBuilder<FabricClientCommandSource> literals(
-            com.mojang.brigadier.Command<FabricClientCommandSource> command,
-            String... literalStrings) {
+    public static LiteralArgumentBuilder<FabricClientCommandSource> literals(Command<FabricClientCommandSource> command, String... literalStrings) {
         List<String> literals = Arrays.asList(literalStrings);
         if (literals.isEmpty()) throw new IllegalArgumentException("literals list needs at least 1 argument");
 

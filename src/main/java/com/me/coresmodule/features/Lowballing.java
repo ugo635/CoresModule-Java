@@ -19,6 +19,7 @@ import java.util.*;
 public class Lowballing {
     public static double amount = 0;
     public static List<String> history = new ArrayList<>();
+    public static String lowballingMessage = "";
 
     public static void register() {
         load();
@@ -52,7 +53,47 @@ public class Lowballing {
         // For /lowball HISTORY COUNT
         lowballHistoryCount();
 
+        // For /lowball SETCOPY
+        lowballSetCopy();
 
+        //For /lowball COPY
+        lowballCopy();
+
+    }
+
+    private static void lowballSetCopy() {
+        ClientCommandRegistrationCallback.EVENT.register(((dispatcher, buildContext) -> {
+            dispatcher.register(
+                    ClientCommands.literal("lowball")
+                            .then(ClientCommands.literal("SETCOPY")
+                                    .then(ClientCommands.argument("value", StringArgumentType.greedyString())
+                                        .executes(context -> {
+                                            String value = StringArgumentType.getString(context, "value");
+                                            Chat.chat("§aSet lowballing message to: §e" + value);
+                                            lowballingMessage = value;
+                                            save();
+                                            return 1;
+                                        })
+                            ))
+            );
+        }));
+    }
+
+    private static void lowballCopy() {
+        ClientCommandRegistrationCallback.EVENT.register(((dispatcher, buildContext) -> {
+            dispatcher.register(
+                    CommandHelper.literals(context -> {
+                        if (lowballingMessage.isEmpty()) {
+                            Chat.chat("§cNo message set! Use /lowball SETCOPY <message> to set a message.");
+                            return 1;
+                        }
+
+                        Helper.copyToClipboard(lowballingMessage);
+                        Chat.chat("§aCopied to clipboard: §e" + lowballingMessage);
+                        return 1;
+                    }, "lowball", "COPY")
+            );
+        }));
     }
 
     private static void lowballAddHistoryRemoveSee() {
@@ -199,6 +240,7 @@ public class Lowballing {
 
             JSONObject json = new JSONObject(content);
             if (!json.isEmpty()) {
+                lowballingMessage = json.optString("lowballingMessage", "");
                 amount = json.optDouble("amount", 0.0);
 
                 if (json.has("history")) {
@@ -218,6 +260,7 @@ public class Lowballing {
             JSONObject json = new JSONObject();
             json.put("amount", amount);
             json.put("history", history);
+            json.put("lowballingMessage", lowballingMessage);
 
             FilesHandler.writeToFile("lowballing.json", json.toString(4));
         } catch (IOException e) {

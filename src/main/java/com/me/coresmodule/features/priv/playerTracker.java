@@ -15,7 +15,7 @@ import net.minecraft.world.entity.Entity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Objects;
+import java.util.List;
 
 import static com.me.coresmodule.CoresModule.mc;
 
@@ -52,7 +52,7 @@ public class playerTracker {
                                     return 0;
                                 }
 
-                                commandExec(target);
+                                track(target);
                                 return 1;
                             })
                     )
@@ -74,13 +74,15 @@ public class playerTracker {
 
     }
 
-    public static void commandExec(Entity player) {
+    public static void track(Entity player) {
         String playerName = TextHelper.unFormattedString(player.getName());
         Chat.chat("§aStart tracking §b%s".formatted(playerName));
 
         Thread thread = new Thread(() -> {
             while (!stop) {
-                double x = player.getX(), y = player.getY(), z = player.getZ();
+                double x = player.getX();
+                double y = player.getY();
+                double z = player.getZ();
 
                 /*
                 Chat.chat("§c[CoresModule] §a%s is at x: §b%.2f§a, y: §b%.2f§a, z: §b%.2f"
@@ -120,11 +122,11 @@ public class playerTracker {
     /**
      * @return An ArrayList with all the Entities in the world
      */
-    public static ArrayList<AbstractClientPlayer> getAllPlayers() {
+    public static List<AbstractClientPlayer> getAllPlayers() {
         return mc.level != null
-                ? (ArrayList<AbstractClientPlayer>) mc.level.players()
+                ? mc.level.players()
                         .stream()
-                        .filter(p -> p.getUUID().version() != 4)
+                        .filter(p -> p.getUUID().version() == 4) // Make sure it's a player
                         .toList()
                 : new ArrayList<>();
     }
@@ -134,7 +136,7 @@ public class playerTracker {
      * @param name The name the entity has to match to be returned
      * @return The entity that matches the name of {@code name}, if multiple occurences, it will be the first one.
      */
-    public static Entity getEntityByName(ArrayList<AbstractClientPlayer> entities, String name) {
+    public static Entity getEntityByName(List<AbstractClientPlayer> entities, String name) {
         for (Entity entity : entities) {
             if (TextHelper.unFormattedString(entity.getName()).equalsIgnoreCase(name)) return entity;
         }

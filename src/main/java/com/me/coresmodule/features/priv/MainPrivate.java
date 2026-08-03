@@ -14,7 +14,6 @@ public class MainPrivate {
         Helper.sleep(200, () -> {
             if (mc.player == null) return;
 
-            System.out.println("Name: " + TextHelper.getUnFormattedString(mc.player.getName()));
             if (!TextHelper.getUnFormattedString(event.player.getName()).equals("JudgementCorePls")) return;
             playerTracker.register();
         });
