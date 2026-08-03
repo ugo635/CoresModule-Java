@@ -157,10 +157,11 @@ public class RenderUtil {
             int yOffset,
             float[] colorComponents
     ) {
-        PoseStack matrices = context.poseStack();
-
-        Vec3 cameraPos = getCamera().position();
         ClientLevel world = mc.level;
+        if (world == null) return;
+
+        PoseStack matrices = context.poseStack();
+        Vec3 cameraPos = getCamera().position();
 
         matrices.pushPose();
 
@@ -171,8 +172,9 @@ public class RenderUtil {
         );
 
         float partialTicks = mc.getDeltaTracker().getGameTimeDeltaPartialTick(true);
+        float animationTime = Math.floorMod(world.getGameTime(), 40) + partialTicks;
+        float beamRadiusScale = 1.0f;
 
-        if (world == null) return;
         int beamHeight = world.getHeight();
 
         float[] beamColor = {
@@ -187,8 +189,8 @@ public class RenderUtil {
         BeaconBlockEntityRendererInvoker.renderBeam(
                 matrices,
                 queue,
-                partialTicks,
-                1.0f,
+                beamRadiusScale,
+                animationTime,
                 yOffset,
                 beamHeight,
                 new Color(
@@ -214,32 +216,12 @@ public class RenderUtil {
         }
 
         Camera camera = getCamera();
-
         Vec3 cameraPos = camera.position();
-
-        PoseStack matrices = context.poseStack();
-
-        matrices.pushPose();
-
-        matrices.translate(
-                -cameraPos.x,
-                -cameraPos.y,
-                -cameraPos.z
-        );
-
-        VertexConsumer buffer =
-                context.bufferSource()
-                        .getBuffer(
-                                CmRenderLayers.getLines(
-                                        lineWidth,
-                                        throughWalls
-                                )
-                        );
 
         Vec3 startPos = cameraPos.add(
                 Vec3.directionFromRotation(
-                        camera.yRot(),
-                        camera.xRot()
+                        camera.xRot(),
+                        camera.yRot()
                 )
         );
 
@@ -247,47 +229,13 @@ public class RenderUtil {
                 .toVec3()
                 .add(0.0, 0.5, 0.0);
 
-        Vec3 lineDir = endPos.subtract(startPos);
-        Vec3 viewDir = startPos.subtract(cameraPos);
+        int r = (int) (Math.clamp(color[0], 0f, 1f) * 255);
+        int g = (int) (Math.clamp(color[1], 0f, 1f) * 255);
+        int b = (int) (Math.clamp(color[2], 0f, 1f) * 255);
+        int a = (int) (Math.clamp(alpha, 0f, 1f) * 255);
+        int argbColor = (a << 24) | (r << 16) | (g << 8) | b;
 
-        Vec3 sideVec = lineDir.cross(viewDir).normalize();
-        Vec3 upVec = sideVec.cross(lineDir).normalize();
-
-        float nx = (float) upVec.x;
-        float ny = (float) upVec.y;
-        float nz = (float) upVec.z;
-
-        PoseStack.Pose entry = matrices.last();
-
-        buffer.addVertex(
-                        entry,
-                        (float) startPos.x,
-                        (float) startPos.y,
-                        (float) startPos.z
-                )
-                .setNormal(entry, nx, ny, nz)
-                .setColor(
-                        color[0],
-                        color[1],
-                        color[2],
-                        alpha
-                );
-
-        buffer.addVertex(
-                        entry,
-                        (float) endPos.x,
-                        (float) endPos.y,
-                        (float) endPos.z
-                )
-                .setNormal(entry, nx, ny, nz)
-                .setColor(
-                        color[0],
-                        color[1],
-                        color[2],
-                        alpha
-                );
-
-        matrices.popPose();
+        Gizmos.line(startPos, endPos, argbColor, lineWidth);
     }
 
     private static Camera getCamera() {

@@ -1,11 +1,10 @@
 package com.me.coresmodule.utils.events.processor;
 
-import com.me.coresmodule.utils.Helper;
+import com.me.coresmodule.utils.helpers.Helper;
 import com.me.coresmodule.utils.chat.Chat;
 import com.me.coresmodule.utils.events.EventBus.EventBus;
 import com.me.coresmodule.utils.events.Register;
 import com.me.coresmodule.utils.events.annotations.CmEvent;
-import com.me.coresmodule.utils.events.impl.AfterHudRenderer;
 import io.github.classgraph.*;
 
 import java.lang.reflect.Method;

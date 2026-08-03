@@ -1,7 +1,7 @@
 package com.me.coresmodule.features.farming;
 
 import com.me.coresmodule.settings.categories.Farming;
-import com.me.coresmodule.utils.Helper;
+import com.me.coresmodule.utils.helpers.AreaHelper;
 import com.me.coresmodule.utils.events.Register;
 import com.me.coresmodule.utils.render.overlay.Overlay;
 import com.me.coresmodule.utils.render.overlay.OverlayTextLine;
@@ -14,7 +14,7 @@ public class Orientation {
 
     public static void register() {
         overlay.register();
-        overlay.setCondition(() -> Farming.activeOverlay.get() && (!Farming.gardenOnly.get() || Helper.isInGarden()));
+        overlay.setCondition(() -> Farming.activeOverlay.get() && (!Farming.gardenOnly.get() || AreaHelper.isInGarden()));
         overlay.addLine(new OverlayTextLine("§6§lCoordonate Helper:"));
         overlay.addLine(overlayComponent);
 

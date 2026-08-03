@@ -68,11 +68,11 @@ dependencies {
 	implementation "gg.essential:universalcraft-26.1-fabric:$uc_version"
 
 	// Jetbrains annotations
-	implementation "org.jetbrains.kotlin:kotlin-stdlib:1.9.22"
+	implementation "org.jetbrains.kotlin:kotlin-stdlib:2.4.0"
 	implementation(include("org.json:json:$json_version"))
 
 	// ClassGraph - for preprocessor scanning.
-	implementation(include("io.github.classgraph:classgraph:4.8.165"))
+	implementation(include("io.github.classgraph:classgraph:4.8.184"))
 
 	// For devauth
 	implementation "org.apache.httpcomponents:httpclient:4.5.14"
@@ -81,7 +81,7 @@ dependencies {
 	// Also include a simple SLF4J binding to avoid runtime warnings about missing SLF4J implementations.
 	// Also include Trove4j, which JDA depends on, to avoid NoClassDefFoundErrors at runtime.
 	implementation(include("net.dv8tion:JDA:$JDA_v"))
-	implementation(include("org.slf4j:slf4j-simple:2.0.9"))
+	implementation(include("org.slf4j:slf4j-simple:2.0.18"))
 	implementation(include("net.sf.trove4j:trove4j:3.0.3"))
 
 	// DevAuth

@@ -1,8 +1,6 @@
 package com.me.coresmodule.features.Diana;
 
-import com.me.coresmodule.utils.Helper;
-import com.me.coresmodule.utils.ItemHelper;
-import com.me.coresmodule.utils.chat.Chat;
+import com.me.coresmodule.utils.helpers.ItemHelper;
 import com.me.coresmodule.utils.events.Register;
 import com.me.coresmodule.utils.render.overlay.Overlay;
 import com.me.coresmodule.utils.render.overlay.OverlayTextLine;

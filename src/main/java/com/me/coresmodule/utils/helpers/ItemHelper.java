@@ -1,4 +1,4 @@
-package com.me.coresmodule.utils;
+package com.me.coresmodule.utils.helpers;
 
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.minecraft.world.entity.player.Inventory;

@@ -22,4 +22,7 @@ public class General {
 
     @ConfigEntry(id = "coordSound", translation = "Sound when coords are sent")
     public static Observable<Boolean> coordSound = Observable.of(true);
+
+    @ConfigEntry(id = "raffleSlices", translation = "Adds an overlay for cake slices")
+    public static Observable<Boolean> raffleSlices = Observable.of(false);
 }

@@ -2,10 +2,10 @@ package com.me.coresmodule.features;
 
 import com.me.coresmodule.settings.categories.Diana;
 import com.me.coresmodule.settings.categories.General;
-import com.me.coresmodule.utils.Helper;
-import com.me.coresmodule.utils.ItemHelper;
+import com.me.coresmodule.utils.helpers.Helper;
+import com.me.coresmodule.utils.helpers.ItemHelper;
 import com.me.coresmodule.utils.SoundHandler;
-import com.me.coresmodule.utils.TextHelper;
+import com.me.coresmodule.utils.helpers.TextHelper;
 import com.me.coresmodule.utils.chat.Chat;
 import com.me.coresmodule.utils.events.Register;
 
@@ -130,12 +130,6 @@ public class Features {
             }
         });
 
-        Register.onChatMessage(msg -> {
-            if (!TextHelper.getFormattedString(msg).contains("§lYUM! §r§eYou've eaten as much cake as you can for §9now§e! You can eat more in")
-            && !TextHelper.getFormattedString(msg).contains("§lYUM! §eYou've eaten as much cake as you can for §9now§e! You can eat more in")) return;
-            Helper.showTitle("§d§lMax Cake Eaten!", "", 0, 25, 35);
-        });
-
         Register.command("inviteOnLeave", args -> {
             toInv.add(args[0]);
             Chat.chat("§6[Cm] Will invite when someone leaves party: §e" + args[0]);
@@ -161,7 +155,7 @@ public class Features {
             );
 
             Chat.chat(TextHelper.gradient(gradient));
-        });
+        }, "testGradient");
 
         Register.onChatMessage(text -> {
             String msg = TextHelper.getUnFormattedString(text);

@@ -1,4 +1,4 @@
-package com.me.coresmodule.utils;
+package com.me.coresmodule.utils.helpers;
 
 import net.minecraft.network.chat.*;
 import net.minecraft.world.item.ItemStack;
@@ -237,6 +237,27 @@ public class TextHelper {
             return Optional.empty();
         }, Style.EMPTY);
         return sb.toString();
+    }
+
+    /**
+     * Returns true if the formatted string of the component contains the string or all of the strings
+     * <pre><code>
+     *     Ex:
+     *     containsFormmatedStringOf(literal{"Hello world!}, "Hello", "!") -> returns true because "Hello World!" contains both "Hello" and "!"
+     *     containsFormmatedStringOf(literal{"Hello world!}, "Hello", "Goodbye") -> returns false because "Hello World!" does not contain "Goodbye"
+     * </code></pre>
+     * @param text The component we need to check
+     * @param strings The strings we need to check if they are contained in the formatted string of the component
+     * @return boolean
+     */
+    public static boolean containsFormattedStringOf(Component text, String... strings) {
+        String formattedString = getFormattedString(text);
+        for (String s : strings) {
+            if (!formattedString.contains(s)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public static String getUnFormattedString(Component input) {

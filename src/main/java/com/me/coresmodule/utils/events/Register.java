@@ -1,5 +1,6 @@
 package com.me.coresmodule.utils.events;
 
+import com.me.coresmodule.utils.chat.Chat;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommands;
@@ -13,6 +14,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -21,8 +23,8 @@ import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.me.coresmodule.utils.TextHelper.formattedString;
-import static com.me.coresmodule.utils.TextHelper.removeFormatting;
+import static com.me.coresmodule.utils.helpers.TextHelper.formattedString;
+import static com.me.coresmodule.utils.helpers.TextHelper.removeFormatting;
 import static com.me.coresmodule.utils.events.TickScheduler.ScheduledTask;
 import static com.me.coresmodule.utils.events.TickScheduler.tasks;
 

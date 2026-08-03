@@ -97,7 +97,7 @@ public class Waypoint {
      */
     public Waypoint(String text, double x, double y, double z,
                     float r, float g, float b, float lineWidth) {
-        this(text, x, y, z, r, g, b, 0, "normal", new HashMap<String, Object>() , false, true, true, lineWidth, 0f);
+        this(text, x, y, z, r, g, b, 0, "normal", new HashMap<>() , false, true, true, lineWidth, 0f);
     }
 
     public double distanceToPlayer() {
