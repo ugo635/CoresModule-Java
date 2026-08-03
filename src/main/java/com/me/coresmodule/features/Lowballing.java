@@ -100,28 +100,32 @@ public class Lowballing {
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) ->
                 dispatcher.register(
                         ClientCommands.literal("lowball") // Command name
-                                .then(CommandHelper.argWithOptions("type", List.of("ADD", "REMOVE", "SEE"))
+                                .then(CommandHelper.argWithOptions("type", List.of("ADD", "REMOVE"))
                                         .then(ClientCommands.argument("value", StringArgumentType.word())
                                                 .executes(context -> {
                                                     String type = StringArgumentType.getString(context, "type");
                                                     String value = StringArgumentType.getString(context, "value");
 
-                                                    switch (type) {
-                                                        case "ADD" -> {
-                                                            amount += Double.parseDouble(value);
-                                                            history.addFirst("§a+ " + Double.parseDouble(value) + "m");
-                                                            save();
-                                                            Chat.chat("§bYou made %s%.2fm §bprofit".formatted(amount >= 0 ? "§a" : "§c", amount));
-                                                        }
+                                                    double delta;
+                                                    try {
+                                                        delta = Double.parseDouble(value);
+                                                    } catch (NumberFormatException e) {
+                                                        Chat.chat("§cInvalid amount: " + value);
+                                                        return 1;
+                                                    }
 
-                                                        case "REMOVE" -> {
-                                                            amount -= Double.parseDouble(value);
-                                                            history.addFirst("§c- " + Double.parseDouble(value) + "m");
-                                                            save();
-                                                            Chat.chat("§bYou made %s%.2fm §bprofit".formatted(amount >= 0 ? "§a" : "§c", amount));
+                                                    switch (type) {
+                                                        case "ADD" -> amount += delta;
+                                                        case "REMOVE" -> amount -= delta;
+                                                        default -> {
+                                                            Chat.chat("§cUnknown type: " + type);
+                                                            return 1;
                                                         }
                                                     }
 
+                                                    history.add(0, (type.equals("ADD") ? "§a+ " : "§c- ") + delta + "m");
+                                                    save();
+                                                    Chat.chat("§bYou made %s%.2fm §bprofit".formatted(amount >= 0 ? "§a" : "§c", amount));
                                                     return 1;
                                                 })))
                 )
