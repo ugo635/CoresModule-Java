@@ -51,10 +51,8 @@ public class CoresModule implements ModInitializer {
 		// Proceed with mild caution.
 
 		LOGGER.info("Hello Fabric world!");
-		org.apache.logging.log4j.core.config.Configurator.setLevel(
-				"com.mojang.authlib", Level.OFF);
-		((org.apache.logging.log4j.core.LoggerContext) org.apache.logging.log4j.LogManager.getContext(false))
-				.updateLoggers(); // Removes errors when joining hypixel
+		org.apache.logging.log4j.core.config.Configurator.setLevel("com.mojang.authlib", Level.OFF);
+		((org.apache.logging.log4j.core.LoggerContext) org.apache.logging.log4j.LogManager.getContext(false)).updateLoggers(); // Removes errors when joining hypixel
 
 		TryCatch.register();
 		Bot.register();
