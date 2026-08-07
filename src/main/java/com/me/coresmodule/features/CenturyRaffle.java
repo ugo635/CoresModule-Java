@@ -5,8 +5,8 @@ import com.me.coresmodule.utils.helpers.AreaHelper;
 import com.me.coresmodule.utils.helpers.Helper;
 import com.me.coresmodule.utils.helpers.TextHelper;
 import com.me.coresmodule.utils.events.Register;
-import com.me.coresmodule.utils.render.overlay.Overlay;
-import com.me.coresmodule.utils.render.overlay.OverlayTextLine;
+import com.me.coresmodule.utils.render.hud.overlay.Overlay;
+import com.me.coresmodule.utils.render.hud.overlay.OverlayTextLine;
 
 import static com.me.coresmodule.CoresModule.mc;
 

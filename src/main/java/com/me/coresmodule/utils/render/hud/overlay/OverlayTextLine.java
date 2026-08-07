@@ -1,4 +1,4 @@
-package com.me.coresmodule.utils.render.overlay;
+package com.me.coresmodule.utils.render.hud.overlay;
 
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;

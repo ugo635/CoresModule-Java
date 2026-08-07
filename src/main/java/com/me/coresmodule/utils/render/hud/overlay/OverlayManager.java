@@ -1,4 +1,4 @@
-package com.me.coresmodule.utils.render.overlay;
+package com.me.coresmodule.utils.render.hud.overlay;
 
 import com.me.coresmodule.utils.events.Register;
 import com.me.coresmodule.utils.events.annotations.CmEvent;

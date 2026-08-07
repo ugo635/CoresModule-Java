@@ -27,5 +27,5 @@ public class General {
     public static Observable<Boolean> raffleSlices = Observable.of(false);
 
     @ConfigEntry(id = "critterSafari", translation = "Critter Safari Overlay")
-    public static Observable<Boolean> critterSafari = Observable.of(true);
+    public static Observable<Boolean> critterSafari = Observable.of(false);
 }

@@ -4,10 +4,9 @@ import com.me.coresmodule.settings.categories.General;
 import com.me.coresmodule.utils.FilesHandler;
 import com.me.coresmodule.utils.chat.Chat;
 import com.me.coresmodule.utils.events.Register;
+import com.me.coresmodule.utils.helpers.AreaHelper;
 import com.me.coresmodule.utils.helpers.Helper;
 import com.me.coresmodule.utils.helpers.TextHelper;
-import com.me.coresmodule.utils.render.overlay.Overlay;
-import com.me.coresmodule.utils.render.overlay.OverlayTextLine;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -22,9 +21,7 @@ import static com.me.coresmodule.CoresModule.mc;
  * <p>
  * Every CAPTURE! / LOOT SHARE! chat line bumps the named shard's count by one,
  * regardless of the quantity in the message. A "<player> entered Critter Safari!"
- * line starts a fresh run, and "SAFARI REWARD SUMMARY" ends it. Ported from the
- * standalone Python log-tailing overlay, minus CSV run logging (nothing here
- * writes a per-run history file; only the runs-since-shiny counter persists).
+ * line starts a fresh run, and "SAFARI REWARD SUMMARY" ends it.
  */
 public class CritterSafari {
 
@@ -56,8 +53,7 @@ public class CritterSafari {
         EXACT_CAPS.put("Gazer", 2);
         EXACT_CAPS.put("Scrappy", 3);
 
-        // Gold: reaching this upper bound is definitely complete, taken from the
-        // maximum message counts seen across completed sessions.
+        // Gold: reaching this upper bound is definitely complete.
         DYNAMIC_CAPS.put("Hideonfloor", 3);
         DYNAMIC_CAPS.put("Foxtrot", 6);
         DYNAMIC_CAPS.put("Treefrog", 7);
@@ -89,13 +85,6 @@ public class CritterSafari {
     private static void registerArea(String area, String... shards) {
         for (String shard : shards) SHARD_TO_AREA.put(shard, area);
     }
-
-    private static final Map<String, String> AREA_COLORS = Map.of(
-            "Forest", "§2",
-            "Icy", "§b",
-            "Cavern", "§6",
-            "Haunted", "§5"
-    );
 
     // ===================== REGEX =====================
 
@@ -160,18 +149,20 @@ public class CritterSafari {
         for (String shard : SHARD_TO_AREA.keySet()) counts.put(shard, 0);
     }
 
-    // ===================== OVERLAY =====================
+    // ===================== REGISTRATION =====================
 
-    public static Overlay overlay = new Overlay("Critter Safari", 10f, 10f);
+    private static CritterSafariWidget widget;
 
     public static void register() {
         loadState();
 
-        overlay.setCondition(() -> mc.player != null && General.critterSafari.get());
-        rebuildOverlayLines();
-        overlay.register();
+        if (widget == null) {
+            widget = new CritterSafariWidget(0.85f);
+            widget.setCondition(() -> CritterSafari.isEnabled() && AreaHelper.isInSafari());
+            widget.register();
+        }
 
-        Register.onChatMessage(message -> processLine(TextHelper.formattedString(message)));
+        Register.onChatMessage(message -> processLine(TextHelper.getUnFormattedString(message)));
 
         Register.command("csreset", ignored -> {
             resetRun(ownPlayerName());
@@ -179,9 +170,72 @@ public class CritterSafari {
         });
     }
 
+    // ===================== SNAPSHOT API (for Widget renderer) =====================
+
+    public record ShardView(String name, int count, String colorCode) {}
+    public record AreaView(String name, int total, List<ShardView> shards) {}
+    public record PlayerView(String name, int count, String biome) {}
+    public record CritterSafariSnapshot(
+            boolean runActive,
+            boolean hasRun,
+            int elapsedSeconds,
+            String runHeaderText,
+            int floorDrops,
+            int runsSinceShiny,
+            List<PlayerView> players,
+            List<AreaView> areas
+    ) {}
+
+    /** Read-only snapshot intended for CritterSafariWidget render override. */
+    public static synchronized CritterSafariSnapshot snapshotForWidget() {
+        List<PlayerView> playerViews = new ArrayList<>();
+        for (Map.Entry<String, PlayerStats> entry : players.entrySet()) {
+            String biome = entry.getValue().majorityBiome();
+            playerViews.add(new PlayerView(
+                    entry.getKey(),
+                    entry.getValue().count,
+                    biome != null ? biome : "Unknown"
+            ));
+        }
+
+        List<AreaView> areaViews = new ArrayList<>();
+        for (String area : AREA_ORDER) {
+            List<ShardView> shardViews = new ArrayList<>();
+            int areaTotal = 0;
+
+            for (Map.Entry<String, String> shardEntry : SHARD_TO_AREA.entrySet()) {
+                if (!area.equals(shardEntry.getValue())) continue;
+                String shard = shardEntry.getKey();
+                int count = counts.getOrDefault(shard, 0);
+                areaTotal += count;
+                shardViews.add(new ShardView(shard, count, entryColor(shard, count)));
+            }
+
+            areaViews.add(new AreaView(area, areaTotal, List.copyOf(shardViews)));
+        }
+
+        boolean hasRun = runStartedAtMs != 0;
+        int elapsed = elapsedSeconds();
+
+        return new CritterSafariSnapshot(
+                runActive,
+                hasRun,
+                elapsed,
+                runHeaderText(),
+                floorDrops,
+                runsSinceShiny,
+                List.copyOf(playerViews),
+                List.copyOf(areaViews)
+        );
+    }
+
+    public static synchronized boolean isEnabled() {
+        return mc.player != null && General.critterSafari.get();
+    }
+
     // ===================== CHAT PROCESSING =====================
 
-    private static void processLine(String line) {
+    private static synchronized void processLine(String line) {
         Matcher resetMatcher = RESET_PATTERN.matcher(line);
         if (resetMatcher.find()) {
             resetRun(resetMatcher.group("player"));
@@ -197,7 +251,6 @@ public class CritterSafari {
 
         if (FLOOR_DROP_PATTERN.matcher(line).find()) {
             floorDrops++;
-            rebuildOverlayLines();
             return;
         }
 
@@ -209,7 +262,6 @@ public class CritterSafari {
             recordCapture(shard, sparklingMatcher.group("catcher"));
             Chat.chat("§d§l[Cm] SPARKLING §5" + shard + " §fcaught by §e" + sparklingMatcher.group("catcher") + "§f!");
             Helper.showTitle("§d§lSPARKLING!", "§5" + shard, 0, 25, 35);
-            rebuildOverlayLines();
             return;
         }
 
@@ -224,7 +276,6 @@ public class CritterSafari {
                 caughtBy = catcherMatcher.find() ? catcherMatcher.group("catcher") : "Unknown";
             }
             recordCapture(shard, caughtBy);
-            rebuildOverlayLines();
         }
     }
 
@@ -240,14 +291,13 @@ public class CritterSafari {
     }
 
     private static void resetRun(String startedBy) {
-        for (String shard : counts.keySet()) counts.put(shard, 0);
+        counts.replaceAll((s, v) -> 0);
         players.clear();
         players.put(ownPlayerName(), new PlayerStats());
         floorDrops = 0;
         currentRunShiny = false;
         runActive = true;
         runStartedAtMs = System.currentTimeMillis();
-        rebuildOverlayLines();
     }
 
     private static void endRun() {
@@ -258,42 +308,13 @@ public class CritterSafari {
             runsSinceShiny++;
         }
         saveState();
-        rebuildOverlayLines();
     }
 
     private static String ownPlayerName() {
         return mc.player != null ? mc.player.getName().getString() : "You";
     }
 
-    // ===================== OVERLAY RENDERING =====================
-
-    private static void rebuildOverlayLines() {
-        List<OverlayTextLine> lines = new ArrayList<>();
-
-        lines.add(new OverlayTextLine("§d§l" + runHeaderText()));
-        lines.add(new OverlayTextLine("§9Floor Drops: §f" + floorDrops +
-                "  §9Runs Since Shiny: §f" + runsSinceShiny));
-
-        for (Map.Entry<String, PlayerStats> entry : players.entrySet()) {
-            String biome = entry.getValue().majorityBiome();
-            lines.add(new OverlayTextLine("§7" + entry.getKey() + ": §f" + entry.getValue().count +
-                    " §8(" + (biome != null ? biome : "Unknown") + ")"));
-        }
-
-        for (String area : AREA_ORDER) {
-            String areaColor = AREA_COLORS.getOrDefault(area, "§f");
-            lines.add(new OverlayTextLine(areaColor + "§l" + area));
-
-            for (Map.Entry<String, String> entry : SHARD_TO_AREA.entrySet()) {
-                if (!entry.getValue().equals(area)) continue;
-                String shard = entry.getKey();
-                int count = counts.getOrDefault(shard, 0);
-                lines.add(new OverlayTextLine("  " + entryColor(shard, count) + shard + ": " + count));
-            }
-        }
-
-        overlay.setLines(lines);
-    }
+    // ===================== SHARED FORMATTING / COLOR LOGIC =====================
 
     private static String runHeaderText() {
         String label = runActive || runStartedAtMs == 0 ? "Run" : "Last run";
@@ -311,7 +332,7 @@ public class CritterSafari {
         return String.format("%d:%02d", minutes, seconds);
     }
 
-    /** Mirrors the Python overlay's red/neutral/green/gold completion coloring. */
+    /** Mirrors red/neutral/green/gold completion coloring. */
     private static String entryColor(String shard, int count) {
         Integer exactCap = EXACT_CAPS.get(shard);
         if (exactCap != null) {
