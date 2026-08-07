@@ -1,6 +1,6 @@
 package com.me.coresmodule;
 
-import com.me.coresmodule.features.Diana.RareDropTracker;
+import com.me.coresmodule.features.diana.RareDropTracker;
 import com.me.coresmodule.utils.FilesHandler;
 import com.me.coresmodule.utils.helpers.Helper;
 

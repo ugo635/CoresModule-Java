@@ -1,4 +1,4 @@
-package com.me.coresmodule.features.Diana;
+package com.me.coresmodule.features.diana;
 
 import com.me.coresmodule.utils.helpers.ItemHelper;
 import com.me.coresmodule.utils.events.Register;
