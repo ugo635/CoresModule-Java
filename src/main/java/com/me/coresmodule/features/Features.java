@@ -52,9 +52,9 @@ public class Features {
             }
         });
 
-        Register.onChatMessageCancelable(Pattern.compile("(You purchased|Visit the Auction House).*"), false, (message, matcher) -> {
+        Register.onChatMessageCancelable(Pattern.compile("(You purchased|Visit the Auction House).*"), (message, matcher) -> {
             if (General.ahMsg.get()) {
-                Chat.clickableChat(TextHelper.formattedString(message), "§eClick To Open The AH", "/ah");
+                Chat.clickableChat(TextHelper.getFormattedString(message), "§eClick To Open The AH", "/ah");
                 return true;
             } else {
                 return false;
@@ -115,7 +115,7 @@ public class Features {
             if (TextHelper.formattedString(msg).contains("§eYou need to equip a §d§lMYTHIC §egriffin pet to fight this!") && Diana.wrongPet.get()) Helper.showTitle("§4§l Wrong Pet", "", 0, 20, 20);
         });
 
-        Register.onChatMessage(Pattern.compile("^(?<channel>.*> )?(?<playerName>.+?)[§&]f: (?:[§&]r)?x: (?<x>[^ ,]+),? y: (?<y>[^ ,]+),? z: (?<z>[^ ,]+)(?<trailing>.*)$"),false, (msg, result) -> {
+        Register.onChatMessage(Pattern.compile("^(?<channel>.*> )?(?<playerName>.+?)[§&]f: (?:[§&]r)?x: (?<x>[^ ,]+),? y: (?<y>[^ ,]+),? z: (?<z>[^ ,]+)(?<trailing>.*)$"),true, (msg, result) -> {
             if (!General.coordSound.get()) return;
             Chat.chat("§c[CoresModule] Coords Delected");
             SoundHandler.playCustomSound("emergencymeeting");
@@ -135,7 +135,7 @@ public class Features {
             Chat.chat("§6[Cm] Will invite when someone leaves party: §e" + args[0]);
         }, "partyIfLeave", "inviteIfLeave");
 
-        Register.onChatMessageCancelable(Pattern.compile("^.*This ability is on cooldown for [0-4]s\\.$"), (msg, match) -> {
+        Register.onChatMessageCancelable(Pattern.compile("^.*This ability is on cooldown for [0-4]s\\.$"), false, (msg, match) -> {
             return ItemHelper.getHeldItemName().contains("Atomsplit Katana");
         });
 

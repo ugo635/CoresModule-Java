@@ -9,6 +9,7 @@ import com.me.coresmodule.utils.helpers.AreaHelper;
 import com.me.coresmodule.utils.helpers.Helper;
 import com.me.coresmodule.utils.helpers.MarketHelper;
 import com.me.coresmodule.utils.helpers.TextHelper;
+import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.minecraft.network.chat.Component;
 import org.json.JSONObject;
 
@@ -252,7 +253,7 @@ public class CritterSafari {
     private static synchronized void processChatLine(String line) {
         Matcher resetMatcher = RESET_PATTERN.matcher(line);
         if (resetMatcher.find()) {
-            endRun();
+            if (runActive) endRun();
             resetRun(resetMatcher.group("player"));
             return;
         }
@@ -261,6 +262,7 @@ public class CritterSafari {
 
         Matcher essenceMatcher = SAFARI_ESSENCE_PATTERN.matcher(line);
         if (essenceMatcher.find()) {
+            Chat.chat("Processing essence");
             safariEssence += Integer.parseInt(essenceMatcher.group("amount").replace(",", ""));
             return;
         }
@@ -288,6 +290,7 @@ public class CritterSafari {
 
         Matcher eventMatcher = SHARD_EVENT_PATTERN.matcher(line);
         if (eventMatcher.find()) {
+            Chat.chat("Processing shard");
             String shard = eventMatcher.group("shard");
             String caughtBy;
             if (eventMatcher.group("capturePrefix") != null) {
@@ -426,10 +429,11 @@ public class CritterSafari {
                 MarketHelper.Market.BAZAAR
         );
 
+
         double shardInstaSell = 0;
         double shardSellOrder = 0;
-        double instaSafariEssence = 0;
-        double orderSafariEssence = 0;
+        double instaSafariEssence;
+        double orderSafariEssence;
 
         for (MarketHelper.ItemInfo itemInfo : itemInfos) {
             shardInstaSell += itemInfo.instaSellPrice();
@@ -442,15 +446,24 @@ public class CritterSafari {
 
             shardInstaSell += instaSafariEssence;
             shardSellOrder += orderSafariEssence;
+        } else {
+            instaSafariEssence = 0;
+            orderSafariEssence = 0;
         }
 
-        Chat.chat(CoresModule.CM_PREFIX_WITH_BRACKET.copy().append(Component.literal("§2Safari profit:")));
-        Chat.chat("§bShard (Insta-Sell/Sell Order): §a(" +
-                formatMoney(shardInstaSell) + ", " +
-                formatMoney(shardSellOrder) + ")");
-        Chat.chat("§bSafari Essence: §a(" +
-                formatMoney(instaSafariEssence) + ", " +
-                formatMoney(orderSafariEssence) + ")");
+        // Prints after the message has appeared
+        final double finalShardInstaSell = shardInstaSell;
+        final double finalShardSellOrder = shardSellOrder;
+        Helper.sleep(100, () -> {
+            if (essenceInfo == null) Chat.chat("§dError with Safari Essence Price!");
+            Chat.chat(CoresModule.CM_PREFIX_WITH_BRACKET.copy().append(Component.literal(" §2Safari profit:")));
+            Chat.chat("§2Shard (Insta-Sell/Sell Order): ");
+            Chat.chat("§a(%s, %s)".formatted(formatMoney(finalShardInstaSell), formatMoney(finalShardSellOrder)));
+            Chat.chat("§2Safari Essence:");
+            Chat.chat("§a(%s, %s)".formatted(formatMoney(instaSafariEssence), formatMoney(orderSafariEssence)));
+            Chat.chat("§a(%d * (%f | %f))".formatted(safariEssence, essenceInfo.instaSellPrice(), essenceInfo.instaBuyPrice()));
+        });
+
     }
 
     private static String formatMoney(double amount) {

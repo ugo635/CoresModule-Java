@@ -88,8 +88,8 @@ public class MarketHelper {
      *
      * @param id The Item ID
      * @param name The Item Name
-     * @param instaSellPrice The price when insta-selling the item
-     * @param instaBuyPrice The price when insta-buying the item
+     * @param instaSellPrice The price when insta-selling the item (or buy order)
+     * @param instaBuyPrice The price when insta-buying the item (or sell order)
      * @param sellOffers How many sell offers there are for this item
      * @param buyOffers How many buy offers there are for this item
      * @param soldThisWeek How many of this item was sold the past 7d
