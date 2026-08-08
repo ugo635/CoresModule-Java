@@ -1,12 +1,15 @@
-package com.me.coresmodule.features;
+package com.me.coresmodule.features.safari;
 
+import com.me.coresmodule.CoresModule;
 import com.me.coresmodule.settings.categories.General;
 import com.me.coresmodule.utils.FilesHandler;
 import com.me.coresmodule.utils.chat.Chat;
 import com.me.coresmodule.utils.events.Register;
 import com.me.coresmodule.utils.helpers.AreaHelper;
 import com.me.coresmodule.utils.helpers.Helper;
+import com.me.coresmodule.utils.helpers.MarketHelper;
 import com.me.coresmodule.utils.helpers.TextHelper;
+import net.minecraft.network.chat.Component;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -30,6 +33,7 @@ public class CritterSafari {
     private static final Map<String, String> SHARD_TO_AREA = new LinkedHashMap<>();
     private static final Map<String, Integer> EXACT_CAPS = new HashMap<>();
     private static final Map<String, Integer> DYNAMIC_CAPS = new HashMap<>();
+    private static final Map<String, String> SHARD_SKYBLOCK_ID = new HashMap<>();
     private static final Set<String> BIRD_SHARDS = Set.of("Macaw", "Parakeet", "Bluebird");
     private static final List<String> AREA_ORDER = List.of("Forest", "Icy", "Cavern", "Haunted");
 
@@ -80,6 +84,15 @@ public class CritterSafari {
         DYNAMIC_CAPS.put("Bloodbat", 4);
         DYNAMIC_CAPS.put("Areita", 4);
         DYNAMIC_CAPS.put("Gimmiegold", 5);
+
+        HashMap<String, Integer> temporaryMap = new HashMap<>(DYNAMIC_CAPS);
+        temporaryMap.putAll(EXACT_CAPS);
+
+        Set<String> entries = temporaryMap.keySet();
+
+        for (String key : entries) {
+            SHARD_SKYBLOCK_ID.put(key, String.format("SHARD_%s", key.replace(" ", "_").toUpperCase()));
+        }
     }
 
     private static void registerArea(String area, String... shards) {
@@ -89,15 +102,15 @@ public class CritterSafari {
     // ===================== REGEX =====================
 
     private static final String SHARD_ALTERNATION;
-    private static final Pattern RESET_PATTERN =
-            Pattern.compile("\\b(?<player>[A-Za-z0-9_]{1,16}) entered Critter Safari!");
-    private static final Pattern SHARD_EVENT_PATTERN;
-    private static final Pattern SPARKLING_ANNOUNCEMENT_PATTERN;
-    private static final Pattern LOOT_CATCHER_PATTERN =
-            Pattern.compile("\\sfrom\\s+(?<catcher>[A-Za-z0-9_]{1,16})\\s+(?:catching|finding)\\b");
+    private static final Pattern RESET_PATTERN = Pattern.compile("\\b(?<player>[A-Za-z0-9_]{1,16}) entered Critter Safari!");
+    private static final Pattern LOOT_CATCHER_PATTERN = Pattern.compile("\\sfrom\\s+(?<catcher>[A-Za-z0-9_]{1,16})\\s+(?:catching|finding)\\b");
     private static final Pattern FLOOR_DROP_PATTERN = Pattern.compile("\\bFLOOR DROP!");
     private static final Pattern SAFARI_REWARD_SUMMARY_PATTERN = Pattern.compile("\\bSAFARI REWARD SUMMARY\\b");
+    private static final Pattern SAFARI_ESSENCE_PATTERN = Pattern.compile("\\+(?<amount>[\\d,]+) Safari Essence\\b");
+    private static final Pattern SPARKLING_ANNOUNCEMENT_PATTERN;
+    private static final Pattern SHARD_EVENT_PATTERN;
 
+    // Pattern init
     static {
         List<String> namesByLengthDesc = new ArrayList<>(SHARD_TO_AREA.keySet());
         namesByLengthDesc.sort((a, b) -> b.length() - a.length());
@@ -123,6 +136,7 @@ public class CritterSafari {
     private static final Map<String, PlayerStats> players = new LinkedHashMap<>();
 
     private static int floorDrops = 0;
+    private static int safariEssence = 0;
     private static int runsSinceShiny = 0;
     private static boolean runActive = false;
     private static boolean currentRunShiny = false;
@@ -162,7 +176,7 @@ public class CritterSafari {
             widget.register();
         }
 
-        Register.onChatMessage(message -> processLine(TextHelper.getUnFormattedString(message)));
+        Register.onChatMessage(message -> processChatLine(TextHelper.getUnFormattedString(message)));
 
         Register.command("csreset", ignored -> {
             resetRun(ownPlayerName());
@@ -235,14 +249,21 @@ public class CritterSafari {
 
     // ===================== CHAT PROCESSING =====================
 
-    private static synchronized void processLine(String line) {
+    private static synchronized void processChatLine(String line) {
         Matcher resetMatcher = RESET_PATTERN.matcher(line);
         if (resetMatcher.find()) {
+            endRun();
             resetRun(resetMatcher.group("player"));
             return;
         }
 
         if (!runActive) return;
+
+        Matcher essenceMatcher = SAFARI_ESSENCE_PATTERN.matcher(line);
+        if (essenceMatcher.find()) {
+            safariEssence += Integer.parseInt(essenceMatcher.group("amount").replace(",", ""));
+            return;
+        }
 
         if (SAFARI_REWARD_SUMMARY_PATTERN.matcher(line).find()) {
             endRun();
@@ -295,6 +316,7 @@ public class CritterSafari {
         players.clear();
         players.put(ownPlayerName(), new PlayerStats());
         floorDrops = 0;
+        safariEssence = 0;
         currentRunShiny = false;
         runActive = true;
         runStartedAtMs = System.currentTimeMillis();
@@ -307,7 +329,9 @@ public class CritterSafari {
         } else {
             runsSinceShiny++;
         }
+
         saveState();
+        printProfit();
     }
 
     private static String ownPlayerName() {
@@ -377,4 +401,72 @@ public class CritterSafari {
             throw new RuntimeException(e);
         }
     }
+
+    // ===================== PROFIT =====================
+    private static void printProfit() {
+        List<MarketHelper.ItemInfo> itemInfos = new ArrayList<>();
+
+        for (Map.Entry<String, Integer> entry : counts.entrySet()) {
+            if (entry.getValue() <= 0) continue;
+
+            MarketHelper.ItemInfo itemInfo = MarketHelper.getItemInfo(
+                    SHARD_SKYBLOCK_ID.get(entry.getKey()),
+                    MarketHelper.Market.BAZAAR
+            );
+
+            if (itemInfo == null) continue;
+
+            for (int i = 0; i < entry.getValue(); i++) {
+                itemInfos.add(itemInfo);
+            }
+        }
+
+        MarketHelper.ItemInfo essenceInfo = MarketHelper.getItemInfo(
+                "ESSENCE_SAFARI",
+                MarketHelper.Market.BAZAAR
+        );
+
+        double shardInstaSell = 0;
+        double shardSellOrder = 0;
+        double instaSafariEssence = 0;
+        double orderSafariEssence = 0;
+
+        for (MarketHelper.ItemInfo itemInfo : itemInfos) {
+            shardInstaSell += itemInfo.instaSellPrice();
+            shardSellOrder += itemInfo.instaBuyPrice();
+        }
+
+        if (essenceInfo != null) {
+            instaSafariEssence = safariEssence * essenceInfo.instaSellPrice();
+            orderSafariEssence = safariEssence * essenceInfo.instaBuyPrice();
+
+            shardInstaSell += instaSafariEssence;
+            shardSellOrder += orderSafariEssence;
+        }
+
+        Chat.chat(CoresModule.CM_PREFIX_WITH_BRACKET.copy().append(Component.literal("§2Safari profit:")));
+        Chat.chat("§bShard (Insta-Sell/Sell Order): §a(" +
+                formatMoney(shardInstaSell) + ", " +
+                formatMoney(shardSellOrder) + ")");
+        Chat.chat("§bSafari Essence: §a(" +
+                formatMoney(instaSafariEssence) + ", " +
+                formatMoney(orderSafariEssence) + ")");
+    }
+
+    private static String formatMoney(double amount) {
+        if (amount >= 1_000_000_000) {
+            return String.format("%.2fb", amount / 1_000_000_000);
+        }
+
+        if (amount >= 1_000_000) {
+            return String.format("%.2fm", amount / 1_000_000);
+        }
+
+        if (amount >= 1_000) {
+            return String.format("%.2fk", amount / 1_000);
+        }
+
+        return String.format("%.2f", amount);
+    }
+
 }

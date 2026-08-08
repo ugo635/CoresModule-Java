@@ -1,4 +1,4 @@
-package com.me.coresmodule.features;
+package com.me.coresmodule.features.safari;
 
 import com.me.coresmodule.utils.render.hud.widget.Widget;
 import net.minecraft.client.gui.Font;

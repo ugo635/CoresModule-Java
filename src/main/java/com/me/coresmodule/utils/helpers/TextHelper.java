@@ -280,9 +280,9 @@ public class TextHelper {
         return getFormattedString(text);
     }
 
-    public static Component gradient(List<List<Object>> list) {
+    public static MutableComponent getGradient(List<List<Object>> list) {
         MutableComponent base = Component.empty();
-        for (List l : list) {
+        for (List<Object> l : list) {
             String character = (String) l.getFirst();
             int color = (int) l.get(1);
             base.append(

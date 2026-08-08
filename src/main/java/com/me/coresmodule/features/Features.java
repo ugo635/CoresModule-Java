@@ -139,23 +139,43 @@ public class Features {
             return ItemHelper.getHeldItemName().contains("Atomsplit Katana");
         });
 
-        Register.command("testColorList", args -> {
+        Register.command("testGradient", args -> {
             List<List<Object>> gradient = List.of(
-                    List.of("C", 0xFF3B82F6),
-                    List.of("o", 0xFF4F8FF7),
-                    List.of("r", 0xFF63A0F8),
-                    List.of("e", 0xFF77B1F9),
-                    List.of("s", 0xFF8BC2FA),
-                    List.of("M", 0xFF6EE7F5),
-                    List.of("o", 0xFF5DDDF0),
-                    List.of("d", 0xFF4CC3E8),
-                    List.of("u", 0xFF3AA8DE),
-                    List.of("l", 0xFF2563EB),
-                    List.of("e", 0xFF1E40AF)
+                    List.of("C", 0xFF9B5DE5),
+                    List.of("o", 0xFFA653E0),
+                    List.of("r", 0xFFB04DDC),
+                    List.of("e", 0xFFB947D7),
+                    List.of("s", 0xFFC341D2),
+                    List.of("M", 0xFFCC3DCD),
+                    List.of("o", 0xFFD43AC7),
+                    List.of("d", 0xFFDC3FC1),
+                    List.of("u", 0xFFE248BA),
+                    List.of("l", 0xFFE852B4),
+                    List.of("e", 0xFFEE5AAE)
             );
 
-            Chat.chat(TextHelper.gradient(gradient));
+            Chat.chat(TextHelper.getGradient(gradient));
         }, "testGradient");
+
+        Register.command("testGradient2", args -> {
+            List<List<Object>> gradient = List.of(
+                    List.of("[", 0xFF9B5DE5),
+                    List.of("C", 0xFFA14FDF),
+                    List.of("o", 0xFFA846DC),
+                    List.of("r", 0xFFB03ED8),
+                    List.of("e", 0xFFB937D4),
+                    List.of("s", 0xFFC32FCF),
+                    List.of("M", 0xFFCC3DCD),
+                    List.of("o", 0xFFD53BC7),
+                    List.of("d", 0xFFDC3FC1),
+                    List.of("u", 0xFFE447BA),
+                    List.of("l", 0xFFE94FB4),
+                    List.of("e", 0xFFEC56B0),
+                    List.of("]", 0xFFEE5AAE)
+            );
+
+            Chat.chat(TextHelper.getGradient(gradient));
+        }, "testGradient2");
 
         Register.onChatMessage(text -> {
             String msg = TextHelper.getUnFormattedString(text);
