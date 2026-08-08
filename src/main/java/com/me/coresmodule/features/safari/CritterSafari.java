@@ -251,6 +251,7 @@ public class CritterSafari {
     // ===================== CHAT PROCESSING =====================
 
     private static synchronized void processChatLine(String line) {
+        if (!line.contains("CM_MSG_FOUND")) Chat.chat("CM_MSG_FOUND");
         Matcher resetMatcher = RESET_PATTERN.matcher(line);
         if (resetMatcher.find()) {
             if (runActive) endRun();

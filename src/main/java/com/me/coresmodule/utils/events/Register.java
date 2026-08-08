@@ -72,8 +72,11 @@ public class Register {
      * Registers an event that listens for chat messages.
      * The action receives the message as a `Component` object.
      */
-    public static void onChatMessage(Consumer<Component> action) {
-        ClientReceiveMessageEvents.GAME.register((message, signed) -> action.accept(message));
+    public static void onChatMessage(boolean withActionBar, Consumer<Component> action) {
+        ClientReceiveMessageEvents.GAME.register((message, signed) -> {
+            if (!withActionBar && signed) return;
+            action.accept(message);
+        });
     }
 
     /**
@@ -82,10 +85,13 @@ public class Register {
      *
      * @param regex The regular expression to filter messages with.
      * @param formatting false -> remove formatting, true -> keep the formatting
+     * @param withActionBar Whether action bar messages should be included.
      * @param action The action to execute. It receives the message and the `MatchResult`.
      */
-    public static void onChatMessage(Pattern regex, boolean formatting, BiConsumer<Component, MatchResult> action) {
+    public static void onChatMessage(Pattern regex, boolean formatting, boolean withActionBar, BiConsumer<Component, MatchResult> action) {
         ClientReceiveMessageEvents.GAME.register((message, signed) -> {
+            if (!withActionBar && signed) return;
+
             String text = formattedString(message);
             if (!formatting) text = removeFormatting(text);
             Matcher matcher = regex.matcher(text);
@@ -93,8 +99,16 @@ public class Register {
         });
     }
 
+    public static void onChatMessage(Pattern regex, boolean formatting, BiConsumer<Component, MatchResult> action) {
+        onChatMessage(regex, formatting, false, action);
+    }
+
     public static void onChatMessage(Pattern regex, BiConsumer<Component, MatchResult> action) {
-        onChatMessage(regex, true, action);
+        onChatMessage(regex, true, false, action);
+    }
+
+    public static void onChatMessage(Consumer<Component> action) {
+        onChatMessage(false, action);
     }
 
     /**
