@@ -1,6 +1,7 @@
 package com.me.coresmodule.utils.events;
 
 import com.me.coresmodule.utils.chat.Chat;
+import com.me.coresmodule.utils.helpers.TextHelper;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommands;
@@ -86,14 +87,13 @@ public class Register {
      * @param regex The regular expression to filter messages with.
      * @param formatting false -> remove formatting, true -> keep the formatting
      * @param withActionBar Whether action bar messages should be included.
-     * @param action The action to execute. It receives the message and the `MatchResult`.
+     * @param action The action to execute. It receives the message and the {@code MatchResult}.
      */
     public static void onChatMessage(Pattern regex, boolean formatting, boolean withActionBar, BiConsumer<Component, MatchResult> action) {
         ClientReceiveMessageEvents.GAME.register((message, signed) -> {
             if (!withActionBar && signed) return;
 
-            String text = formattedString(message);
-            if (!formatting) text = removeFormatting(text);
+            String text = formatting ? TextHelper.getFormattedString(message) : TextHelper.getUnFormattedString(message);
             Matcher matcher = regex.matcher(text);
             if (matcher.find()) action.accept(message, matcher.toMatchResult());
         });

@@ -8,6 +8,7 @@ import com.me.coresmodule.utils.SoundHandler;
 import com.me.coresmodule.utils.helpers.TextHelper;
 import com.me.coresmodule.utils.chat.Chat;
 import com.me.coresmodule.utils.events.Register;
+import org.apache.logging.log4j.core.tools.picocli.CommandLine;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -139,6 +140,11 @@ public class Features {
             return ItemHelper.getHeldItemName().contains("Atomsplit Katana");
         });
 
+        // Petalfall or Timber without or without §r
+        Register.onChatMessage(Pattern.compile("(?<reason>PETALFALL|TIMBER)!(§.)*\\s*You felled the entire(§.)*\\s*Tree(§.)*!"), false, (msg, match) -> {
+            Helper.showTitle("§2" + match.group("reason"), "", 0, 20, 0);
+        });
+
         Register.command("testGradient", args -> {
             List<List<Object>> gradient = List.of(
                     List.of("C", 0xFF9B5DE5),
@@ -155,7 +161,7 @@ public class Features {
             );
 
             Chat.chat(TextHelper.getGradient(gradient));
-        }, "testGradient");
+        });
 
         Register.command("testGradient2", args -> {
             List<List<Object>> gradient = List.of(
@@ -175,7 +181,7 @@ public class Features {
             );
 
             Chat.chat(TextHelper.getGradient(gradient));
-        }, "testGradient2");
+        });
 
         Register.onChatMessage(text -> {
             String msg = TextHelper.getUnFormattedString(text);

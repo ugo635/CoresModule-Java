@@ -23,9 +23,14 @@ import static com.me.coresmodule.CoresModule.mc;
 /**
  * Critter Safari shard counter.
  * <p>
- * Every CAPTURE! / LOOT SHARE! chat line bumps the named shard's count by one,
+ * Every CAPTURE! / LOOT SHARE! chat line bumps the named shard's widget count by one,
  * regardless of the quantity in the message. A "<player> entered Critter Safari!"
  * line starts a fresh run, and "SAFARI REWARD SUMMARY" ends it.
+ * <p>
+ * Separately, {@code profitCounts} tracks the actual quantity of each shard obtained
+ * (from CAPTURE!/LOOT SHARE! quantity prefixes, e.g. "3x", and from FLOOR DROP! lines
+ * naming a shard) purely for the end-of-run profit calculation. It never affects the
+ * widget's per-shard counts, which always increment by 1 per message.
  */
 public class CritterSafari {
 
@@ -53,38 +58,38 @@ public class CritterSafari {
         EXACT_CAPS.put("Doomspiral", 1);
         EXACT_CAPS.put("Gemzie", 3);
         EXACT_CAPS.put("Hideyho", 1);
-        EXACT_CAPS.put("Billygoat", 1);
         EXACT_CAPS.put("Troodon", 3);
-        EXACT_CAPS.put("Gazer", 2);
+        EXACT_CAPS.put("Gazer", 4);
         EXACT_CAPS.put("Scrappy", 3);
 
-        // Gold: reaching this upper bound is definitely complete.
+        // Red: reaching this upper bound is definitely complete.
         DYNAMIC_CAPS.put("Hideonfloor", 3);
-        DYNAMIC_CAPS.put("Foxtrot", 6);
-        DYNAMIC_CAPS.put("Treefrog", 7);
+        DYNAMIC_CAPS.put("Foxtrot", 8);
+        DYNAMIC_CAPS.put("Treefrog", 6);
         DYNAMIC_CAPS.put("Woodchucker", 6);
         DYNAMIC_CAPS.put("Honeybug", 6);
         DYNAMIC_CAPS.put("Fluffling", 3);
         DYNAMIC_CAPS.put("Strongarm", 8);
         DYNAMIC_CAPS.put("Polaris", 4);
         DYNAMIC_CAPS.put("Shuddersquid", 6);
-        DYNAMIC_CAPS.put("Tepid", 12);
+        DYNAMIC_CAPS.put("Tepid", 8);
+        DYNAMIC_CAPS.put("Billygoat", 4);
         DYNAMIC_CAPS.put("Nozzlenose", 4);
         DYNAMIC_CAPS.put("Mantis Shrimp", 6);
-        DYNAMIC_CAPS.put("Cavernfish", 7);
+        DYNAMIC_CAPS.put("Cavernfish", 8);
         DYNAMIC_CAPS.put("Driftling", 6);
-        DYNAMIC_CAPS.put("Flitter", 6);
+        DYNAMIC_CAPS.put("Flitter", 8);
         DYNAMIC_CAPS.put("Chuckwalla", 4);
-        DYNAMIC_CAPS.put("Rockmite", 8);
-        DYNAMIC_CAPS.put("Snoozle", 3);
+        DYNAMIC_CAPS.put("Rockmite", 10);
+        DYNAMIC_CAPS.put("Snoozle", 5);
         DYNAMIC_CAPS.put("Shyworm", 8);
         DYNAMIC_CAPS.put("Solsnatcher", 8);
         DYNAMIC_CAPS.put("Hideonwall", 4);
         DYNAMIC_CAPS.put("Duplico", 4);
-        DYNAMIC_CAPS.put("Litterbug", 7);
-        DYNAMIC_CAPS.put("Bloodbat", 4);
-        DYNAMIC_CAPS.put("Areita", 4);
-        DYNAMIC_CAPS.put("Gimmiegold", 5);
+        DYNAMIC_CAPS.put("Litterbug", 8);
+        DYNAMIC_CAPS.put("Bloodbat", 6);
+        DYNAMIC_CAPS.put("Areita", 6);
+        DYNAMIC_CAPS.put("Gimmiegold", 7);
 
         HashMap<String, Integer> temporaryMap = new HashMap<>(DYNAMIC_CAPS);
         temporaryMap.putAll(EXACT_CAPS);
@@ -108,8 +113,10 @@ public class CritterSafari {
     private static final Pattern FLOOR_DROP_PATTERN = Pattern.compile("\\bFLOOR DROP!");
     private static final Pattern SAFARI_REWARD_SUMMARY_PATTERN = Pattern.compile("\\bSAFARI REWARD SUMMARY\\b");
     private static final Pattern SAFARI_ESSENCE_PATTERN = Pattern.compile("\\+(?<amount>[\\d,]+) Safari Essence\\b");
+    private static final Pattern HUNTING_EXP_PATTERN = Pattern.compile("\\+[\\d,]+\\s+Hunting Exp\\b");
     private static final Pattern SPARKLING_ANNOUNCEMENT_PATTERN;
     private static final Pattern SHARD_EVENT_PATTERN;
+    private static final Pattern FLOOR_DROP_SHARD_PATTERN;
 
     // Pattern init
     static {
@@ -129,11 +136,19 @@ public class CritterSafari {
                 "SPARKLING!\\s+(?<catcher>[A-Za-z0-9_]{1,16})\\s+caught\\s+" +
                         "a?\\s*SPARKLING\\s+(?<shard>" + SHARD_ALTERNATION + ")!"
         );
+        // e.g. "FLOOR DROP! You found Honeybug Shard on the ground!" (or "3x Honeybug Shard").
+        // Profit-only: never touches the widget's per-shard counts.
+        FLOOR_DROP_SHARD_PATTERN = Pattern.compile(
+                "FLOOR DROP!.*?found\\s+(?:(?<quantity>\\d+)x\\s+)?(?:an?\\s+)?" +
+                        "(?<shard>" + SHARD_ALTERNATION + ")\\s+Shard\\b"
+        );
     }
 
     // ===================== STATE =====================
 
     private static final Map<String, Integer> counts = new LinkedHashMap<>();
+    /** Actual shard quantities obtained this run (captures use their real quantity, floor drops included). Profit-only, never shown on the widget. */
+    private static final Map<String, Integer> profitCounts = new LinkedHashMap<>();
     private static final Map<String, PlayerStats> players = new LinkedHashMap<>();
 
     private static int floorDrops = 0;
@@ -142,6 +157,8 @@ public class CritterSafari {
     private static boolean runActive = false;
     private static boolean currentRunShiny = false;
     private static long runStartedAtMs = 0;
+    /** True between "SAFARI REWARD SUMMARY" and the reward block actually finishing (Hunting Exp line), so profit is printed only once the essence total is final. */
+    private static boolean profitPending = false;
 
     private static class PlayerStats {
         int count = 0;
@@ -161,7 +178,10 @@ public class CritterSafari {
     }
 
     static {
-        for (String shard : SHARD_TO_AREA.keySet()) counts.put(shard, 0);
+        for (String shard : SHARD_TO_AREA.keySet()) {
+            counts.put(shard, 0);
+            profitCounts.put(shard, 0);
+        }
     }
 
     // ===================== REGISTRATION =====================
@@ -251,30 +271,48 @@ public class CritterSafari {
     // ===================== CHAT PROCESSING =====================
 
     private static synchronized void processChatLine(String line) {
-        if (!line.contains("CM_MSG_FOUND")) Chat.chat("CM_MSG_FOUND");
+        Matcher essenceMatcher = SAFARI_ESSENCE_PATTERN.matcher(line);
+        if (essenceMatcher.find()) {
+            safariEssence += Integer.parseInt(essenceMatcher.group("amount").replace(",", ""));
+            return;
+        }
+
+        if (profitPending && HUNTING_EXP_PATTERN.matcher(line).find()) {
+            profitPending = false;
+            printProfit();
+            return;
+        }
+
         Matcher resetMatcher = RESET_PATTERN.matcher(line);
         if (resetMatcher.find()) {
-            if (runActive) endRun();
+            if (runActive) {
+                endRun();
+            } else if (profitPending) {
+                // Reward summary was seen but the Hunting Exp line never arrived before a new
+                // run started — flush now with whatever we have, since resetRun() below wipes it.
+                profitPending = false;
+                printProfit();
+            }
             resetRun(resetMatcher.group("player"));
             return;
         }
 
         if (!runActive) return;
 
-        Matcher essenceMatcher = SAFARI_ESSENCE_PATTERN.matcher(line);
-        if (essenceMatcher.find()) {
-            Chat.chat("Processing essence");
-            safariEssence += Integer.parseInt(essenceMatcher.group("amount").replace(",", ""));
-            return;
-        }
-
         if (SAFARI_REWARD_SUMMARY_PATTERN.matcher(line).find()) {
-            endRun();
+            finishRunAfterSummary();
             return;
         }
 
         if (FLOOR_DROP_PATTERN.matcher(line).find()) {
             floorDrops++;
+
+            Matcher floorShardMatcher = FLOOR_DROP_SHARD_PATTERN.matcher(line);
+            if (floorShardMatcher.find()) {
+                String shard = floorShardMatcher.group("shard");
+                int quantity = parseQuantity(floorShardMatcher.group("quantity"));
+                profitCounts.merge(shard, quantity, Integer::sum);
+            }
             return;
         }
 
@@ -283,7 +321,7 @@ public class CritterSafari {
             String shard = sparklingMatcher.group("shard");
             currentRunShiny = true;
             runsSinceShiny = 0;
-            recordCapture(shard, sparklingMatcher.group("catcher"));
+            recordCapture(shard, sparklingMatcher.group("catcher"), 1);
             Chat.chat("§d§l[Cm] SPARKLING §5" + shard + " §fcaught by §e" + sparklingMatcher.group("catcher") + "§f!");
             Helper.showTitle("§d§lSPARKLING!", "§5" + shard, 0, 25, 35);
             return;
@@ -291,7 +329,6 @@ public class CritterSafari {
 
         Matcher eventMatcher = SHARD_EVENT_PATTERN.matcher(line);
         if (eventMatcher.find()) {
-            Chat.chat("Processing shard");
             String shard = eventMatcher.group("shard");
             String caughtBy;
             if (eventMatcher.group("capturePrefix") != null) {
@@ -300,12 +337,22 @@ public class CritterSafari {
                 Matcher catcherMatcher = LOOT_CATCHER_PATTERN.matcher(line);
                 caughtBy = catcherMatcher.find() ? catcherMatcher.group("catcher") : "Unknown";
             }
-            recordCapture(shard, caughtBy);
+            int quantity = parseQuantity(eventMatcher.group("quantity"));
+            recordCapture(shard, caughtBy, quantity);
         }
     }
 
-    private static void recordCapture(String shard, String caughtBy) {
+    private static int parseQuantity(String rawQuantity) {
+        return rawQuantity != null ? Integer.parseInt(rawQuantity) : 1;
+    }
+
+    /**
+     * @param quantity the actual number of shards this message granted (profit-only).
+     *                 The widget-facing {@code counts} always bumps by 1 regardless.
+     */
+    private static void recordCapture(String shard, String caughtBy, int quantity) {
         counts.merge(shard, 1, Integer::sum);
+        profitCounts.merge(shard, quantity, Integer::sum);
 
         PlayerStats stats = players.computeIfAbsent(caughtBy, ignored -> new PlayerStats());
         stats.count++;
@@ -317,6 +364,7 @@ public class CritterSafari {
 
     private static void resetRun(String startedBy) {
         counts.replaceAll((s, v) -> 0);
+        profitCounts.replaceAll((s, v) -> 0);
         players.clear();
         players.put(ownPlayerName(), new PlayerStats());
         floorDrops = 0;
@@ -326,6 +374,37 @@ public class CritterSafari {
         runStartedAtMs = System.currentTimeMillis();
     }
 
+    /**
+     * Normal run ending: "SAFARI REWARD SUMMARY" was seen. The actual {@link #printProfit()}
+     * call is driven by the "+N Hunting Exp" line in processChatLine — the last line of the
+     * reward block, arriving after Safari Essence — so essence has definitely been received
+     * by the time profit is computed. The fallback timer here only covers that line's wording
+     * ever changing and never arriving.
+     */
+    private static void finishRunAfterSummary() {
+        runActive = false;
+        if (currentRunShiny) {
+            runsSinceShiny = 0;
+        } else {
+            runsSinceShiny++;
+        }
+
+        saveState();
+        profitPending = true;
+
+        Helper.sleep(1000, () -> {
+            if (profitPending) {
+                profitPending = false;
+                printProfit();
+            }
+        });
+    }
+
+    /**
+     * Interrupted run: a new run started before "SAFARI REWARD SUMMARY" ever arrived. Prints
+     * immediately with whatever data exists, since resetRun() runs right after this and wipes
+     * the counters for the new run — there's no later line to safely defer to.
+     */
     private static void endRun() {
         runActive = false;
         if (currentRunShiny) {
@@ -407,10 +486,11 @@ public class CritterSafari {
     }
 
     // ===================== PROFIT =====================
+    /** Called once the reward block is fully known to be finished (see finishRunAfterSummary). */
     private static void printProfit() {
         List<MarketHelper.ItemInfo> itemInfos = new ArrayList<>();
 
-        for (Map.Entry<String, Integer> entry : counts.entrySet()) {
+        for (Map.Entry<String, Integer> entry : profitCounts.entrySet()) {
             if (entry.getValue() <= 0) continue;
 
             MarketHelper.ItemInfo itemInfo = MarketHelper.getItemInfo(
@@ -430,11 +510,10 @@ public class CritterSafari {
                 MarketHelper.Market.BAZAAR
         );
 
-
         double shardInstaSell = 0;
         double shardSellOrder = 0;
-        double instaSafariEssence;
-        double orderSafariEssence;
+        double instaSafariEssence = 0;
+        double orderSafariEssence = 0;
 
         for (MarketHelper.ItemInfo itemInfo : itemInfos) {
             shardInstaSell += itemInfo.instaSellPrice();
@@ -448,24 +527,16 @@ public class CritterSafari {
             shardInstaSell += instaSafariEssence;
             shardSellOrder += orderSafariEssence;
         } else {
-            instaSafariEssence = 0;
-            orderSafariEssence = 0;
+            Chat.chat("§dError with Safari Essence Price!");
         }
 
-        // Prints after the message has appeared
-        final double finalShardInstaSell = shardInstaSell;
-        final double finalShardSellOrder = shardSellOrder;
-        Helper.sleep(100, () -> {
-            if (essenceInfo == null) Chat.chat("§dError with Safari Essence Price!");
-            Chat.chat(CoresModule.CM_PREFIX_WITH_BRACKET.copy().append(Component.literal(" §2Safari profit:")));
-            Chat.chat("§2Shard (Insta-Sell/Sell Order): ");
-            Chat.chat("§a(%s, %s)".formatted(formatMoney(finalShardInstaSell), formatMoney(finalShardSellOrder)));
-            Chat.chat("§2Safari Essence:");
-            Chat.chat("§a(%s, %s)".formatted(formatMoney(instaSafariEssence), formatMoney(orderSafariEssence)));
-            Chat.chat("§a(%d * (%f | %f))".formatted(safariEssence, essenceInfo.instaSellPrice(), essenceInfo.instaBuyPrice()));
-        });
-
+        Chat.chat(CoresModule.CM_PREFIX_WITH_BRACKET.copy().append(Component.literal(" §2Safari profit:")));
+        Chat.chat("§2Shard (Insta-Sell/Sell Order): ");
+        Chat.chat("§a(%s, %s)".formatted(formatMoney(shardInstaSell), formatMoney(shardSellOrder)));
+        Chat.chat("§2Safari Essence:");
+        Chat.chat("§a(%s, %s)".formatted(formatMoney(instaSafariEssence), formatMoney(orderSafariEssence)));
     }
+
 
     private static String formatMoney(double amount) {
         if (amount >= 1_000_000_000) {
