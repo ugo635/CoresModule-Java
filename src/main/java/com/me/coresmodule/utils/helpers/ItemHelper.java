@@ -19,7 +19,7 @@ public class ItemHelper {
     }
 
     public static String getFormattedItemName(ItemStack item) {
-        return item != ItemStack.EMPTY ? TextHelper.getFormattedString(item.getItemName()) : "";
+        return item != ItemStack.EMPTY ? TextHelper.getFormattedString(item.getDisplayName()) : "";
     }
 
     public static String getFormattedHeldItemName() {
