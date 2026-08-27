@@ -53,8 +53,6 @@ public class DianaFeatures {
     private static InteractionResult updateTimer() {
         if (ffTimerOn || remaining >= 0) return InteractionResult.PASS;
         ItemStack item = ItemHelper.getHeldItem();
-        System.out.println(ItemHelper.getItemName(item));
-        System.out.println(ItemHelper.getItemName(item).contains("Fire Freeze Staff"));
         if (ItemHelper.getItemName(item).contains("Fire Freeze Staff")) {
             ffTimerOn = true;
             startTime = System.currentTimeMillis();
