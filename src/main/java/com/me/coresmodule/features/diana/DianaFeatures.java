@@ -7,9 +7,7 @@ import com.me.coresmodule.utils.render.hud.overlay.OverlayTextLine;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 
@@ -21,17 +19,17 @@ public class DianaFeatures {
 
     public static void register() {
         Overlay overlay = new Overlay("Fire Freeze Timer", 10.0f, 10.0f, 2.0f, List.of("Chat screen"));
-        OverlayTextLine overlayComponent = new OverlayTextLine("");
+        OverlayTextLine overlayText = new OverlayTextLine("");
         overlay.register();
         overlay.setCondition(() -> ffTimerOn);
-        overlay.addLine(overlayComponent);
+        overlay.addLine(overlayText);
 
         UseItemCallback.EVENT.register((player, world, hand) -> {
-            return updateTimer(player);
+            return updateTimer();
         });
 
         UseBlockCallback.EVENT.register((player, world, hand, blockHitResult) -> {
-            return updateTimer(player);
+            return updateTimer();
         });
 
         Register.onTick(1, args -> {
@@ -48,12 +46,11 @@ public class DianaFeatures {
                 return;
             }
 
-            overlayComponent.text = "%s%.2fs".formatted(remaining <= 0 ? "§c" : "§a", remaining);
+            overlayText.text = "%s%.2fs".formatted(remaining <= 0 ? "§c" : "§a", remaining);
         });
     }
 
-    @NonNull
-    private static InteractionResult updateTimer(Player player) {
+    private static InteractionResult updateTimer() {
         if (ffTimerOn || remaining >= 0) return InteractionResult.PASS;
         ItemStack item = ItemHelper.getHeldItem();
         if (ItemHelper.getItemName(item).contains("Fire Freeze Staff")) {
