@@ -41,7 +41,7 @@ public class ItemHelper {
     }
 
     public static String getItemName(ItemStack item) {
-        return item != ItemStack.EMPTY ? item.getItemName().getString() : "";
+        return item != ItemStack.EMPTY ? item.getDisplayName().getString() : "";
     }
 
     public static String getHeldItemName() {
