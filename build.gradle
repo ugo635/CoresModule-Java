@@ -97,21 +97,19 @@ dependencies {
     }
 
     implementation(include("org.slf4j:slf4j-simple:2.0.18"))
-    implementation(include("net.sf.trove4j:trove4j:3.0.3"))
 
-    // Resolve JDA's full runtime dependency tree (OkHttp, Okio, kotlin-stdlib,
-    // nv-websocket-client, Jackson, etc.) and jar-in-jar every artifact it
-    // resolves to, so we stop hitting one missing-class error at a time.
+    // Resolve JDA's full runtime dependency tree - JDA itself plus OkHttp, Okio,
+    // kotlin-stdlib, nv-websocket-client, Jackson, trove4j, etc. - and jar-in-jar
+    // every artifact it resolves to. (The plain `implementation("net.dv8tion:JDA...")`
+    // line above is NOT wrapped in include(), so on its own it only helps the dev
+    // environment; it does nothing for an exported/packaged mod jar. This loop is
+    // what actually bundles JDA - and everything it needs - into the built jar.)
     jdaRuntime("net.dv8tion:JDA:$JDA_v") {
         exclude module: 'opus-java'
     }
-
     afterEvaluate {
         configurations.jdaRuntime.resolvedConfiguration.resolvedArtifacts.each {
-            // JDA itself is already included above; skip it here to avoid duplicates.
-            if (it.moduleVersion.id.group != "net.dv8tion") {
-                include("${it.moduleVersion.id}")
-            }
+            include("${it.moduleVersion.id}")
         }
     }
 
