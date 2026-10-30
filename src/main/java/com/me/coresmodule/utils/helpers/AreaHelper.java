@@ -13,4 +13,9 @@ public class AreaHelper {
         String area = TabList.findInfo("Area: ");
         return (area == null ? "None" : area).contains("Hub");
     }
+
+    public static boolean isInSafari() {
+        String area = TabList.findInfo("Area: ");
+        return (area == null ? "None" : area).contains("Safari");
+    }
 }

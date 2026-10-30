@@ -1,4 +1,4 @@
-package com.me.coresmodule.utils.render.overlay;
+package com.me.coresmodule.utils.render.hud.overlay;
 
 import com.me.coresmodule.utils.helpers.Helper;
 import net.minecraft.client.gui.Font;
@@ -93,7 +93,7 @@ public class Overlay {
     }
 
     public List<OverlayTextLine> getLines() {
-        if (lines.isEmpty() && !exampleView.isEmpty() && mc.screen instanceof OverlayEditScreen) {
+        if (lines.isEmpty() && !exampleView.isEmpty() && mc.gui.screen() instanceof OverlayEditScreen) {
             return exampleView;
         }
         return lines;
@@ -177,7 +177,7 @@ public class Overlay {
             graphics.text(font, "X: " + (int) x + " Y: " + (int) y + " Scale: " + String.format("%.1f", scale), (int) currentX, (int) (currentY - font.lineHeight - 1), new Color(255, 255, 255, 200).getRGB(), true);
         }
 
-        if (isOverOverlay(mouseX, mouseY) && mc.screen instanceof OverlayEditScreen) {
+        if (isOverOverlay(mouseX, mouseY) && mc.gui.screen() instanceof OverlayEditScreen) {
             graphics.fill((int) currentX, (int) currentY, (int) (currentX + totalWidth), (int) (currentY + totalHeight), new Color(0, 0, 0, 100).getRGB());
         }
 

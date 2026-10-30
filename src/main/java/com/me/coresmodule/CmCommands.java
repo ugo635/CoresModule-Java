@@ -46,7 +46,7 @@ public class CmCommands {
             else arg = "";
 
             if (arg.equals("config") || arg.equals("settings") || arg.isEmpty()) {
-                mc.execute(() -> mc.setScreen(ResourcefulConfigScreen.getFactory(MOD_ID).apply(null)));
+                mc.execute(() -> mc.setScreenAndShow(ResourcefulConfigScreen.getFactory(MOD_ID).apply(null)));
                 return;
             } else {
                 // For stuff that isn't opening the config screen

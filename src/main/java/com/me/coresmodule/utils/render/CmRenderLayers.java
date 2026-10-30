@@ -1,7 +1,9 @@
 package com.me.coresmodule.utils.render;
 
+import com.mojang.blaze3d.PrimitiveTopology;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.blaze3d.vertex.VertexFormatElement;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.LayeringTransform;
@@ -53,14 +55,16 @@ class CmRenderPipelines {
     public static final RenderPipeline FILLED_BOX_THROUGH_WALLS = RenderPipelines.register(
             RenderPipeline.builder(RenderPipelines.DEBUG_FILLED_SNIPPET)
                     .withLocation(Identifier.fromNamespaceAndPath(MOD_ID, "pipeline/debug_filled_box_through_walls"))
-                    .withVertexFormat(DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.TRIANGLE_STRIP)
+                    .withVertexBinding(0, DefaultVertexFormat.POSITION_COLOR)
+                    .withPrimitiveTopology(PrimitiveTopology.TRIANGLE_STRIP)
                     .build()
     );
 
     public static final RenderPipeline LINES = RenderPipelines.register(
             RenderPipeline.builder(RenderPipelines.LINES_SNIPPET)
                     .withLocation(Identifier.fromNamespaceAndPath(MOD_ID, "pipeline/line_strip"))
-                    .withVertexFormat(DefaultVertexFormat.POSITION_COLOR_NORMAL, VertexFormat.Mode.LINES)
+                    .withVertexBinding(0, DefaultVertexFormat.POSITION_COLOR_NORMAL)
+                    .withPrimitiveTopology(PrimitiveTopology.LINES)
                     .withCull(false)
                     .build()
     );
@@ -69,7 +73,8 @@ class CmRenderPipelines {
             RenderPipeline.builder(RenderPipelines.LINES_SNIPPET)
                     .withLocation(Identifier.fromNamespaceAndPath(MOD_ID, "pipeline/line_through_walls"))
                     .withShaderDefine("shad")
-                    .withVertexFormat(DefaultVertexFormat.POSITION_COLOR_NORMAL, VertexFormat.Mode.LINES)
+                    .withVertexBinding(0, DefaultVertexFormat.POSITION_COLOR_NORMAL)
+                    .withPrimitiveTopology(PrimitiveTopology.LINES)
                     .withCull(false)
                     .build()
     );

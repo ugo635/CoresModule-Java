@@ -1,4 +1,4 @@
-package com.me.coresmodule.features.Diana;
+package com.me.coresmodule.features.diana;
 
 import com.me.coresmodule.settings.categories.Diana;
 import com.me.coresmodule.utils.FilesHandler;
@@ -15,7 +15,7 @@ import static com.me.coresmodule.CoresModule.mc;
 public class RareDropTracker {
     public static void register() throws IOException {
         FilesHandler.createFile("chimeras.txt");
-        Register.onChatMessage(Pattern.compile("^§6§lRARE DROP! (.*?)$", Pattern.DOTALL), false, (message, matchResult) -> {
+        Register.onChatMessage(Pattern.compile("^§6§lRARE DROP! (.*?)$", Pattern.DOTALL), true, (message, matchResult) -> {
             String text = TextHelper.formattedString(message);
             String drop = matchResult.group(1);
             if (Diana.RareDropSs.get() && (

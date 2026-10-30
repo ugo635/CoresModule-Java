@@ -8,6 +8,7 @@ import com.me.coresmodule.utils.SoundHandler;
 import com.me.coresmodule.utils.helpers.TextHelper;
 import com.me.coresmodule.utils.chat.Chat;
 import com.me.coresmodule.utils.events.Register;
+import org.apache.logging.log4j.core.tools.picocli.CommandLine;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,9 +53,9 @@ public class Features {
             }
         });
 
-        Register.onChatMessageCancelable(Pattern.compile("(You purchased|Visit the Auction House).*"), false, (message, matcher) -> {
+        Register.onChatMessageCancelable(Pattern.compile("(You purchased|Visit the Auction House).*"), (message, matcher) -> {
             if (General.ahMsg.get()) {
-                Chat.clickableChat(TextHelper.formattedString(message), "§eClick To Open The AH", "/ah");
+                Chat.clickableChat(TextHelper.getFormattedString(message), "§eClick To Open The AH", "/ah");
                 return true;
             } else {
                 return false;
@@ -66,12 +67,12 @@ public class Features {
         });
 
         Register.command("clear", ignore -> {
-            mc.gui.getChat().clearMessages(true);
+            mc.gui.hud.getChat().clearMessages(true);
         });
 
         Register.onChatMessage(message -> {
             if (General.pickaceAbility.get() && TextHelper.formattedString(message).contains("§aYou used your §6Maniac Miner §aPickaxe Ability!")) {
-                // TODO make it compatible with other pickaxe abilities
+                // TODO: Make it compatible with other pickaxe abilities
                 Helper.exactSleep(103000, () -> {
                     Chat.chat("§6§l[Cm] Pickaxe Ability Ready!");
                     Helper.showTitle("§6§lPickaxe Ability", "§aReady!", 0, 25, 35);
@@ -115,7 +116,7 @@ public class Features {
             if (TextHelper.formattedString(msg).contains("§eYou need to equip a §d§lMYTHIC §egriffin pet to fight this!") && Diana.wrongPet.get()) Helper.showTitle("§4§l Wrong Pet", "", 0, 20, 20);
         });
 
-        Register.onChatMessage(Pattern.compile("^(?<channel>.*> )?(?<playerName>.+?)[§&]f: (?:[§&]r)?x: (?<x>[^ ,]+),? y: (?<y>[^ ,]+),? z: (?<z>[^ ,]+)(?<trailing>.*)$"),false, (msg, result) -> {
+        Register.onChatMessage(Pattern.compile("^(?<channel>.*> )?(?<playerName>.+?)[§&]f: (?:[§&]r)?x: (?<x>[^ ,]+),? y: (?<y>[^ ,]+),? z: (?<z>[^ ,]+)(?<trailing>.*)$"),true, (msg, result) -> {
             if (!General.coordSound.get()) return;
             Chat.chat("§c[CoresModule] Coords Delected");
             SoundHandler.playCustomSound("emergencymeeting");
@@ -135,27 +136,52 @@ public class Features {
             Chat.chat("§6[Cm] Will invite when someone leaves party: §e" + args[0]);
         }, "partyIfLeave", "inviteIfLeave");
 
-        Register.onChatMessageCancelable(Pattern.compile("^.*This ability is on cooldown for [0-4]s\\.$"), (msg, match) -> {
+        Register.onChatMessageCancelable(Pattern.compile("^.*This ability is on cooldown for [0-4]s\\.$"), false, (msg, match) -> {
             return ItemHelper.getHeldItemName().contains("Atomsplit Katana");
         });
 
-        Register.command("testColorList", args -> {
+        // Petalfall or Timber without or without §r
+        Register.onChatMessage(Pattern.compile("(?<reason>PETALFALL|TIMBER)!(§.)*\\s*You felled the entire(§.)*\\s*Tree(§.)*!"), false, (msg, match) -> {
+            Helper.showTitle("§2" + match.group("reason"), "", 0, 20, 0);
+        });
+
+        Register.command("testGradient", args -> {
             List<List<Object>> gradient = List.of(
-                    List.of("C", 0xFF3B82F6),
-                    List.of("o", 0xFF4F8FF7),
-                    List.of("r", 0xFF63A0F8),
-                    List.of("e", 0xFF77B1F9),
-                    List.of("s", 0xFF8BC2FA),
-                    List.of("M", 0xFF6EE7F5),
-                    List.of("o", 0xFF5DDDF0),
-                    List.of("d", 0xFF4CC3E8),
-                    List.of("u", 0xFF3AA8DE),
-                    List.of("l", 0xFF2563EB),
-                    List.of("e", 0xFF1E40AF)
+                    List.of("C", 0xFF9B5DE5),
+                    List.of("o", 0xFFA653E0),
+                    List.of("r", 0xFFB04DDC),
+                    List.of("e", 0xFFB947D7),
+                    List.of("s", 0xFFC341D2),
+                    List.of("M", 0xFFCC3DCD),
+                    List.of("o", 0xFFD43AC7),
+                    List.of("d", 0xFFDC3FC1),
+                    List.of("u", 0xFFE248BA),
+                    List.of("l", 0xFFE852B4),
+                    List.of("e", 0xFFEE5AAE)
             );
 
-            Chat.chat(TextHelper.gradient(gradient));
-        }, "testGradient");
+            Chat.chat(TextHelper.getGradient(gradient));
+        });
+
+        Register.command("testGradient2", args -> {
+            List<List<Object>> gradient = List.of(
+                    List.of("[", 0xFF9B5DE5),
+                    List.of("C", 0xFFA14FDF),
+                    List.of("o", 0xFFA846DC),
+                    List.of("r", 0xFFB03ED8),
+                    List.of("e", 0xFFB937D4),
+                    List.of("s", 0xFFC32FCF),
+                    List.of("M", 0xFFCC3DCD),
+                    List.of("o", 0xFFD53BC7),
+                    List.of("d", 0xFFDC3FC1),
+                    List.of("u", 0xFFE447BA),
+                    List.of("l", 0xFFE94FB4),
+                    List.of("e", 0xFFEC56B0),
+                    List.of("]", 0xFFEE5AAE)
+            );
+
+            Chat.chat(TextHelper.getGradient(gradient));
+        });
 
         Register.onChatMessage(text -> {
             String msg = TextHelper.getUnFormattedString(text);

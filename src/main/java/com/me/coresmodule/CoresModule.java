@@ -1,33 +1,32 @@
 package com.me.coresmodule;
 
-import com.me.coresmodule.features.CenturyRaffle;
-import com.me.coresmodule.features.Diana.*;
-import com.me.coresmodule.features.Features;
-import com.me.coresmodule.features.Lowballing;
-import com.me.coresmodule.features.Party;
+import com.me.coresmodule.features.*;
 import com.me.coresmodule.features.bot.Bot;
+import com.me.coresmodule.features.diana.DianaFeatures;
 import com.me.coresmodule.features.farming.HoldDirection;
 import com.me.coresmodule.features.farming.Orientation;
 import com.me.coresmodule.features.farming.PestCooldown;
-import com.me.coresmodule.features.priv.MainPrivate;
+import com.me.coresmodule.features.safari.CritterSafari;
 import com.me.coresmodule.settings.Settings;
 import com.me.coresmodule.utils.*;
 import com.me.coresmodule.utils.chat.ClickActionManager;
 import com.me.coresmodule.utils.chat.SimulateChat;
 import com.me.coresmodule.utils.events.impl.CmEventReg;
 import com.me.coresmodule.utils.events.processor.EventProcessor;
+import com.me.coresmodule.utils.helpers.MarketHelper;
+import com.me.coresmodule.utils.helpers.TextHelper;
 import com.me.coresmodule.utils.render.WaypointManager;
-import com.me.coresmodule.utils.render.gui.GUIs;
-import com.me.coresmodule.utils.render.overlay.OverlayData;
-import com.me.coresmodule.utils.render.overlay.OverlayManager;
+import com.me.coresmodule.utils.render.hud.overlay.OverlayData;
+import com.me.coresmodule.utils.render.hud.overlay.OverlayManager;
 import com.teamresourceful.resourcefulconfig.api.loader.Configurator;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.MutableComponent;
 import org.apache.logging.log4j.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.List;
 
 
 public class CoresModule implements ModInitializer {
@@ -43,6 +42,40 @@ public class CoresModule implements ModInitializer {
 	// Resourceful Configurator instance for this mod
 	public static final Configurator configurator = new Configurator(MOD_ID);
 
+	public static final MutableComponent CM_PREFIX_WITH_BRACKET = TextHelper.getGradient(
+			List.of(
+					List.of("[", 0xFF9B5DE5),
+					List.of("C", 0xFFA14FDF),
+					List.of("o", 0xFFA846DC),
+					List.of("r", 0xFFB03ED8),
+					List.of("e", 0xFFB937D4),
+					List.of("s", 0xFFC32FCF),
+					List.of("M", 0xFFCC3DCD),
+					List.of("o", 0xFFD53BC7),
+					List.of("d", 0xFFDC3FC1),
+					List.of("u", 0xFFE447BA),
+					List.of("l", 0xFFE94FB4),
+					List.of("e", 0xFFEC56B0),
+					List.of("]", 0xFFEE5AAE)
+			)
+	);
+
+	public static final MutableComponent CM_PREFIX_WITHOUT_BRACKET = TextHelper.getGradient(
+			List.of(
+					List.of("C", 0xFF9B5DE5),
+					List.of("o", 0xFFA653E0),
+					List.of("r", 0xFFB04DDC),
+					List.of("e", 0xFFB947D7),
+					List.of("s", 0xFFC341D2),
+					List.of("M", 0xFFCC3DCD),
+					List.of("o", 0xFFD43AC7),
+					List.of("d", 0xFFDC3FC1),
+					List.of("u", 0xFFE248BA),
+					List.of("l", 0xFFE852B4),
+					List.of("e", 0xFFEE5AAE)
+			)
+	);
+
 
 	@Override
 	public void onInitialize() {
@@ -51,10 +84,8 @@ public class CoresModule implements ModInitializer {
 		// Proceed with mild caution.
 
 		LOGGER.info("Hello Fabric world!");
-		org.apache.logging.log4j.core.config.Configurator.setLevel(
-				"com.mojang.authlib", Level.OFF);
-		((org.apache.logging.log4j.core.LoggerContext) org.apache.logging.log4j.LogManager.getContext(false))
-				.updateLoggers(); // Removes errors when joining hypixel
+		org.apache.logging.log4j.core.config.Configurator.setLevel("com.mojang.authlib", Level.OFF);
+		((org.apache.logging.log4j.core.LoggerContext) org.apache.logging.log4j.LogManager.getContext(false)).updateLoggers(); // Removes errors when joining hypixel
 
 		TryCatch.register();
 		Bot.register();
@@ -70,13 +101,14 @@ public class CoresModule implements ModInitializer {
 		EventProcessor.register();
 		CmCommands.register();
 		CmEventReg.register();
-		GUIs.register();
 		HoldDirection.register();
 		Orientation.register();
 		TabList.register();
 		PestCooldown.register();
 		CenturyRaffle.register();
 		Lowballing.register();
+		CritterSafari.register();
+		MarketHelper.register();
 
 		configurator.register(Settings.class);
 		configurator.saveConfig(Settings.class);

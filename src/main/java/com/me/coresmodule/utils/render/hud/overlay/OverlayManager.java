@@ -1,4 +1,4 @@
-package com.me.coresmodule.utils.render.overlay;
+package com.me.coresmodule.utils.render.hud.overlay;
 
 import com.me.coresmodule.utils.events.Register;
 import com.me.coresmodule.utils.events.annotations.CmEvent;
@@ -19,7 +19,7 @@ public final class OverlayManager {
 
     public static void register() {
         Register.command("cmguis", args -> {
-            mc.execute(() -> mc.setScreen(new OverlayEditScreen()));
+            mc.execute(() -> mc.setScreenAndShow(new OverlayEditScreen()));
         });
     }
 
@@ -71,8 +71,8 @@ public final class OverlayManager {
     public static void draw(AfterHudRenderer event) {
         GuiGraphicsExtractor graphics = event.graphics;
 
-        String title = mc.screen != null
-                ? mc.screen.getTitle().getString()
+        String title = mc.gui.screen() != null
+                ? mc.gui.screen().getTitle().getString()
                 : "";
 
         render(graphics, title);

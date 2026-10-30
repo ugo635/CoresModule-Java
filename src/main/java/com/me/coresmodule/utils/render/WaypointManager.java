@@ -9,7 +9,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class WaypointManager {
 
-    public static List<Waypoint> waypoints = new CopyOnWriteArrayList<>(List.of(
+    public static List<Waypoint> waypoints = new CopyOnWriteArrayList<>(/*List.of(
             new Waypoint(
                     "Hellooo",
                     0.0, 100.0, 0.0,
@@ -18,7 +18,7 @@ public class WaypointManager {
                     Tracker.doLine.get(), Tracker.doBeam.get(), true,
                     5f, 0
             )
-    ));
+    )*/);
 
     public static void register() {
         LevelRenderEvents.BEFORE_TRANSLUCENT_TERRAIN.register(context -> {

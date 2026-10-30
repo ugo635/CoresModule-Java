@@ -1,4 +1,4 @@
-package com.me.coresmodule.utils.Tuples;
+package com.me.coresmodule.utils.tuples;
 
 import java.util.HashMap;
 

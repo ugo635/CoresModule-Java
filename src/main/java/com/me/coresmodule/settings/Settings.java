@@ -9,12 +9,12 @@ import com.me.coresmodule.settings.categories.*;
         version = 1,
         categories = {
                 General.class,
-                Credits.class,
                 Diana.class,
+                Widget.class,
                 Farming.class,
                 Space.class,
-                Tracker.class
-
+                Tracker.class,
+                Credits.class
         }
 
 )

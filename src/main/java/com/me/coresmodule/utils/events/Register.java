@@ -1,6 +1,7 @@
 package com.me.coresmodule.utils.events;
 
 import com.me.coresmodule.utils.chat.Chat;
+import com.me.coresmodule.utils.helpers.TextHelper;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommands;
@@ -45,7 +46,7 @@ public class Register {
         }));
     }
 
-    public static LiteralArgumentBuilder<FabricClientCommandSource> createLiteral(String name, Consumer<String[]> action) {
+    private static LiteralArgumentBuilder<FabricClientCommandSource> createLiteral(String name, Consumer<String[]> action) {
         return ClientCommands.literal(name)
                 .executes(context -> { action.accept(new String[0]); return 1; })
                 .then(ClientCommands.argument("args", StringArgumentType.greedyString())
@@ -72,12 +73,11 @@ public class Register {
      * Registers an event that listens for chat messages.
      * The action receives the message as a `Component` object.
      */
-    public static void onChatMessage(Consumer<Component> action) {
-        ClientReceiveMessageEvents.GAME.register((message, signed) -> action.accept(message));
-    }
-
-    public static void onClientStart(Consumer<String[]> action) {
-        ClientLifecycleEvents.CLIENT_STARTED.register(client -> action.accept(new String[0]));
+    public static void onChatMessage(boolean withActionBar, Consumer<Component> action) {
+        ClientReceiveMessageEvents.GAME.register((message, signed) -> {
+            if (!withActionBar && signed) return;
+            action.accept(message);
+        });
     }
 
     /**
@@ -85,20 +85,30 @@ public class Register {
      * The action receives both the message and the regex match result for easy value extraction.
      *
      * @param regex The regular expression to filter messages with.
-     * @param noFormating Remove the text formatting
-     * @param action The action to execute. It receives the message and the `MatchResult`.
+     * @param formatting false -> remove formatting, true -> keep the formatting
+     * @param withActionBar Whether action bar messages should be included.
+     * @param action The action to execute. It receives the message and the {@code MatchResult}.
      */
-    public static void onChatMessage(Pattern regex, boolean noFormating, BiConsumer<Component, MatchResult> action) {
+    public static void onChatMessage(Pattern regex, boolean formatting, boolean withActionBar, BiConsumer<Component, MatchResult> action) {
         ClientReceiveMessageEvents.GAME.register((message, signed) -> {
-            String text = formattedString(message);
-            if (noFormating) text = removeFormatting(text);
+            if (!withActionBar && signed) return;
+
+            String text = formatting ? TextHelper.getFormattedString(message) : TextHelper.getUnFormattedString(message);
             Matcher matcher = regex.matcher(text);
             if (matcher.find()) action.accept(message, matcher.toMatchResult());
         });
     }
 
+    public static void onChatMessage(Pattern regex, boolean formatting, BiConsumer<Component, MatchResult> action) {
+        onChatMessage(regex, formatting, false, action);
+    }
+
     public static void onChatMessage(Pattern regex, BiConsumer<Component, MatchResult> action) {
-        onChatMessage(regex, false, action);
+        onChatMessage(regex, true, false, action);
+    }
+
+    public static void onChatMessage(Consumer<Component> action) {
+        onChatMessage(false, action);
     }
 
     /**
@@ -131,7 +141,8 @@ public class Register {
 
     /**
      * Registers a cancelable pattern-based chat listener.
-     * The action receives the message and a MatchResult; return true to cancel/hide the message.
+     * The action receives the message and a MatchResult;
+     * return true to cancel/hide the message.
      *
      * Example:
      * Register.onChatMessageCancelable(Pattern.compile("foo (\\d+)"), true, (message, matcher) -> {
@@ -139,10 +150,10 @@ public class Register {
      *     return true;
      * });
      */
-    public static void onChatMessageCancelable(Pattern regex, boolean noFormating, BiFunction<Component, MatchResult, Boolean> action) {
+    public static void onChatMessageCancelable(Pattern regex, boolean formatting, BiFunction<Component, MatchResult, Boolean> action) {
         ClientReceiveMessageEvents.ALLOW_GAME.register((message, signed) -> {
             String text = formattedString(message);
-            if (noFormating) text = removeFormatting(text);
+            if (!formatting) text = removeFormatting(text);
             Matcher matcher = regex.matcher(text);
             if (matcher.find()) {
                 try {
@@ -157,8 +168,15 @@ public class Register {
         });
     }
 
+    /**
+     * With chat formatting
+     */
     public static void  onChatMessageCancelable(Pattern regex, BiFunction<Component, MatchResult, Boolean> action) {
-        onChatMessageCancelable(regex, false, action);
+        onChatMessageCancelable(regex, true, action);
+    }
+
+    public static void onClientStart(Consumer<String[]> action) {
+        ClientLifecycleEvents.CLIENT_STARTED.register(client -> action.accept(new String[0]));
     }
 
     public static void onGuiClose(Consumer<Screen> action) {

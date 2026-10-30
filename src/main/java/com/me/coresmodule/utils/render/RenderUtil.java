@@ -2,7 +2,6 @@ package com.me.coresmodule.utils.render;
 
 import com.me.coresmodule.mixin.BeaconBlockEntityRendererInvoker;
 import com.me.coresmodule.utils.math.CmVectors;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext;
 import net.minecraft.client.Camera;
@@ -15,6 +14,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.gizmos.Gizmos;
 import net.minecraft.gizmos.GizmoStyle;
+import net.minecraft.network.chat.Component;
 
 import java.awt.*;
 
@@ -93,6 +93,7 @@ public class RenderUtil {
             boolean throughWalls
     ) {
         PoseStack matrices = context.poseStack();
+        SubmitNodeCollector collector = context.submitNodeCollector();
 
         Camera camera = getCamera();
         Vec3 cameraPos = camera.position();
@@ -135,17 +136,16 @@ public class RenderUtil {
                 ? Font.DisplayMode.SEE_THROUGH
                 : Font.DisplayMode.NORMAL;
 
-        textRenderer.drawInBatch(
-                text,
-                xOffset,
-                0f,
-                color,
+        collector.submitText(
+                matrices,
+                xOffset, 0f,
+                Component.literal(text).getVisualOrderText(),
                 shadow,
-                matrices.last().pose(),
-                context.bufferSource(),
                 displayMode,
-                0,
-                0xF000F0
+                0xF000F0,   // packed light
+                color,
+                0,          // background color
+                0           // outline color
         );
 
         matrices.popPose();
@@ -184,7 +184,7 @@ public class RenderUtil {
                 1.0f
         };
 
-        SubmitNodeCollector queue = context.gameRenderer().getSubmitNodeStorage();
+        SubmitNodeCollector queue = context.submitNodeCollector();
 
         BeaconBlockEntityRendererInvoker.renderBeam(
                 matrices,
@@ -239,6 +239,6 @@ public class RenderUtil {
     }
 
     private static Camera getCamera() {
-        return mc.gameRenderer.getMainCamera();
+        return mc.gameRenderer.mainCamera();
     }
 }

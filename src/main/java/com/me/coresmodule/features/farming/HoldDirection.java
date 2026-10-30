@@ -34,7 +34,7 @@ public class HoldDirection {
     public static void main() {
         // Keyboard Input Hook
         previousKeyCallback = GLFW.glfwSetKeyCallback(mc.getWindow().handle(), (window, key, scancode, action, mods) -> {
-            if (mc.screen == null && action == GLFW.GLFW_PRESS) {
+            if (mc.gui.screen() == null && action == GLFW.GLFW_PRESS) {
                 int toggleKeyCode = InputConstants.getKey(toggleKey.saveString()).getValue();
                 int attackKeyCode = InputConstants.getKey(mc.options.keyAttack.saveString()).getValue();
 
@@ -56,7 +56,7 @@ public class HoldDirection {
 
         // Mouse Input Hook
         previousMouseCallback = GLFW.glfwSetMouseButtonCallback(mc.getWindow().handle(), (window, button, action, mods) -> {
-            if (mc.screen == null && isHolding && action == GLFW.GLFW_PRESS) {
+            if (mc.gui.screen() == null && isHolding && action == GLFW.GLFW_PRESS) {
                 int attackButtonCode = InputConstants.getKey(mc.options.keyAttack.saveString()).getValue();
                 if (button == attackButtonCode) { // If physical click on the mouse
                     cancelHold(false);
@@ -67,7 +67,7 @@ public class HoldDirection {
 
         ClientTickEvents.START_CLIENT_TICK.register(client -> {
             // Cancel if in a menu
-            if (mc.screen != null) {
+            if (mc.gui.screen() != null) {
                 if (isHolding) cancelHold(true);
                 return;
             }
