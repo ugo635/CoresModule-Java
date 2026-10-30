@@ -1,7 +1,6 @@
 plugins {
     id 'net.fabricmc.fabric-loom' version "${loom_version}"
     id 'maven-publish'
-    id 'dev.deftu.gradle.tools.bloom' version '2.73.0'
 }
 
 version = project.mod_version
@@ -41,10 +40,6 @@ repositories {
     }
 }
 
-bloom {
-
-}
-
 fabricApi {
     configureDataGeneration {
         client = true
@@ -76,8 +71,8 @@ dependencies {
     implementation "com.teamresourceful.resourcefulconfig:resourcefulconfig-fabric-$rconfig_version"
 
     // UIs
-    implementation("gg.essential:elementa:$elementaVersion")
-    implementation "gg.essential:universalcraft-26.1-fabric:$uc_version"
+    //implementation("gg.essential:elementa:$elementaVersion")
+    //implementation "gg.essential:universalcraft-26.1-fabric:$uc_version"
 
     // Jetbrains annotations
     implementation "org.jetbrains.kotlin:kotlin-stdlib:2.4.10"

@@ -4,11 +4,7 @@ import static com.me.coresmodule.CoresModule.mc;
 import static java.lang.Integer.parseInt;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.components.ChatComponent;
-import net.minecraft.client.multiplayer.ClientPacketListener;
-import net.minecraft.core.component.DataComponentHolder;
 import net.minecraft.network.chat.*;
 
 import java.net.URI;
@@ -22,7 +18,7 @@ public class Chat {
      * @param s The message to display in the chat.
      */
     public static void chat(String s) {
-        mc.gui.getChat().addClientSystemMessage(Component.literal(s.replaceAll("&", "§")));
+        mc.gui.hud.getChat().addClientSystemMessage(Component.literal(s.replaceAll("&", "§")));
     }
 
     /**
@@ -30,7 +26,7 @@ public class Chat {
      * @param t The Component to display in the chat.
      */
     public static void chat(Component t) {
-        mc.gui.getChat().addClientSystemMessage(t);
+        mc.gui.hud.getChat().addClientSystemMessage(t);
     }
 
     /**
@@ -143,7 +139,7 @@ public class Chat {
         }
 
         Font font = mc.font;
-        int chatWidth = mc.gui.getChat().getWidth();
+        int chatWidth = mc.gui.hud.getChat().getWidth();
         int separatorWidth = font.width(separator);
 
         if (separatorWidth <= 0) {

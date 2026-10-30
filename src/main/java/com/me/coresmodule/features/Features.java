@@ -67,12 +67,12 @@ public class Features {
         });
 
         Register.command("clear", ignore -> {
-            mc.gui.getChat().clearMessages(true);
+            mc.gui.hud.getChat().clearMessages(true);
         });
 
         Register.onChatMessage(message -> {
             if (General.pickaceAbility.get() && TextHelper.formattedString(message).contains("§aYou used your §6Maniac Miner §aPickaxe Ability!")) {
-                // TODO make it compatible with other pickaxe abilities
+                // TODO: Make it compatible with other pickaxe abilities
                 Helper.exactSleep(103000, () -> {
                     Chat.chat("§6§l[Cm] Pickaxe Ability Ready!");
                     Helper.showTitle("§6§lPickaxe Ability", "§aReady!", 0, 25, 35);

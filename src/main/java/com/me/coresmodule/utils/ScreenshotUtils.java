@@ -44,7 +44,7 @@ public class ScreenshotUtils {
         Minecraft client = Minecraft.getInstance();
         if (client.player == null) return;
 
-        RenderTarget framebuffer = client.getMainRenderTarget();
+        RenderTarget framebuffer = client.gameRenderer.mainRenderTarget();
 
         Screenshot.takeScreenshot(framebuffer, nativeImage -> {
             // We're on the render thread here - do the bare minimum (just hand
@@ -111,7 +111,7 @@ public class ScreenshotUtils {
             return future;
         }
 
-        RenderTarget framebuffer = mc.getMainRenderTarget();
+        RenderTarget framebuffer = mc.gameRenderer.mainRenderTarget();
 
         Minecraft.getInstance().execute(() -> {
             Screenshot.takeScreenshot(framebuffer, nativeImage -> {

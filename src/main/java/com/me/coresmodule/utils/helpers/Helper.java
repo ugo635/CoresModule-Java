@@ -1,6 +1,7 @@
 package com.me.coresmodule.utils.helpers;
 
 import com.me.coresmodule.utils.ScreenshotUtils;
+import net.minecraft.network.chat.Component;
 
 import java.awt.image.BufferedImage;
 import java.lang.reflect.Field;
@@ -44,14 +45,14 @@ public class Helper {
      * @param fadeOut How long for the text to fade out (In ticks)
      */
     public static void showTitle(String title, String subtitle, int fadeIn, int time, int fadeOut) {
-        mc.gui.setTimes(fadeIn, time, fadeOut);
+        mc.gui.hud.setTimes(fadeIn, time, fadeOut);
 
         if (title != null) {
-            mc.gui.setTitle(net.minecraft.network.chat.Component.literal(title));
+            mc.gui.hud.setTitle(Component.literal(title));
         }
 
         if (subtitle != null) {
-            mc.gui.setSubtitle(net.minecraft.network.chat.Component.literal(subtitle));
+            mc.gui.hud.setSubtitle(Component.literal(subtitle));
         }
 
     }
@@ -96,7 +97,7 @@ public class Helper {
     }
 
     public static String getGuiName() {
-        return mc.screen != null ? mc.screen.getTitle().getString() : "";
+        return mc.gui.screen() != null ? mc.gui.screen().getTitle().getString() : "";
     }
 
     public static void copyToClipboard(String s) {
