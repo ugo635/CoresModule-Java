@@ -75,11 +75,11 @@ dependencies {
     //implementation "gg.essential:universalcraft-26.1-fabric:$uc_version"
 
     // Jetbrains annotations
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:2.4.10"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:2.4.20"
     implementation(include("org.json:json:$json_version"))
 
     // ClassGraph - for preprocessor scanning.
-    implementation(include("io.github.classgraph:classgraph:4.8.186"))
+    implementation(include("io.github.classgraph:classgraph:4.8.196"))
 
     // For devauth
     implementation "org.apache.httpcomponents:httpclient:4.5.14"
